@@ -1,0 +1,12 @@
+{
+ "url": "https://x-cdn.ngs.nexon.com/1.5.3.1/windows/x64",
+ "retry": 0,
+ "timeout": 40,
+ "module_crc": {
+  "grap-core64.aes": 816866722,
+  "grap64.dll": 3004574433,
+  "grap-communicator64.aes": 391528369,
+  "BlackCat64.sys": 3943112960
+ },
+ "emergency_stop": 0
+}

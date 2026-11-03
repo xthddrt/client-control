@@ -1,0 +1,4 @@
+# nothing sensitive should ever land here; keep caches out
+__pycache__/
+*.pyc
+.DS_Store

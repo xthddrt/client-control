@@ -1,0 +1,561 @@
+[
+ {
+  "ts": 1793308603.3877122,
+  "iso": "2026-10-29T22:16:43.387712",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 1,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793308667.206057,
+  "iso": "2026-10-29T22:17:47.206057",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793308730.4950063,
+  "iso": "2026-10-29T22:18:50.495006",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793308793.4752884,
+  "iso": "2026-10-29T22:19:53.475288",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793308857.4453943,
+  "iso": "2026-10-29T22:20:57.445394",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793308921.418441,
+  "iso": "2026-10-29T22:22:01.418441",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793308985.3866518,
+  "iso": "2026-10-29T22:23:05.386652",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309049.376079,
+  "iso": "2026-10-29T22:24:09.376079",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309113.357529,
+  "iso": "2026-10-29T22:25:13.357529",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309177.3363404,
+  "iso": "2026-10-29T22:26:17.336340",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309241.3164792,
+  "iso": "2026-10-29T22:27:21.316479",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309305.2753265,
+  "iso": "2026-10-29T22:28:25.275326",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309369.2522671,
+  "iso": "2026-10-29T22:29:29.252267",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309433.2231963,
+  "iso": "2026-10-29T22:30:33.223196",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309497.1970875,
+  "iso": "2026-10-29T22:31:37.197088",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309561.1744678,
+  "iso": "2026-10-29T22:32:41.174468",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309625.1544077,
+  "iso": "2026-10-29T22:33:45.154408",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309689.120203,
+  "iso": "2026-10-29T22:34:49.120203",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309753.0820348,
+  "iso": "2026-10-29T22:35:53.082035",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309817.0405388,
+  "iso": "2026-10-29T22:36:57.040539",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309881.0124564,
+  "iso": "2026-10-29T22:38:01.012456",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793309944.9937744,
+  "iso": "2026-10-29T22:39:04.993774",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310008.9741874,
+  "iso": "2026-10-29T22:40:08.974187",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310072.9469573,
+  "iso": "2026-10-29T22:41:12.946957",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310136.9078934,
+  "iso": "2026-10-29T22:42:16.907893",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310200.8825867,
+  "iso": "2026-10-29T22:43:20.882587",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310264.8637366,
+  "iso": "2026-10-29T22:44:24.863737",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310328.8401566,
+  "iso": "2026-10-29T22:45:28.840157",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310392.8049161,
+  "iso": "2026-10-29T22:46:32.804916",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310456.7772782,
+  "iso": "2026-10-29T22:47:36.777278",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310520.7769935,
+  "iso": "2026-10-29T22:48:40.776994",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310584.7699711,
+  "iso": "2026-10-29T22:49:44.769971",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310648.7730987,
+  "iso": "2026-10-29T22:50:48.773099",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310712.7866642,
+  "iso": "2026-10-29T22:51:52.786664",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310776.7490911,
+  "iso": "2026-10-29T22:52:56.749091",
+  "wire_len": 208,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310840.7284005,
+  "iso": "2026-10-29T22:54:00.728400",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310904.7076232,
+  "iso": "2026-10-29T22:55:04.707623",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793310968.6891308,
+  "iso": "2026-10-29T22:56:08.689131",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793311032.6675994,
+  "iso": "2026-10-29T22:57:12.667599",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793311096.6428654,
+  "iso": "2026-10-29T22:58:16.642865",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793311160.621101,
+  "iso": "2026-10-29T22:59:20.621101",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793311224.5907824,
+  "iso": "2026-10-29T23:00:24.590782",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ },
+ {
+  "ts": 1793311288.5955634,
+  "iso": "2026-10-29T23:01:28.595563",
+  "wire_len": 204,
+  "decoded": {
+   "csauthtoken": "<redacted-token>",
+   "config_changed": 0,
+   "auth_cycle": 60,
+   "emergency_stop": 0,
+   "terminate_message": "An abnormal behavior has been detected.",
+   "detected": []
+  }
+ }
+]

@@ -1,0 +1,19 @@
+
+### x-update/v2
+  {"url": "https://x-cdn.ngs.nexon.com/1.5.3.1/windows/x64", "retry": 0, "timeout": 40, "module_crc": {"grap-core64.aes": 816866722, "grap64.dll": 3004574433, "grap-communicator64.aes": 391528369, "BlackCat64.sys": 3943112960}, "emergency_stop": 0}
+
+### x-init/v1
+  subfeature: 97 total, 94 enabled, 3 DISABLED
+  disabled codes: ['0x0B08B', '0x0E0B0', '0x0E0A0']
+  other: {"lifetoken": "<redacted-guid>", "auth_cycle": 60, "terminate_message": "An abnormal behavior has been detected.", "emergency_stop": 0, "signature": {"0x06030": [{"id": 109077, "s": {"rule": "rule HT_doyuin\n{\n    strings:\n        $HT_doyuin_1={43 3A 5C 64 6F 75 79 69 6E 5F 49
+
+### x-csauth/v1/issue
+  {"csauthtoken": "<redacted-token>"}
+
+### x-csauth/v2
+  {"csauthtoken": "<redacted-token>", "config_changed": 0, "auth_cycle": 60, "emergency_stop": 0, "terminate_message": "An abnormal behavior has been detected.", "detected": []}
+
+### x-config/v1
+  subfeature: 97 total, 94 enabled, 3 DISABLED
+  disabled codes: ['0x0B08B', '0x0E0B0', '0x0E0A0']
+  other: {"signature": {"0x0F013": [{"id": 14345, "s": {"capture_limit": "100", "width": "1280", "capture_cool_time": "6", "quality": "50"}, "l": 1}], "0x0F020": [{"id": 112760, "s": {"hash": "0xc87ed562"}, "l": 1}, {"id": 112762, "s": {"hash": "0xb03af875"}, "l": 1}, {"id": 112763, "s": {"hash": "0xee987f20
