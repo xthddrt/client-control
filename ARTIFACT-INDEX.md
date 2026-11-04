@@ -35,7 +35,7 @@ scoped to a closed research LAN.
 ### Crypto / wire
 | File | Lines | What |
 |------|------:|------|
-| `wire-session-decrypt.py` | 232 | Passive full-duplex pcap decryptor (AES-256-OFB, static key, self-seeding IV) |
+| `wire-session-decrypt.py` | 235 | Passive full-duplex pcap decryptor (AES-256-OFB, static key, self-seeding IV) |
 | `ngs_cipher.py` | 130 | Shared cipher helpers (transport + header + recv) |
 | `decode-flows.py` | 75 | Decode captured control-plane flows |
 | `decode-heartbeats.py` | 73 | Decode `x-csauth` heartbeats |
@@ -43,9 +43,9 @@ scoped to a closed research LAN.
 ### In-game arsenal
 | File | Lines | What |
 |------|------:|------|
-| `vac-sprites.py` | 919 | Mob VAC + **server-side mob PARK** engine |
-| `position-gui.py` | 717 | PySide6 control GUI (hotkeys, teleport, toggles, panic kill) |
-| `overhead-attacks.py` | 402 | Overhead-hitbox forcing + Always-MISS |
+| `vac-sprites.py` | 925 | Mob VAC + park engine with `--dry`; basic X-only live-validated, other modes pending |
+| `position-gui.py` | 1911 | PySide6 control GUI (hotkeys, read-only portals, toggles, panic kill); unavailable native controls disabled |
+| `overhead-attacks.py` | 409 | Overhead-hitbox forcing + collision gates; selector observation validated, MISS unverified |
 | `observe-incoming-display.py` | 432 | Live incoming-packet display (read side) |
 | `atkspeed.py` | 267 | ~3× attack-speed override |
 | `atkspeed-frames.py` | 111 | Animation-frame-timer attack-rate mechanism |
@@ -59,3 +59,16 @@ scoped to a closed research LAN.
 | `sendpacket-drop.py` | 166 | Stealth DR0 telemetry drop (`0x1ef`) at SendPacket |
 | `sendpacket-observe.py` | 120 | Passive send-path tap |
 | `grap-core-crash.py` | 231 | grap-core64 crash-kill (NtWriteFile E9 detour) |
+
+## Consolidated recovery artifacts
+
+`RECOVERY-PLAN.md` records the plan-2-based recovery and objective additions from plan 1. `LIVE-VALIDATION.md` records subsequent sequential live results, exact code corrections, and remaining work. `requirements.txt` lists third-party Python packages. `tools-QUARANTINE/DEPENDENCIES.md` is the authoritative caller/artifact inventory and recovery-status matrix.
+
+| File | What |
+|------|------|
+| `transport-cipher.py`, `transport-shuffle-table.bin` | Offline transport IV rolling and the validated 256-byte permutation |
+| `observe-position-reset.py` | Shared character resolver, register layout, checked ptrace, bounded wait |
+| `mob_profile.py`, `mob-count.py` | Strict mob-offset validation and read-only GUI mob scanning |
+| `try-collision-miss.py` | Collision gates recovered from live disassembly; native forcing remains unverified |
+| `try-native-reset.py` | Read-only portal snapshots and destination validation; native execute refuses an omitted call sequence |
+| `launch-game.py`, `hotkeys.py` | Validated UMU/preload orchestration and passive evdev Qt hotkeys |

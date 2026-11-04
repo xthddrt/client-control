@@ -290,6 +290,13 @@ def run(args, profile):
                             "miss_limit": cycle.limit, "remaining": cycle.remaining,
                             "next_forced": cycle.forcing,
                         }, sort_keys=True), flush=True)
+                    else:
+                        print("COLLISION-SKIP " + json.dumps({
+                            "native_status": context.get("status") if context else None,
+                            "monster_present": context.get("monster_present") if context else None,
+                            "attack_record_status": context.get("attack_record_status") if context else None,
+                            "attack_record_absent": context.get("attack_record_absent") if context else None,
+                        }, sort_keys=True), flush=True)
                     observer.ptrace(pid, 7)
                     stopped = False
                     continue

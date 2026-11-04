@@ -5,7 +5,7 @@ Edits are transient (next packet rebuilt from game state). usage: edit-melee-swa
 """
 import ctypes, importlib.util, json, os, signal, struct, sys, time, array
 from pathlib import Path
-WS=Path('/home/<redacted>/Desktop/NGS-GRAP-MapleStory-Research/workspace-position-research')
+WS=Path(__file__).resolve().parent
 def load(n,p):
     s=importlib.util.spec_from_file_location(n,p);m=importlib.util.module_from_spec(s);s.loader.exec_module(m);return m
 observer=load('reset_observer',WS/'observe-position-reset.py'); shared=load('attack_observer',WS/'overhead-attacks.py')

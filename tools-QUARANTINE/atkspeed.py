@@ -34,7 +34,7 @@ usage: atkspeed.py PID SECONDS OUT.json MULT [TICKSTEP] [MAXINJECT]
 import ctypes, importlib.util, json, os, signal, struct, sys, time, glob as _glob
 from collections import deque
 from pathlib import Path
-WS = Path('/home/<redacted>/Desktop/NGS-GRAP-MapleStory-Research/workspace-position-research')
+WS = Path(__file__).resolve().parent
 
 
 def load(n, p):
@@ -59,7 +59,7 @@ TICKSTEP = int(sys.argv[5]) if len(sys.argv) > 5 else 1000
 MAXINJECT = int(sys.argv[6]) if len(sys.argv) > 6 else 0
 OFF_COMBO = 18
 OFF_TICK = 32
-SENDPACKET_RVA = 0x1660360
+SENDPACKET_RVA = 0x1660ab0
 OP = 0xe1
 OBJ = 0x500
 DRB = 848

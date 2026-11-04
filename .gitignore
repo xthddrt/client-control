@@ -1,4 +1,5 @@
 # nothing sensitive should ever land here; keep caches out
 __pycache__/
 *.pyc
+.venv/
 .DS_Store

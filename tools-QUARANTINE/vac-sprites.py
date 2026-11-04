@@ -8,6 +8,7 @@ Controller B (+0x2c0) is NEVER written (A+B together + player hit = hard crash, 
 Writes: process_vm_writev (root, no ptrace) -- one 14-byte write per value (encoded double +
 key/meta untouched + checksum) so the game never reads a torn block. Heap data only.
 usage: vac-sprites.py PID SECONDS [--y] [--front PX] [--face left|right] [--spread PX] [--radius PX]
+  --dry      scan, select, and encode without any process memory writes
   --front    place the pile PX ahead of the player (facing inferred from X movement; default 0)
   --face     initial facing before the player moves (default right)
   --count N  pull only N mobs (the nearest ones at least --min-dist away), kept stable across rescans
@@ -72,6 +73,9 @@ CONTROLLED_OFF = MOFF['controlled']
 
 args = sys.argv[1:]
 pid = int(args[0]); dur = float(args[1])
+DRY = '--dry' in args
+if DRY:
+    print('DRY-RUN: scanning, selection, and encoding only; all process writes are suppressed.', flush=True)
 HOLD_Y = '--y' in args
 # When pulling Y across platforms, a mob's own foothold pointer goes stale (it still
 # references its origin platform) and the knockback/physics integrator walks that far-away
@@ -234,6 +238,8 @@ _libc.process_vm_writev.restype = ctypes.c_ssize_t
 
 
 def vm_write(addr, data):
+    if DRY:
+        return True
     buf = ctypes.create_string_buffer(bytes(data), len(data))
     local = _Iov(ctypes.cast(buf, ctypes.c_void_p), len(data))
     remote = _Iov(addr, len(data))
@@ -916,4 +922,4 @@ finally:
         json.dump(probe_snaps, open(PROBE, 'w'))
         print(f'probe: {len(probe_snaps)} snaps -> {PROBE}', flush=True)
     print(f'STOPPED t={time.monotonic() - t0:.1f}s parked={park_count} chain_kills={kills} mobs={len(mobs)} writes={writes} fails={fails} facing_flips={flips} vanished={vanished} spawned={spawned} stuck_ok={stuck_ok} snapped={snapped} foreign={len(foreign_ids)} skip_foreign={skipped_foreign} skip_repull={skipped_repull}', flush=True)
-print('DETACHED: vac stopped cleanly (nothing to restore)', flush=True)
+print('DETACHED: dry-run complete; no process memory was written.' if DRY else 'DETACHED: vac stopped cleanly (nothing to restore)', flush=True)

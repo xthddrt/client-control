@@ -11,6 +11,7 @@ This package was mechanically redacted with an env-driven redactor/leak-scanner
 | Account IDs | numeric account IDs → `<redacted-account-id>` | Account identity |
 | Passport | `NP12:...` → `<redacted-passport>` | Session credential |
 | csauth token | `csauthtoken` values → `<redacted-token>` | Session credential |
+| Session IDs | session identifiers → `<redacted-session-id>` | Session identity |
 | lifetoken GUID | lifetoken GUID → `<redacted-guid>` | Session credential |
 | **Researcher handle** | `REDACT_HANDLES` entries → "the external researcher" (+ possessive) | At operator's request, a third-party contributor's handle is removed throughout |
 
@@ -26,12 +27,20 @@ Technical facts that are properties of the **client/anti-cheat**, not the operat
 
 These are reproducible from the shipped binary and carry no personal data.
 
-## Verification performed on this package
+## Original verification (superseded by the recovery review below)
 - Scan of `docs`, `evidence`, and `tools-QUARANTINE` with the redactor → **CLEAN**
 - Belt-and-braces case-insensitive grep for the username, the researcher handle, and any
   `ghp_` token across all files → **0 hits**
 
+## Consolidated recovery review (2026-11-04)
+
+- Parsed every evidence JSON file and recursively checked account/passport/session-token fields: values remain marked with the documented redaction placeholders.
+- Scanned documentation, evidence, and source for GitHub-token and credential-shaped values: no unredacted match was found.
+- Found that two copies of the documented base64 decode sample produced an unredacted session token. Replaced both with synthetic samples containing `<redacted-token>`, redacted a session identifier, reran both samples, and scanned all long base64 candidates in `docs` and `evidence`: **CLEAN**.
+- Removed the pre-redaction absolute workspace paths from all Python callers; intentional redaction examples in these notes are unchanged.
+- The internal redactor, original username/handle lists, and pre-redaction sources were not shipped. This review cannot independently reproduce their exact comparisons or prove the absence of identifiers that are not recognizable from the redacted drop.
+
 ## Note on secrets
-No GitHub token, password, or session credential is stored anywhere in this package or its
-git history. If this drop is published, the token shared during research should be rotated —
-it was over-privileged and shared in-band.
+No known unredacted GitHub token, password, or session credential remains in the recovered
+working tree. This review does not rewrite existing publication history or external archives.
+The token shared during research should be rotated — it was over-privileged and shared in-band.

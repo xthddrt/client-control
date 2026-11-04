@@ -21,7 +21,7 @@ Usage: wire-session-decrypt.py <pcap> [--max N]
 """
 import sys, os, struct, json, argparse
 from collections import defaultdict, Counter
-from Crypto.Cipher import AES
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 import importlib.util
@@ -31,7 +31,10 @@ TABLE = tc._load_shuffle_table(os.path.join(HERE, "transport-shuffle-table.bin")
 
 STATIC_KEY = bytes.fromhex("0f0000001b000000c500000046000000f3000000be000000ff00000075000000")
 VERMASK = 0x00df
-_enc = AES.new(STATIC_KEY, AES.MODE_ECB).encrypt
+_cipher = Cipher(algorithms.AES(STATIC_KEY), modes.ECB())
+def _enc(block):
+    encryptor = _cipher.encryptor()
+    return encryptor.update(block) + encryptor.finalize()
 def _hs(iv): return (iv[3] << 8) | iv[2]
 
 def parse_pcap(path):
