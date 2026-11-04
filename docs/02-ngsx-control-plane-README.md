@@ -1,7 +1,7 @@
 # NGS-X CONTROL-PLANE CRACK — master index
 
 **Status:** ✅ Server→client control-plane cipher fully broken and reproducible.
-**Date:** 2026-10-29 · **Session:** 68a0dca5 · **Target:** MapleStory Classic World (MSCW), NGS-X/GRAP, client 1.5.3.1 x64.
+**Date:** 2026-10-29 · **Session:** `<redacted-session-id>` · **Target:** MapleStory Classic World (MSCW), NGS-X/GRAP, client 1.5.3.1 x64.
 **Context:** Authorized security research on the operator's own closed LAN / own account / own client.
 
 ---
@@ -54,8 +54,8 @@ NGS-X-CONTROL-PLANE-CRACK/
 
 ```bash
 cd tools
-# decode one real captured body:
-printf '%s' 'u9JDS0tLS0tLtH7GCkGJe1sO5FktFo9l/35whGpZbZgiGSdt2ccJWqQlX5e2TKS6FAteVFF+lBOLSVW3p8LNVbC6f7E6u3Y/CxKtbnPBY8ps+7BF9droxh1NMCeHwgAr6oYehrzU6ReZaeOnWZzB6tI7XcgVOQLzUYRa1ABlbSkmiyltHW2uIpx1tFCnrrG1S4b/z/3sS0tL' | python3 ngs_cipher.py
+# decode one synthetic body with a redacted token:
+printf '%s' 'KioiKioqKioo1R+n6yDoGjpuVQ/Gk6ANJWsulWkORrkbAxwxY3yLotVEcNocRVLpVuIdVEP42Kq6j3lvSoUikYcT+WqU4leg5A28omrcGvqQWlTbGeI0EQmJbKJ1dvnY9j5v57ma6E+e7JuxXjvpib6wUxwJOJWNeGfI/CtIKD7B2ZRV1BnzwcfRKQO6nYqOKioq' | python3 ngs_cipher.py
 # re-decode the entire archived dump:
 python3 decode-flows.py ../data/nexon-flows-2026-10-29.mitm --json /tmp/replay.json
 ```

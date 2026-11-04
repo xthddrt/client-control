@@ -14,7 +14,7 @@ usage: atkspeed-frames.py PID SECONDS FACTOR [--dry]
 """
 import ctypes, importlib.util, json, os, signal, struct, sys, time
 from pathlib import Path
-WS = Path('/home/<redacted>/Desktop/NGS-GRAP-MapleStory-Research/workspace-position-research')
+WS = Path(__file__).resolve().parent
 s = importlib.util.spec_from_file_location('c', WS / 'locate-character.py')
 ch = importlib.util.module_from_spec(s); s.loader.exec_module(ch)
 prof = json.loads((WS / 'profile.json').read_text())

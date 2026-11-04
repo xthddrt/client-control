@@ -37,11 +37,10 @@ PROFILE = json.loads((DIRECTORY / "profile.json").read_text())
 SPEED_FILE = DIRECTORY.parent / "native-speedhack-v13.speed"
 
 # GRAP / NGS controls (telemetry shield v3 + core crash). The GUI runs as root.
-RESEARCH_DIR = Path("/home/dingler/Desktop/NGS-GRAP-MapleStory-Research")
-SHIELD_SCRIPT = RESEARCH_DIR / "workspace-position-research" / "shield-blackout-v3.sh"
-SHIELD_STOP_SCRIPT = RESEARCH_DIR / "workspace-position-research" / "v3-stop.sh"
-PARK_SCRIPT = RESEARCH_DIR / "workspace-position-research" / "vac-sprites.py"
-MOB_COUNT_SCRIPT = RESEARCH_DIR / "workspace-position-research" / "mob-count.py"
+SHIELD_SCRIPT = DIRECTORY / "shield-blackout-v3.sh"
+SHIELD_STOP_SCRIPT = DIRECTORY / "v3-stop.sh"
+PARK_SCRIPT = DIRECTORY / "vac-sprites.py"
+MOB_COUNT_SCRIPT = DIRECTORY / "mob-count.py"
 MOB_COUNT_RETRY_SECONDS = 5.0
 # count and pull-interval are injected at launch from the GUI spinboxes
 # (see start_park); everything else is fixed. Defaults below are the
@@ -57,7 +56,7 @@ PARK_ARGUMENTS = [
     # "--glide", "500", "--glide-hz", "15" — see PM-68).
     "--log", "/tmp/park-dc.log",   # tees to /tmp/park-dc.log for DC forensics
 ]
-CORE_CRASH_TOOL = RESEARCH_DIR / "continuation-artifacts" / "grap-core-crash.py"
+CORE_CRASH_TOOL = DIRECTORY / "grap-core-crash.py"
 
 # Hard-cleanup targets after a game crash. These are the real executable names.
 # A process matches if EITHER its /proc/<pid>/comm (kernel-truncated to 15 chars,
@@ -532,16 +531,18 @@ class PositionWindow(QMainWindow):
         nav_layout.addWidget(coordinates)
 
         self.enable_movement = QCheckBox("Enable experimental portal teleportation")
+        self.enable_movement.setToolTip(
+            "Unavailable: the original native-call register/stack sequence was not shipped. "
+            "Read-only portal discovery remains available."
+        )
         self.enable_movement.toggled.connect(self.movement_toggled)
         nav_layout.addWidget(self.enable_movement)
         self.stop_move_button = QPushButton("Cancel queued teleport")
         self.stop_move_button.clicked.connect(self.stop_move)
         nav_layout.addWidget(self.stop_move_button)
         caution = QLabel(
-            "Stand still on solid ground with other debuggers detached. Move here calls the "
-            "historical native position reset and places you near the selected portal; enter manually. "
-            "This is experimental and may freeze or disconnect the game. A started native call "
-            "cannot be safely cancelled; closing waits for the helper. No automatic retries."
+            "Portal discovery is read-only. Native teleportation is disabled because the original "
+            "native-call register/stack sequence was not shipped; no offsets or calls are inferred."
         )
         caution.setWordWrap(True)
         nav_layout.addWidget(caution)
@@ -816,10 +817,14 @@ class PositionWindow(QMainWindow):
 
     def update_controls(self):
         available = self.player is not None and not self.busy() and not self.closing
-        can_move = available and self.enable_movement.isChecked() and not self.overhead_stopping
+        native_reset_available = hasattr(movement, "execute_native_reset")
+        can_move = (
+            available and native_reset_available and self.enable_movement.isChecked()
+            and not self.overhead_stopping
+        )
         self.stop_move_button.setEnabled(self.pending_move is not None and not self.closing)
         self.refresh_button.setEnabled(not self.busy())
-        self.enable_movement.setEnabled(not self.busy())
+        self.enable_movement.setEnabled(native_reset_available and not self.busy())
         self.show_spawns.setEnabled(not self.busy())
         for control in (self.speed_value, self.speed_apply, self.speed_normal):
             control.setEnabled(not self.busy() and not self.closing)
@@ -993,6 +998,7 @@ class PositionWindow(QMainWindow):
                 self.launch_process = None
         try:
             processes = launcher.process_snapshot()
+            preload_available = Path(launcher.PRELOAD_LIBRARY).is_file()
             if processes["game"]:
                 loaded = all(launcher.preload_loaded(pid) for pid in processes["game"])
                 message = (
@@ -1008,10 +1014,13 @@ class PositionWindow(QMainWindow):
                 )
             elif self.launch_process is not None:
                 message = "Starting MapleStory launcher..."
+            elif not preload_available:
+                message = f"Launch unavailable: native preload was not shipped ({launcher.PRELOAD_LIBRARY})."
             else:
                 message = self.launch_error or "Ready to launch standalone Nexon; Steam is not required."
             self.launch_available = (
-                not processes["game"] and not processes["launcher"] and self.launch_process is None
+                preload_available and not processes["game"] and not processes["launcher"]
+                and self.launch_process is None
             )
         except (OSError, RuntimeError, ValueError) as error:
             message = f"Launch status unavailable: {error}"
@@ -1565,10 +1574,10 @@ class PositionWindow(QMainWindow):
             points = ground["endpoints"]
             self.bounds.setText(
                 f"Current foothold: ({points['x1']}, {points['y1']}) → "
-                f"({points['x2']}, {points['y2']}). Portal targets are checked against controller bounds."
+                f"({points['x2']}, {points['y2']}). Portal discovery is read-only; native execution is unavailable."
             )
         else:
-            self.bounds.setText("Airborne — wait until grounded before moving.")
+            self.bounds.setText("Airborne — portal destinations are unavailable until grounded.")
         self.ensure_mob_count(player["pid"])
         self.update_controls()
 
@@ -1850,10 +1859,14 @@ class PositionWindow(QMainWindow):
             f"GRAP core: ALIVE (PID {core})" if core is not None else "GRAP core: dead"
         )
         self.core_crash_button.setEnabled(core is not None and not self.closing)
+        shield_available = SHIELD_SCRIPT.is_file() and SHIELD_STOP_SCRIPT.is_file()
         running = shield_pid() is not None
-        self.shield_status.setText("Shield v3: RUNNING" if running else "Shield v3: stopped")
-        self.shield_raise_button.setEnabled(not running and not self.closing)
-        self.shield_lower_button.setEnabled(running and not self.closing)
+        if shield_available:
+            self.shield_status.setText("Shield v3: RUNNING" if running else "Shield v3: stopped")
+        else:
+            self.shield_status.setText("Shield v3: unavailable (firewall scripts not shipped)")
+        self.shield_raise_button.setEnabled(shield_available and not running and not self.closing)
+        self.shield_lower_button.setEnabled(shield_available and running and not self.closing)
 
     def closeEvent(self, event):
         self.stop_mob_count()

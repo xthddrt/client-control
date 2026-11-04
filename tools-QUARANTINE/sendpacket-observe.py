@@ -1,6 +1,6 @@
 """Stealth outbound-packet observer at the REAL CClientSocket::SendPacket.
 
-Behavior-verified entry this build: RVA 0x1660360 (VA 0x141660360), rcx=COutPacket*.
+Behavior-verified entry this build: RVA 0x1660ab0 (VA 0x141660ab0), rcx=COutPacket*.
   - opcode  @ COutPacket+0x434 (u32)
   - length  @ COutPacket+0x428 (u32)
   - body    @ COutPacket+0x008 (inline, opcode duplicated at +0x008 too)
@@ -14,7 +14,7 @@ detaches). usage: sendpacket-observe.py PID SECONDS OUT.json
 """
 import ctypes, importlib.util, json, os, signal, struct, sys, time
 from pathlib import Path
-WS = Path('/home/<redacted>/Desktop/NGS-GRAP-MapleStory-Research/workspace-position-research')
+WS = Path(__file__).resolve().parent
 
 
 def load(n, p):
@@ -32,7 +32,7 @@ prof = json.loads((WS / 'profile.json').read_text())
 pid = int(sys.argv[1])
 dur = float(sys.argv[2])
 out = sys.argv[3]
-SENDPACKET_RVA = 0x1660360
+SENDPACKET_RVA = 0x1660ab0
 SAMPLES_PER_OP = 4
 BODY_CAP = 64
 

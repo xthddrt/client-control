@@ -75,8 +75,9 @@
   "heal_call_rva": "0x280121e",
   "display_call_rva": "0x29618a8",
   "damage_magnitude_calculator_rva": "0x2b3500",
+  "attack_record_status_offset": "0x140",
   "_1_1_0_display_validated": "2026-10-29 live 30-hit test: 28 hit + 2 miss, matched user on-screen count (pid 517743)",
-  "_1_1_0_decision_layer": "STALE 1.0 values below (calculator_wrapper/avoidance_function/collision_source/HP chain) NOT yet re-derived for 1.1.0"
+  "_1_1_0_decision_layer": "2026-11-04 live validation: calculator/avoidance decisions and r13/r14+0x140 gates re-derived; HP stat context remains unresolved"
  },
  "native_reset": {
   "rva": "0xa46750",
@@ -169,8 +170,8 @@
   }
  ],
  "portal_layout": {
-  "manager_global_rva": "0x3bf16e8",
-  "manager_vtable_rva": "0x3524a78",
+  "manager_global_rva": "0x3be6728",
+  "manager_vtable_rva": "0x35192f8",
   "array_pointer": "0x8",
   "array_count_offset": -8,
   "entry_size": 16,
@@ -180,7 +181,8 @@
   "record_type": "0x10",
   "record_x": "0x14",
   "record_y": "0x18",
-  "record_accessor_exclusion": "0xb8"
+  "record_accessor_exclusion": "0xb8",
+  "record_destination_fallback": "0x40"
  },
  "character_offsets": {
   "cached_y": "0xff8",

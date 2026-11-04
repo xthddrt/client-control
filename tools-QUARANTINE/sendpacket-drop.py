@@ -1,4 +1,4 @@
-"""Stealth selective DROP at the real SendPacket (RVA 0x1660360).
+"""Stealth selective DROP at the real SendPacket (RVA 0x1660ab0).
 
 For each outbound packet whose opcode is in DROP set, redirect execution to the
 return address (SendPacket returns TRUE without transmitting) -> the packet never
@@ -11,7 +11,7 @@ usage: sendpacket-drop.py PID SECONDS OUT.json [OPCODE_HEX ...]   (default 0x1ef
 """
 import ctypes, importlib.util, json, os, signal, struct, sys, time, glob as _glob
 from pathlib import Path
-WS = Path('/home/<redacted>/Desktop/NGS-GRAP-MapleStory-Research/workspace-position-research')
+WS = Path(__file__).resolve().parent
 
 
 def load(n, p):
@@ -30,7 +30,7 @@ pid = int(sys.argv[1])
 dur = float(sys.argv[2])
 out = sys.argv[3]
 DROP = set(int(x, 16) for x in sys.argv[4:]) or {0x1ef}
-SENDPACKET_RVA = 0x1660360
+SENDPACKET_RVA = 0x1660ab0
 
 
 def chan_inodes():
