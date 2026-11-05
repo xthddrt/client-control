@@ -1,4 +1,4 @@
-"""Stealth selective DROP at the real SendPacket (RVA 0x1660ab0).
+"""Stealth selective DROP at the real SendPacket (RVA 0x1661780).
 
 For each outbound packet whose opcode is in DROP set, redirect execution to the
 return address (SendPacket returns TRUE without transmitting) -> the packet never
@@ -30,7 +30,7 @@ pid = int(sys.argv[1])
 dur = float(sys.argv[2])
 out = sys.argv[3]
 DROP = set(int(x, 16) for x in sys.argv[4:]) or {0x1ef}
-SENDPACKET_RVA = 0x1660ab0
+SENDPACKET_RVA = 0x1661780
 
 
 def chan_inodes():
