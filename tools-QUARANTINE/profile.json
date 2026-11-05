@@ -171,8 +171,8 @@
   }
  ],
  "portal_layout": {
-  "manager_global_rva": "0x3be6728",
-  "manager_vtable_rva": "0x35192f8",
+  "manager_global_rva": "0x3bf5788",
+  "manager_vtable_rva": "0x3526248",
   "array_pointer": "0x8",
   "array_count_offset": -8,
   "entry_size": 16,
