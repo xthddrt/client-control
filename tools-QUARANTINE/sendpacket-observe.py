@@ -34,7 +34,7 @@ dur = float(sys.argv[2])
 out = sys.argv[3]
 SENDPACKET_RVA = 0x1661780
 SAMPLES_PER_OP = 4
-BODY_CAP = 64
+BODY_CAP = 256
 
 r = ch.Reader(pid)
 base, _ = ch.find_image(r, pid, prof)

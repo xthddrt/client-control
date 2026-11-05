@@ -187,4 +187,10 @@ M2 was reanchored to detour `0x1416689a1` and cave `0x14335891a`. The empty deto
 
 The attack selector was reanchored to `0x859480`, with caller `0x2982aa0` and return `0x2982f57`. A normal sword attack returned action 0, outside the old polearm-only filter. Action 0 was added to the frame-speed module, and live capture showed the action field moved from `0x7e8` to `0x7ec`. The dry observer then captured one attack and two frames. The 1.2× modifier produced five attacks, 13 timer writes, 527 ms saved, and no disconnect or watchdog event.
 
+### Damage and RNG investigation
+
+`sendpacket-observe.py` now captures full 232-byte melee packets instead of truncating them at 64 bytes. A damage-related field at body offset `0x88` was confirmed against displayed values. Changing that field from native 25 to 23 produced an exact readback, but the displayed result remained 25, so the packet edit did not change the authoritative damage outcome.
+
+A weapon differential then showed 20 with the weapon equipped and 5 with it unequipped on the same mob. This proves that the client computes a prediction using weapon stats, while the server also recomputes or validates the result. It does not prove where the random roll originates. The checked RNG state fields at `stats+0x60` and `stats+0x90` did not change after an attack, and the range sampler/damage helper did not fire during the tested sword attack. The outgoing roll and any adjustable seed remain unidentified.
+
 Native portal execution is still not implemented. The new update boundary is `0x283717d`, but the exact reset ABI is not recovered. HP/result support, native preload, shield scripts, and global hotkeys remain pending or unverified. No fatal GRAP-core operation was executed.
