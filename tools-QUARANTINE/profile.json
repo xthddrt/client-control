@@ -18,29 +18,29 @@
   }
  },
  "incoming_display": {
-  "player_function_rva": "0x2801020",
+  "player_function_rva": "0x280ce60",
   "player_function_size": "0x5d9",
-  "player_function_sha256": "2831b2243f6e044ebefa0e329d04aa256321e1f46543e047120cbf7608a4c474",
-  "miss_renderer_rva": "0xe9c660",
+  "player_function_sha256": "5b88d789ecfd1f48f7ace629af75451cd12628883b4773d372c9f3347478597c",
+  "miss_renderer_rva": "0xe9d250",
   "miss_renderer_size": "0x345",
-  "miss_renderer_sha256": "60ea9d121e7c1e2ae0599055bbade2265e9c08b09eafc9c632165a2ce1b6c6f8",
-  "miss_call_rva": "0x280144b",
-  "damage_call_rva": "0x28012f7",
-  "observed_hit_caller_return_rva": "0x29618ad",
-  "hit_caller_function_rva": "0x2960e1d",
+  "miss_renderer_sha256": "9b0d69bce0e3b3e85dd3c2fb128024f41991738bff1f31d85ed2b5efa23458c5",
+  "miss_call_rva": "0x280d28b",
+  "damage_call_rva": "0x280d137",
+  "observed_hit_caller_return_rva": "0x296d6ed",
+  "hit_caller_function_rva": "0x296acb0",
   "hit_caller_function_size": "0x393f",
-  "hit_caller_function_sha256": "ec0d2bf7b7bf5e143c84a686fbd6d04f86f791854c20ab20e7b41c3df1d65613",
+  "hit_caller_function_sha256": "38d6bca901af09779eba0bd79c16cf1385fcc7ebecf9a07634b2e425e09ed8a8",
   "observed_healing_caller_return_rva": "0x281b878",
-  "calculator_wrapper_rva": "0x2b2670",
+  "calculator_wrapper_rva": "0x2b2fb0",
   "calculator_wrapper_size": "0x104",
-  "calculator_wrapper_sha256": "685825cb1a2f2c54f02fc1ebd32604f8283f2b653cf990c0b311ee6129a0c247",
-  "avoidance_function_rva": "0x2b4780",
+  "calculator_wrapper_sha256": "58f8020b233f382d76929ac56d2c8148e560bf15f41a7205692fc8bc7384189f",
+  "avoidance_function_rva": "0x2b50c0",
   "avoidance_function_size": "0x389",
-  "avoidance_function_sha256": "a238605d1a7a238277b66a6e4cb046e5ed245821a5a9b795ed7496589bc9141c",
-  "avoidance_compare_rva": "0x2b4949",
-  "avoidance_result_rva": "0x2b4ac3",
-  "avoidance_wrapper_return_rva": "0x2b26d8",
-  "calculator_caller_return_rva": "0x295f61d",
+  "avoidance_function_sha256": "457a51444ee5a99b002a48c6db88884fd697d4d5780410dafec975b02e2b6754",
+  "avoidance_compare_rva": "0x2b5289",
+  "avoidance_result_rva": "0x2b5403",
+  "avoidance_wrapper_return_rva": "0x2b3018",
+  "calculator_caller_return_rva": "0x296b45d",
   "calculator_context_global_rva": "0x3bd6710",
   "calculator_context_offset": "0x2998",
   "rng_state_offset": "0x60",
@@ -73,9 +73,10 @@
   "collision_source_sha256": "877660b9716d67dba9c4866bd31597c5dba3d33446605b958f26513a25bfdccb",
   "collision_return_rva": "0x298ce45",
   "heal_call_rva": "0x280121e",
-  "display_call_rva": "0x29618a8",
+  "display_call_rva": "0x296d6e8",
   "damage_magnitude_calculator_rva": "0x2b3500",
   "attack_record_status_offset": "0x140",
+  "_2026_11_05_reprofile": "Decision/display anchors re-derived; healing, result-serialization, RNG, and HP-context fields remain pending",
   "_1_1_0_display_validated": "2026-10-29 live 30-hit test: 28 hit + 2 miss, matched user on-screen count (pid 517743)",
   "_1_1_0_decision_layer": "2026-11-04 live validation: calculator/avoidance decisions and r13/r14+0x140 gates re-derived; HP stat context remains unresolved"
  },
@@ -89,16 +90,16 @@
   "controller_bounds_offset": "0x340"
  },
  "polearm_attacks": {
-  "temporary_action_offset": "0x7e8",
+  "temporary_action_offset": "0x7ec",
   "weapon_id_offset": "0x6a8",
   "action_family_offset": "0x6dc",
-  "selector_return_rva": "0x2977117",
-  "selector_rva": "0x858890",
+  "selector_return_rva": "0x2982f57",
+  "selector_rva": "0x859480",
   "selector_size": "0x1d3",
-  "selector_sha256": "7f6094c288e4514076670c94862dffc4a85c1137a8b56a59b22eee08c4851443",
-  "caller_rva": "0x2976c60",
+  "selector_sha256": "e8bfc3235e9bf6fc0fa3d40ded55b5b9f7539c7d10102f75db2ac7f062407a6f",
+  "caller_rva": "0x2982aa0",
   "caller_size": "0x3ab0",
-  "caller_sha256": "a1dc63fade35852e6a0c9d2a61580e4671db55074f1926ae518833e26833b967",
+  "caller_sha256": "9974ee3299d6aa8b7934c62dbac79916d87052919efef26fe229c1a8057fd227",
   "skill_selector_return_rva": null,
   "skill_caller_rva": null,
   "skill_caller_size": null,
@@ -128,44 +129,44 @@
  },
  "pe": {
   "machine": "0x8664",
-  "timestamp": "0x6AE292F1",
-  "size_of_image": "0x5E88000"
+  "timestamp": "0x6AEB667B",
+  "size_of_image": "0x5F2E000"
  },
  "rvas": {
-  "character_global": "0x3bcb7c8",
-  "movement_vector_vtable": "0x3404458",
+  "character_global": "0x3bda828",
+  "movement_vector_vtable": "0x34113a8",
   "physics_x_scale": "0x3483480",
   "physics_y_scale": "0x348348c"
  },
  "code_fingerprints": [
   {
    "name": "character_identifier_getter",
-   "rva": "0x27FDC20",
+   "rva": "0x2809A60",
    "bytes": "8b81d0110000c3cccccccccccccccccc488b"
   },
   {
    "name": "character_cached_position_getter",
-   "rva": "0x284C7B0",
+   "rva": "0x28585F0",
    "bytes": "48895c2408574883ec20488d99f00f00"
   },
   {
    "name": "controller_snapshot_copy",
-   "rva": "0xA2CB10",
+   "rva": "0xA2D700",
    "bytes": "48895c24104889742418574883ec30488bd94881"
   },
   {
    "name": "encoded_integer_position_assignment",
-   "rva": "0xA559A0",
+   "rva": "0xA56590",
    "bytes": "48895c241048896c241848897424205741544155415641574883ec208b"
   },
   {
    "name": "portal_array_accessor",
-   "rva": "0x1F7CC70",
+   "rva": "0x1F7DB20",
    "bytes": "48895c2410574883ec204863da85d2786a488b4108488d79"
   },
   {
    "name": "portal_minimap_xy_reader",
-   "rva": "0x25006BE",
+   "rva": "0x250116E",
    "bytes": "8b8e04030000458b7e144403befc0200"
   }
  ],
@@ -223,7 +224,7 @@
   "next": "0x68"
  },
  "mob_offsets": {
-  "cmob_vtable_rva": "0x3509d48",
+  "cmob_vtable_rva": "0x3516c98",
   "cvecctrl_vtable_rva": "0x35906e0",
   "ctrl_a": "0x2b8",
   "ctrl_b": "0x2c0",
@@ -244,12 +245,20 @@
   "controlled": "0xaf0"
  },
  "_reprofile_report": {
-  "resolved": 6,
-  "unresolved": 0,
-  "needs_manual": [],
-  "data_rvas_need_manual": [
+  "last_live_reprofile": "2026-11-05",
+  "resolved": [
+   "pe",
+   "code_fingerprints",
    "character_global",
    "movement_vector_vtable",
+   "incoming_display",
+   "mob_offsets",
+   "sendpacket"
+  ],
+  "pending": [
+   "native_reset",
+   "polearm_attacks",
+   "portal_layout",
    "physics_x_scale",
    "physics_y_scale"
   ]

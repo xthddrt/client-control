@@ -31,12 +31,12 @@ Usage:
 import ctypes, os, sys
 
 # ---- addresses (build 1.5.3.1, base 0x140000000) ----
-DETOUR_VA   = 0x141667cd1
+DETOUR_VA   = 0x1416689a1
 DETOUR_ORIG = bytes.fromhex("488b4c2428")   # mov rcx,[rsp+0x28]
-RETURN_VA   = 0x141667cda
-CAVE_START  = 0x14334bc3a
-CAVE_END    = 0x14334c000
-TEXT_END    = 0x14334c000
+RETURN_VA   = 0x1416689aa
+CAVE_START  = 0x14335891a
+CAVE_END    = 0x143359000
+TEXT_END    = 0x143359000
 
 # ---- GRAP no-op payload patches: list of (va, patched_bytes) ----
 # Each region is auto-covered by the substitution table with its PRISTINE bytes

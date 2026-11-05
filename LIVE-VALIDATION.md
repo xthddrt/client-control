@@ -147,3 +147,50 @@ An HP-context read failed with `No current stat context`. The `--results` path a
 ## Resume protocol
 
 Continue one function at a time. Start each launch with the read-only resolver, then portal/mob scans, then passive observers, then the smallest relevant dry-run or unchanged-value test. Do not run multiple ptrace tools simultaneously. Restore debug registers and temporary patches after every test, and keep destructive core, process-kill, firewall, and forged-packet actions out of routine validation.
+
+## 2026-11-05 patch update
+
+### New build recovery
+
+The updated client has PE timestamp `0x6AEB667B` and image size `0x5F2E000`. All six original function fingerprints changed addresses but were found byte-for-byte at new RVAs. The character global was rederived as `0x3bda828`, and the movement-vector vtable as `0x34113a8`. The reanchored resolver produces a valid in-world snapshot.
+
+Collision/display functions were reanchored independently: player display `0x280ce60`, MISS renderer `0xe9d250`, hit caller `0x296acb0`, calculator wrapper `0x2b2fb0`, and avoidance function `0x2b50c0`. Decision comparison/result addresses are `0x2b5289` and `0x2b5403`. A real hit validated comparison, native status, and display correlation.
+
+### CMob and VAC
+
+A controller-getter breakpoint identified the actual CMob vtable as `0x3516c98`. The mob scanner subsequently reported `MOBS 19 xmin=-639 xmax=1548`. Earlier broad vtable scans were unnecessary once the runtime getter was used correctly.
+
+Progressive VAC validation produced:
+
+- Dry-run selection and both encoder self-tests with no write failures.
+- Unchanged-value write/readback success.
+- X-only VAC reaching player X during the hold.
+- Post-copy X and velocity pinning holding X immediately after detach.
+- Y plus player-foothold synchronization holding both coordinates exactly.
+- Controller-B hold reaching both coordinates, followed by post-detach movement.
+- A one-slot park/release cycle where controller B remained at X=1059 after release while controller A moved elsewhere. This supports a persistent server-side park, but multiplayer visuals were not tested.
+
+### Collision MISS
+
+Collision-only mode was changed to use DR1, matching the proven decision observer. An explicit `--allow-active-attack-record` flag was added while preserving the absent-only default gate. The test cycle then produced:
+
+- First hit: native 1, effective 2, forced MISS.
+- Second hit: native 1, effective 1, native damage.
+
+The operator visually confirmed the first MISS and second damaging hit. Collision-MISS is therefore working on this build with the opt-in active-record scope.
+
+### SendPacket and remaining work
+
+SendPacket was reanchored to `0x1661780` in the observer, dropper, and attack-speed packet script. The observer captured 38 traps and two opcodes on this build. A four-minute drop test then dropped two `0x1ef` packets across 1,450 traps, with no `dc_at` recorded. Pass-through and an actual target drop are therefore both validated.
+
+M2 was reanchored to detour `0x1416689a1` and cave `0x14335891a`. The empty detour installed and restored correctly. A padding-byte payload at `0x1402b5449` was changed from `0xcc` to `0x90`, and direct cave execution verified that the integrity-read substitution returned the original `0xcc`. All detours, payloads, cave bytes, registers, and stack state were restored.
+
+The attack selector was reanchored to `0x859480`, with caller `0x2982aa0` and return `0x2982f57`. A normal sword attack returned action 0, outside the old polearm-only filter. Action 0 was added to the frame-speed module, and live capture showed the action field moved from `0x7e8` to `0x7ec`. The dry observer then captured one attack and two frames. The 1.2× modifier produced five attacks, 13 timer writes, 527 ms saved, and no disconnect or watchdog event.
+
+### Damage and RNG investigation
+
+`sendpacket-observe.py` now captures full 232-byte melee packets instead of truncating them at 64 bytes. A damage-related field at body offset `0x88` was confirmed against displayed values. Changing that field from native 25 to 23 produced an exact readback, but the displayed result remained 25, so the packet edit did not change the authoritative damage outcome.
+
+A weapon differential then showed 20 with the weapon equipped and 5 with it unequipped on the same mob. This proves that the client computes a prediction using weapon stats, while the server also recomputes or validates the result. It does not prove where the random roll originates. The checked RNG state fields at `stats+0x60` and `stats+0x90` did not change after an attack, and the range sampler/damage helper did not fire during the tested sword attack. The outgoing roll and any adjustable seed remain unidentified.
+
+Native portal execution is still not implemented. The new update boundary is `0x283717d`, but the exact reset ABI is not recovered. HP/result support, native preload, shield scripts, and global hotkeys remain pending or unverified. No fatal GRAP-core operation was executed.

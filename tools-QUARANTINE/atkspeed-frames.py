@@ -23,8 +23,8 @@ DRY = '--dry' in sys.argv
 if not 1.0 <= FACTOR <= 3.0:
     raise SystemExit('FACTOR must be 1.0..3.0')
 pa = prof['polearm_attacks']
-ATTACK_ACTIONS = set(pa['overhead_actions']) | set(pa['stab_actions'])
-OFF_ACTION, OFF_FRAME = 0x7e8, 0xb70          # frame idx @0xb70, remaining ms @0xb74
+ATTACK_ACTIONS = set(pa['overhead_actions']) | set(pa['stab_actions']) | {0}
+OFF_ACTION, OFF_FRAME = 0x7ec, 0xb70          # frame idx @0xb70, remaining ms @0xb74
 
 r = ch.Reader(pid)
 base, _ = ch.find_image(r, pid, prof)

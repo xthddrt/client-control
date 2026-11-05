@@ -43,13 +43,13 @@ def _number(value):
     return int(value, 0) if isinstance(value, str) else int(value)
 
 
-def eligible(context, settings):
+def eligible(context, settings, allow_active_attack_record=False):
     return (
         context is not None
         and context.get("kind") == "decision"
         and _number(context.get("actor", 0)) != 0
         and context.get("monster_present") is True
-        and context.get("attack_record_absent") is True
+        and (allow_active_attack_record or context.get("attack_record_absent") is True)
         and context.get("status") in (1, 2, 3)
         and _number(context.get("caller_frame", 0))
         == _number(context.get("expected_frame", 0)) + 0x1B7

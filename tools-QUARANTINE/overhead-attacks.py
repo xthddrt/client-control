@@ -198,8 +198,9 @@ def run(args, profile):
             collision = load_collision()
             collision_settings = profile["incoming_display"]
             collision.verify_collision_code(reader, base, collision_settings)
+            collision_slot = 2 if targets else 1
             targets.update({
-                base + character.number(collision_settings["avoidance_result_rva"]): 2,
+                base + character.number(collision_settings["avoidance_result_rva"]): collision_slot,
             })
         slots = sorted(set(targets.values()))
         status = dict(
@@ -236,6 +237,7 @@ def run(args, profile):
         print(
             f"ARMED pid={pid} overhead_only={args.force_overhead}; "
             f"collision_miss={args.force_collision_miss} misses_before_normal={cycle.limit}; "
+            f"allow_active_attack_record={args.allow_active_attack_record}; "
             "strict local-player scopes; shared tables/code unchanged.",
             flush=True,
         )
@@ -267,11 +269,13 @@ def run(args, profile):
             if collision is not None:
                 if reader.qword(root) != original_actor:
                     raise RuntimeError("Local character changed; collision override stopped.")
-                if targets[registers.rip] == 2:
+                if targets[registers.rip] == collision_slot:
                     context = collision.collision_context(
                         reader, registers, root, base, collision_settings
                     )
-                    if context is not None and collision.eligible(context, collision_settings):
+                    if context is not None and collision.eligible(
+                        context, collision_settings, args.allow_active_attack_record
+                    ):
                         native = context["status"]
                         forcing = cycle.forcing
                         effective = 2 if forcing else native
@@ -287,6 +291,7 @@ def run(args, profile):
                         print("COLLISION " + json.dumps({
                             "index": collisions, "native_status": native,
                             "effective_status": effective, "forcing": forcing,
+                            "attack_record_status": context["attack_record_status"],
                             "miss_limit": cycle.limit, "remaining": cycle.remaining,
                             "next_forced": cycle.forcing,
                         }, sort_keys=True), flush=True)
@@ -306,6 +311,7 @@ def run(args, profile):
                 print(
                     f"SELECTOR {seen}: " + json.dumps({
                         "return_rva": hex(reader.qword(registers.rsp) - base),
+                        "action": registers.rax & 0xFFFFFFFF,
                         "actor": hex(reader.qword(root)),
                         "family": registers.rcx & 0xFFFFFFFF,
                         "weapon_type": registers.rdx & 0xFFFFFFFF,
@@ -383,6 +389,7 @@ def main():
     parser.add_argument("--pid", type=int)
     parser.add_argument("--force-overhead", action="store_true", help="Redirect eligible stabs before attack processing.")
     parser.add_argument("--force-collision-miss", action="store_true", help="Force MISS on the verified local collision path.")
+    parser.add_argument("--allow-active-attack-record", action="store_true", help="Also test collisions with an active attack record; default preserves the absent-only gate.")
     parser.add_argument("--misses-before-normal", type=int, default=0, help="N collision misses, one native collision, repeat; 0 means continuous.")
     parser.add_argument("--seconds", type=float, default=90, help="Observation duration; 0 requires --control-stdin.")
     parser.add_argument("--attacks", type=int, default=0, help="Stop after this many eligible attacks.")
@@ -395,6 +402,8 @@ def main():
         parser.error("--attacks cannot be negative.")
     if args.misses_before_normal < 0 or args.misses_before_normal and not args.force_collision_miss:
         parser.error("--misses-before-normal requires collision MISS and cannot be negative.")
+    if args.allow_active_attack_record and not args.force_collision_miss:
+        parser.error("--allow-active-attack-record requires --force-collision-miss.")
     if args.observe_selector and (args.force_overhead or args.force_collision_miss):
         parser.error("--observe-selector cannot change attack selections.")
     profile = json.loads((DIRECTORY / "profile.json").read_text())
