@@ -274,10 +274,10 @@ def shield_pid():
         if not entry.name.isdigit():
             continue
         try:
-            cmdline = (entry / "cmdline").read_bytes().replace(b"\0", b" ").decode(errors="replace")
+            arguments = (entry / "cmdline").read_bytes().split(b"\0")
         except OSError:
             continue
-        if SHIELD_MATCH in cmdline:
+        if any(argument.rsplit(b"/", 1)[-1] == SHIELD_MATCH.encode() for argument in arguments):
             return int(entry.name)
     return None
 

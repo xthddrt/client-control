@@ -145,7 +145,7 @@ def read_result_event(reader, registers, root, base, kind, settings):
     if kind == "hp_update":
         if registers.rbx != stats:
             return None
-        if not registers.rbp & 0x400:
+        if not registers.rbp & character.number(settings["hp_stat_mask"]):
             raise RuntimeError("HP writer reached without the expected HP stat-mask bit.")
         event.update({
             "hp_before": reader.protected_integer(hp_address),

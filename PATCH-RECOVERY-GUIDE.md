@@ -21,12 +21,15 @@ Use the current report in `LIVE-VALIDATION.md` for exact results and remaining b
 | Collision MISS | The first hit was forced to MISS and the second was allowed to damage the player. The operator confirmed the visual result. |
 | SendPacket observation | The new SendPacket address was found and the observer captured real packets. |
 | Packet dropping | Two real `0x1ef` packets were dropped; other packets passed through. |
-| M2 detour | An empty detour installed/restored, and a padding-byte substitution returned the original byte during cave execution. |
+| M2 detour | An empty detour installed/restored, a padding-byte substitution returned the original byte, and an active detour survived 240 seconds before complete restoration. |
 | Attack frames | A sword action was identified as action 0. The action offset changed to `0x7ec`, and the 1.2× modifier produced five attacks, 13 writes, and 527 ms saved. |
 | Selector observation | A normal sword attack was observed without changing its selection. |
 | Damage analysis | The client predicts damage using weapon stats, but editing the packet's damage field did not change the displayed result. This showed that the server also recomputes or validates damage. |
+| Network shield | Rebuilt cgroup-scoped scripts blocked Nexon HTTPS/8484 telemetry for 120 seconds with no game-channel loss. |
+| NGS proxy | Live `x-update`, `x-init`, and `x-csauth` calls returned HTTP 200. `x-init` had signature/subfeature maps neutralized and the character entered the world. |
+| Attack/RNG capture | Four sword attacks (26, 24, 21, 20) matched the melee damage field and produced paired pre/post memory snapshots. Candidate state transitions remain unconfirmed. |
 
-These are limited proofs, not a claim that every tool is complete. Native portal execution, HP/result decoding, native preload, shield scripts, and global hotkeys remain incomplete.
+These are limited proofs, not a claim that every tool is complete. Native portal execution, live HP/result decoding, native preload, and global hotkeys remain incomplete. Shield scripts are now restored.
 
 ## Concepts in plain English
 
@@ -145,9 +148,10 @@ Log the game channel and the exact time it disappears. A successful write and a 
 9. Restore VAC in this order: X, pinning, Y with foothold sync, controller-B, then park.
 10. Revalidate collision observation before forcing one MISS and one native hit.
 11. Revalidate attack-frame action IDs and offsets before enabling the modifier.
-12. Test M2 empty first, then one harmless substitution.
-13. Leave native portal, HP/result support, preload, shield scripts, and hotkeys for separate targeted work if they are required.
-14. Commit the exact evidence, not just the code changes.
+12. Test M2 empty first, then one harmless substitution, then an active soak before restoring.
+13. Rebuild the shield against current game/Wine cgroups and verify the NGS proxy with real HTTP 200 responses.
+14. Leave native portal, HP/result support, preload, and hotkeys for separate targeted work if they are required.
+15. Commit the exact evidence, not just the code changes.
 
 ## What to give an AI agent next time
 
