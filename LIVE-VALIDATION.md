@@ -194,3 +194,21 @@ The attack selector was reanchored to `0x859480`, with caller `0x2982aa0` and re
 A weapon differential then showed 20 with the weapon equipped and 5 with it unequipped on the same mob. This proves that the client computes a prediction using weapon stats, while the server also recomputes or validates the result. It does not prove where the random roll originates. The checked RNG state fields at `stats+0x60` and `stats+0x90` did not change after an attack, and the range sampler/damage helper did not fire during the tested sword attack. The outgoing roll and any adjustable seed remain unidentified.
 
 Native portal execution is still not implemented. The new update boundary is `0x283717d`, but the exact reset ABI is not recovered. HP/result support, native preload, shield scripts, and global hotkeys remain pending or unverified. No fatal GRAP-core operation was executed.
+
+### NGS/GRAP blocker recovery
+
+The missing network shield scripts were rebuilt using the existing systemd application cgroups for MapleStory and its Wine services. The shield rejects outbound TCP ports 443 and 8484 for those two Nexon-specific cgroups without targeting game ports 8563/8913 or unrelated applications. The confirmed shield endpoints `35.164.63.25:443` and `44.230.128.74:443` disconnected, and a 120-second soak recorded zero MapleStory HTTPS/8484 connections and zero game-channel losses. This is network telemetry blocking, not complete GRAP neutralization or message-content logging. The scripts also include rate-limited kernel packet logging for later runs.
+
+M2 then completed an active four-minute test on PID 392977. It hid a harmless padding-byte change at `0x1402b5449` (`0xcc` to `0x90`) with the detour at `0x1416689a1` and cave `0x14335891a`. The detour and payload remained installed for 240 seconds with no disconnect. The payload was restored to `0xcc`, the original detour bytes were restored, and the cave was zeroed. This validates active detour stability during the integrity window; it does not prove concealment of every possible server-selected address or all anti-cheat outcomes.
+
+`ngs-mitm.py` now wires the recovered response cipher into mitmproxy. Its offline round-trip and neutralize-mode startup passed. It can log exact requests/decoded responses or pin emergency-stop, detection, config-change, subfeature, and signature fields while preserving module CRCs. Live use still requires a launcher/client restart through the proxy and CA; live neutralization is not yet claimed. The separate NGS request/attestation cipher remains unresolved.
+
+### Final 2026-11-05 blocker and RNG results
+
+The live NGS proxy subsequently succeeded: `x-update`, `x-init`, and two `x-csauth` issue requests returned HTTP 200. `x-init` had `signature` and `subfeature` neutralized, and the character entered the world with an active local proxy connection. `launch-ngs-mitm.sh` keeps the proxy alive through launcher handoffs rather than exiting when a process briefly disappears.
+
+The approved GRAP-core crash test did not reproduce the historical result. The patched core remained alive at the first check, MapleStory exited 42 seconds later, and the launcher started a new client/core. This path is not considered viable for normal play and should not be retried routinely.
+
+For RNG analysis, `attack-rng-observe.py` captured four sword attacks with displayed damage 26, 24, 21, and 20. Every value matched the melee field at `0x88`, every selector paired, and pre/post memory was saved without writes. The `stats_2998` region changed 12 bytes at `+0x00` and `+0x20` on every attack with exact pre/post continuity. Neither the common CRand32 formula nor the transition reimplemented from `0x7ac850` reproduced those changes, so they remain candidates rather than confirmed damage seeds. `rng-write-watch.py` is the next instrument; its client exited before a writer was captured.
+
+The first raw pcap filter missed combat because this session used 8484 plus 8913, not 8563. The next full-duplex capture must include 8484 and current channel ports. See `HANDOFF.md` for exact resume commands, remaining limits, and the no-modification prediction protocol.

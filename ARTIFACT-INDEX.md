@@ -55,14 +55,19 @@ scoped to a closed research LAN.
 ### Evasion / anti-DC
 | File | Lines | What |
 |------|------:|------|
-| `m2-detour.py` | 245 | M2 echo-loop detour: hide a `.text` patch from the server-directed read |
+| `m2-detour.py` | 245 | M2 echo-loop detour: hide a `.text` patch from the server-directed read; active four-minute soak passed |
 | `sendpacket-drop.py` | 166 | Stealth DR0 telemetry drop (`0x1ef`) at SendPacket |
 | `sendpacket-observe.py` | 120 | Passive send-path tap |
-| `grap-core-crash.py` | 231 | grap-core64 crash-kill (NtWriteFile E9 detour) |
+| `grap-core-crash.py` | 231 | Historical grap-core64 crash-kill experiment; current test failed and is not recommended |
+| `shield-blackout-v3.sh`, `v3-stop.sh` | — | Cgroup-scoped network telemetry shield with counters, rate-limited logs, and cleanup |
+| `ngs-mitm.py` | — | NGS request logger and live response decoder/neutralizer for mitmproxy |
+| `launch-ngs-mitm.sh` | — | Persistent proxy and proxied Nexon launcher |
+| `attack-rng-observe.py` | — | Correlates melee damage with selector and pre/post memory snapshots |
+| `rng-write-watch.py` | — | Identifies writers of candidate state words; writer result pending |
 
 ## Consolidated recovery artifacts
 
-`RECOVERY-PLAN.md` records the plan-2-based recovery and objective additions from plan 1. `LIVE-VALIDATION.md` records subsequent sequential live results, exact code corrections, and remaining work. `requirements.txt` lists third-party Python packages. `tools-QUARANTINE/DEPENDENCIES.md` is the authoritative caller/artifact inventory and recovery-status matrix.
+`RECOVERY-PLAN.md` records the plan-2-based recovery and objective additions from plan 1. `LIVE-VALIDATION.md` records subsequent sequential live results, exact code corrections, and remaining work. `HANDOFF.md` is the latest cross-computer resume point, including the unresolved RNG experiment. `requirements.txt` lists third-party Python packages. `tools-QUARANTINE/DEPENDENCIES.md` is the authoritative caller/artifact inventory and recovery-status matrix.
 
 | File | What |
 |------|------|
