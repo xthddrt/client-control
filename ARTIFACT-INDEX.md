@@ -63,11 +63,19 @@ scoped to a closed research LAN.
 | `ngs-mitm.py` | — | NGS request logger and live response decoder/neutralizer for mitmproxy |
 | `launch-ngs-mitm.sh` | — | Persistent proxy and proxied Nexon launcher |
 | `attack-rng-observe.py` | — | Correlates melee damage with selector and pre/post memory snapshots |
-| `rng-write-watch.py` | — | Identifies writers of candidate state words; writer result pending |
+| `rng-write-watch.py` | — | Identifies writers of candidate state words through DR6 write watchpoints |
+| `damage-rng.py` | — | Unified solve/replay/capture/search/analyze entrypoint with offline self-test |
+| `rng-state-solver.py` | — | GF(2) state solver for single or simultaneous roll targets |
+| `rng-state-override.py` | — | Exact state writes, replay, and complete-state restoration |
+| `rng-roll-override.py` | — | Solver-generated replay by target roll and index |
+| `rng-dataset.py` | — | Streaming 100-attack RNG/damage JSONL recorder with resume |
+| `rng-max-search.py` | — | Generates and tests 100 unique near-maximum states with resume |
+| `rng-damage-override.py` | — | Narrow single-roll override experiment with native/unchanged controls |
+| `capture-rng.sh`, `run-rng-max-search.sh` | — | Auto-PID wrappers with logging and output ownership handling |
 
 ## Consolidated recovery artifacts
 
-`RECOVERY-PLAN.md` records the plan-2-based recovery and objective additions from plan 1. `LIVE-VALIDATION.md` records subsequent sequential live results, exact code corrections, and remaining work. `HANDOFF.md` is the latest cross-computer resume point, including the unresolved RNG experiment. `requirements.txt` lists third-party Python packages. `tools-QUARANTINE/DEPENDENCIES.md` is the authoritative caller/artifact inventory and recovery-status matrix.
+`RECOVERY-PLAN.md` records the plan-2-based recovery and objective additions from plan 1. `LIVE-VALIDATION.md` records subsequent sequential live results, exact code corrections, and remaining work. `HANDOFF.md` is the latest cross-computer resume point, including RNG evidence and remaining server-HP questions. `DAMAGE-RNG.md` is the supported RNG toolkit guide. `requirements.txt` lists third-party Python packages. `tools-QUARANTINE/DEPENDENCIES.md` is the authoritative caller/artifact inventory and recovery-status matrix.
 
 | File | What |
 |------|------|

@@ -5,6 +5,8 @@ Branch delivered to `main` after review/merge.
 
 This is the authoritative resume point for work on another computer. It separates live evidence from static validation, failed experiments, and unfinished research. Do not infer that every tool in the repository works.
 
+For the completed damage-RNG workflow, start with `DAMAGE-RNG.md` and `tools-QUARANTINE/damage-rng.py`. Its `solve`, `replay`, `capture`, `search`, `analyze`, and `self-test` commands package the results below.
+
 ## Environment and build identity
 
 Recovered tools target this unpacked client build:
@@ -165,29 +167,80 @@ Validated sequence: **26, 24, 21, 20**, all with action 0 and paired selectors. 
 
 The local capture is `captures/attack-rng-400403.json` on the original computer and is intentionally not committed.
 
-### Candidate memory findings
+### Earlier candidate memory findings
 
 - `stats_2350` had no changes in these four attacks.
 - `stats_2998` changed 12 bytes at `+0x00` and 12 bytes at `+0x20` on every attack.
 - Every post-state matched the next attack's pre-state, so these are continuous stateful values, not random unrelated noise.
 - Actor changes were dominated by action/timer/position fields.
-- The common three-word `CRand32` formula did **not** reproduce the next state.
-- The shift/mask transition reimplemented from disassembly at `0x7ac850` also did **not** reproduce the next state.
+- The common three-word `CRand32` formula and a one-transition reimplementation from `0x7ac850` did not reproduce the next state. A single transition was not the right comparison: the melee routine fills 11 rolls per attack.
 
-Therefore these words are candidates only. They are **not confirmed damage RNG seeds**, and no adjustable seed has been proven.
+### RNG object and algorithm recovered statically
 
-`rng-write-watch.py` was then built to place write watchpoints on the first words of those two regions and record writer RIP, registers, stack, and updated bytes. It armed at `0x18685070` and `0x18685090`, but the client exited before the requested attack. No writer instruction was captured, and no live breakpoint remains.
+The current executable establishes the missing link: `0x2d80710` returns the object at `context+0x2998`, and a melee-related path passes that exact pointer to the generator at `0x7ac850`. Thus `stats_2998` is the confirmed client RNG object, not merely a changing candidate.
+
+The generator's three input words are at object offsets `0x00`, `0x08`, and `0x24`. Each call updates those words plus snapshots at `0x04`, `0x20`, and `0x28`, exactly explaining the two 12-byte change runs. Live captures show 11 transitions per basic melee attack, but they can span multiple callers. A statically traced damage routine has an 11-call array loop, yet the current basic attacks did not execute its scaler at `0x2d3ba0` or its result write at `0x2ad8a9`. One returned roll in the verified melee caller is overwritten without being used. Therefore RNG advancement is proven, but damage consumption is not.
+
+`attack-rng-observe.py` implements the exact transition, predicts 11 transitions per attack, records all 11 rolls, and checks all six state/snapshot words. Its offline self-checks pass. Successive live captures reproduced the 11-step state transition; the latest capture matched 7/7 attacks after selector pairing was corrected. The observer now also has filtered breakpoints at the generator and shared scaler to identify the actual callers. No damage-roll claim is based on these state predictions alone.
+
+`rng-write-watch.py` identifies data-watchpoint hits through `DR6` and records the watched address, post-write RIP/RVA, preceding code bytes, registers, stack, and updated state. Its live capture recorded 100 events/50 complete transitions. Every writer was in `0x7ac850`, and every saved stack identified caller `0x2ac76f`. That routine fills the 11-roll array at `0x2ac76a`; the current hit's roll is loaded at `0x2ac9a2` and consumed by the subsequent inline range calculation.
+
+### Controlled damage-roll override: negative result
+
+`rng-damage-override.py` tested three attacks at `0x2ac9a9`, after the critical-hit check and immediately after the current damage roll was loaded:
+
+| Stage | Roll operation | Outgoing packet damage | Displayed damage |
+|---|---|---:|---:|
+| Native | No modification, original `1218335471` | 20 | 20 |
+| Unchanged control | Wrote `2029730638` back and verified exact readback | 23 | 23 |
+| Override | Changed `1795405682` to `4294967295` and verified exact readback | 18 | 18 |
+
+The maximum roll did not change either the outgoing damage or displayed damage. This rules out that individual roll as the final damage-control input, but not the entire three-word state. The later whole-state replay below is the broader and more decisive experiment.
+
+### Repeated three-word state replay: positive client-side result
+
+`rng-state-override.py` next wrote the previously observed state `0c2418d6, cdf84fe7, 5e613e0a`, whose next roll is `fdc9f1d2` and whose earlier outgoing/displayed damage was 22. A native attack and unchanged-state control were followed by four independent replays. Each replay wrote the same triple, generated the same next roll, restored the complete original 44-byte RNG object, and verified every write/restoration.
+
+| Stage | Outgoing packet damage | Displayed damage |
+|---|---:|---:|
+| Native | 19 | 19 |
+| Unchanged control | 24 | 24 |
+| Replay 1 | 22 | 22 |
+| Replay 2 | 22 | 22 |
+| Replay 3 | 22 | 22 |
+| Replay 4 | 22 | 22 |
+
+This is strong evidence that the three state words deterministically affect the client-side damage calculation and outgoing/displayed result. It supersedes the earlier broader inference that RNG state adjustment was not useful. The narrow single-roll negative result and the whole-state positive result are compatible: the final damage depends on a different roll or combination of rolls from the generated sequence.
+
+Server HP loss has not yet been decoded, so server acceptance remains unproven. Outgoing/displayed determinism does not distinguish a client prediction from a server-confirmed result. A second replay state and inbound HP correlation are the next independent checks.
+
+### Critical roll and unique-state reproduction of 30 damage
+
+Roll index 4 is the 5% critical roll: `predicted_rolls[4] / 2^32 < 0.05`. Across 125 valid dataset attacks, every critical flag at packet byte `0x87 = 1` followed that rule and every noncritical attack did not. Two solver-generated states with index-4 roll 1 then produced two displayed critical strikes, confirming the mapping. Base damage correlates most strongly with roll index 2 in the same-mob dataset.
+
+`rng-state-solver.py` was extended to solve simultaneous roll targets. Four unique triples preserved the first five rolls from the 30-damage critical hit, including roll 2 and critical roll 4. Every run completed and restored the original RNG object:
+
+| Replayed triple | Native/unchanged damage | Replayed outgoing/displayed damage |
+|---|---|---:|
+| `fadbcf10 95db8810 76cf1a80` | 23 / 26 | 30 |
+| `fadbcf11 95db8810 76cf1a80` | 20 / 21 | 30 |
+| `fadbcf12 95db8810 76cf1a80` | 16 / 22 | 30 |
+| `fadbcf13 95db8810 76cf1a80` | 22 / 22 | 30 |
+
+This demonstrates deterministic damage reproduction with four previously unseen state triples, not merely replaying one memorized state. Captures are `captures/rng-30-0xfadbcf10.json` through `rng-30-0xfadbcf13.json`.
+
+The multi-target solver then combined roll 2 `0xffffffff` with critical roll 4 `0`. The resulting state `b95365e0 e2793d38 000000d0` produced outgoing/displayed damage 33. Across 32 salted state variants satisfying those two targets, all 11 resulting rolls were identical, leaving no further roll variation to optimize under those constraints. This is the maximum identified for the current mob/equipment setup, not a proven game-wide maximum or a proof that every damage-affecting stat is understood.
+
+### 100-state maximum-damage search
+
+`rng-max-search.py` generated 100 unique state triples with roll 2 equal to `0xffffffff` or `0xfffffffe` and roll 4 below the 5% critical threshold, with 100 distinct 11-roll sequences. All 100 candidates completed and every original RNG object was restored. Results: 19 attacks reached 34, 17 reached 33, 22 reached 32, 25 reached 31, seven reached 30, and the rest were lower or had no damage field. No candidate reached 35. Example 34-damage state: `178e8921 a8fc3ce8 000000e4`, with roll 2 `0xfffffffe` and roll 4 `0x00100000`. Full candidates/results are in `captures/rng-max-100-candidates.json` and `captures/rng-max-100-results.jsonl`.
 
 ## Resume the RNG experiment here
 
-1. Start the proxy and enter a map with mobs using the same sword and no equipment changes.
-2. Confirm the current MapleStory PID and all current remote ports with `ss -tnp`.
-3. Start raw capture on the actual ports. Include 8484 and 8913; add the current channel port if different.
-4. Arm `rng-write-watch.py`.
-5. Attack once, record the displayed damage, and inspect each writer RVA with Capstone.
-6. Identify the writer's exact algorithm before considering any state modification.
-7. Reproduce several consecutive transitions offline. Then test **prediction without modification**: predict the next legitimate damage and compare it with the server/displayed result.
-8. Only after a proven prediction, decide whether RNG surfing/timing is feasible. Do not edit a candidate seed based only on its changing value.
+1. Preserve `captures/rng-state-replay.json`: four identical replays produced 22 while native/unchanged attacks produced 19 and 24.
+2. Replay a different known state and determine whether its earlier damage is also reproduced. Do not claim a general state-to-damage mapping from one triple alone.
+3. Decode inbound mob-HP changes or use another authoritative health/death measurement to determine whether replayed damage is accepted by the server rather than only displayed.
+4. If server acceptance is confirmed, map which generated rolls and stat inputs determine final damage before attempting any generalized RNG surfing or state-selection tool.
 
 Example commands:
 

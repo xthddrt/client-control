@@ -19,6 +19,10 @@ character = shared.character
 PROFILE = json.loads((DIRECTORY / "profile.json").read_text())
 
 
+def fired_watchpoint_slots(dr6, slots=(0, 1)):
+    return [slot for slot in slots if dr6 & (1 << slot)]
+
+
 def run(pid, duration, output):
     reader = character.Reader(pid)
     base, _ = character.find_image(reader, pid, PROFILE)
@@ -45,7 +49,7 @@ def run(pid, duration, output):
         observer.ptrace(pid, 0x4207)
         state = observer.wait_stop(pid, 1)
         stopped = True
-        deliver = shared.pending_signal(pid, state, targets)
+        deliver = shared.pending_signal(pid, state)
         saved = {
             slot: observer.ptrace(pid, 3, 848 + slot * 8) & 0xFFFFFFFFFFFFFFFF
             for slot in (0, 1, 6, 7)
@@ -75,14 +79,21 @@ def run(pid, duration, output):
                 observer.ptrace(pid, 7, 0, number)
                 stopped = False
                 continue
+            dr6 = observer.ptrace(pid, 3, 848 + 6 * 8)
+            fired = fired_watchpoint_slots(dr6, targets.values())
+            if len(fired) != 1:
+                deliver = number
+                raise RuntimeError("Trap did not belong to exactly one RNG write watchpoint.")
+            slot = fired[0]
             registers = observer.Registers()
             observer.ptrace(pid, 12, 0, ctypes.addressof(registers))
-            if not shared.owns_trap(pid, registers, targets):
-                deliver = number
-                raise RuntimeError("Trap did not belong to the RNG write observer.")
             event = {
-                "timestamp": time.time(), "rva": hex(registers.rip - base),
-                "slot": targets[registers.rip],
+                "timestamp": time.time(),
+                "slot": slot,
+                "watched_address": hex(stats + slot * 0x20),
+                "rip_after_write": hex(registers.rip),
+                "rva_after_write": hex(registers.rip - base),
+                "code_before": reader.read(registers.rip - 15, 15).hex(),
                 "registers": {
                     name: hex(getattr(registers, name))
                     for name in ("rax", "rbx", "rcx", "rdx", "rsi", "rdi", "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15", "rbp", "rsp")
@@ -91,29 +102,40 @@ def run(pid, duration, output):
                 "stack": reader.read(registers.rsp, 0x40).hex(),
             }
             events.append(event)
-            print(f"WRITE slot={event['slot']} rva={event['rva']} state={event['state']}", flush=True)
+            print(f"WRITE slot={slot} rip_after={event['rva_after_write']} state={event['state']}", flush=True)
             if len(events) >= 100:
                 raise RuntimeError("Write-watch capture exceeded 100 events.")
             observer.ptrace(pid, 6, 848 + 6 * 8, 0)
             observer.ptrace(pid, 7)
             stopped = False
     finally:
+        cleanup_error = None
         if attached:
-            if not stopped:
-                observer.ptrace(pid, 0x4207)
-                state = observer.wait_stop(pid, 1)
-                deliver = shared.pending_signal(pid, state, targets)
-            if saved is not None:
-                for slot in (7, 0, 1, 6):
-                    observer.ptrace(pid, 6, 848 + slot * 8, saved[slot])
-            observer.ptrace(pid, 17, 0, deliver)
-            print("DETACHED: original debug registers restored; no memory writes.", flush=True)
+            try:
+                if not stopped:
+                    observer.ptrace(pid, 0x4207)
+                    state = observer.wait_stop(pid, 1)
+                    deliver = shared.pending_signal(pid, state)
+                    if os.WSTOPSIG(state) == signal.SIGTRAP:
+                        dr6 = observer.ptrace(pid, 3, 848 + 6 * 8)
+                        if len(fired_watchpoint_slots(dr6, targets.values())) == 1:
+                            deliver = 0
+                if saved is not None:
+                    for slot in (7, 0, 1, 6):
+                        observer.ptrace(pid, 6, 848 + slot * 8, saved[slot])
+                observer.ptrace(pid, 17, 0, deliver)
+                print("DETACHED: original debug registers restored; no memory writes.", flush=True)
+            except (OSError, RuntimeError) as error:
+                cleanup_error = error
+                print(f"DETACH incomplete: {error}", file=sys.stderr, flush=True)
         with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
             json.dump({"pid": pid, "stats": hex(stats), "events": events}, stream, indent=1)
         reader.close()
         for number, handler in handlers.items():
             signal.signal(number, handler)
         print(f"WROTE {output}: events={len(events)}", flush=True)
+        if cleanup_error is not None:
+            raise cleanup_error
 
 
 if __name__ == "__main__":

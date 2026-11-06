@@ -31,6 +31,12 @@ The saved profile was observed on 2026-10-25 and describes `MapleStory.exe` with
 | `launch-game.py` | `position-gui.py` | UMU environment, process/preload checks, private launch log | Reconstructed; missing-artifact refusal checked; actual launch blocked by absent game/preload |
 | `hotkeys.py` | `position-gui.py` | Qt signals and passive Linux evdev listener | Reconstructed and imported; current host has zero readable evdev devices exposing every GUI binding, so global hotkeys remain unavailable |
 | `dl.py` | `m2-detour.py verify` | Read the omitted pristine memory dump for offline cross-checking | **Not included / not reconstructed**; no dump or reader contract is present |
+| `damage-rng.py` | Operator CLI | Unified solve, replay, capture, search, and analysis workflow | Offline self-test passed; live replay and 100-state search validated |
+| `rng-state-solver.py` | `damage-rng.py`, `rng-roll-override.py`, `rng-max-search.py` | GF(2) solver for single and simultaneous roll targets | Known targets, salts, critical states, and multi-target states checked |
+| `rng-state-override.py` | `damage-rng.py`, `rng-roll-override.py` | Exact state write/readback, replay, and complete 44-byte restoration | Repeated 22/30/34 damage and forced-critical experiments passed |
+| `rng-roll-override.py` | Operator CLI | Solver-generated replay by target roll and index | Two forced critical strikes confirmed |
+| `rng-dataset.py` | `damage-rng.py`, `capture-rng.sh` | Streaming attack-dataset recorder with resume and variable packet lengths | 100-attack JSONL dataset captured |
+| `rng-max-search.py` | `damage-rng.py`, `run-rng-max-search.sh` | Near-maximum candidate generation and resumable search | All 100 candidates completed; maximum observed damage 34 |
 
 `observe-incoming-display.py` reaches `observe-position-reset.py` and `try-collision-miss.py` transitively through `overhead-attacks.py`. These are not additional direct dependencies.
 

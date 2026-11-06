@@ -338,6 +338,7 @@ keystream-free, length-preserving.
 | Read | For |
 |------|-----|
 | **[`01-THE-ARSENAL.md`](01-THE-ARSENAL.md)** | Per-capability deep dive: addresses, mechanism, evidence, limits |
+| **[`DAMAGE-RNG.md`](DAMAGE-RNG.md)** | Deterministic RNG solver, state replay, datasets, critical strikes, and the 34-damage search |
 | **[`00-RETROSPECTIVE.md`](00-RETROSPECTIVE.md)** | Full technical story, environment-first, honest accounting |
 | **[`ARTIFACT-INDEX.md`](ARTIFACT-INDEX.md)** | Every doc, capture, and tool, annotated |
 | **[`docs/`](docs/)** | Strategic index, control-plane crack, NGS-X static report |
