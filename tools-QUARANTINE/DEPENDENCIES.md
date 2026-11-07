@@ -33,10 +33,23 @@ The saved profile was observed on 2026-10-25 and describes `MapleStory.exe` with
 | `dl.py` | `m2-detour.py verify` | Read the omitted pristine memory dump for offline cross-checking | **Not included / not reconstructed**; no dump or reader contract is present |
 | `damage-rng.py` | Operator CLI | Unified solve, replay, capture, search, and analysis workflow | Offline self-test passed; live replay and 100-state search validated |
 | `rng-state-solver.py` | `damage-rng.py`, `rng-roll-override.py`, `rng-max-search.py` | GF(2) solver for single and simultaneous roll targets | Known targets, salts, critical states, and multi-target states checked |
-| `rng-state-override.py` | `damage-rng.py`, `rng-roll-override.py` | Exact state write/readback, replay, and complete 44-byte restoration | Repeated 22/30/34 damage and forced-critical experiments passed |
+| `rng-state-override.py` | `damage-rng.py`, `rng-roll-override.py` | Exact state write/readback, replay, and complete 44-byte restoration; optional incoming drop tracing | Repeated 22/30/34 damage and forced-critical experiments passed; `TRACE_DROPS=1` adds read-only `0x3f3`/`0x471` without a generator breakpoint; three-hook replay/drop/detach child check passed; live validation pending |
+| `replay-rng-drops.sh` | Operator CLI | Reusable auto-PID capture of 100 fixed-state damaging attacks with unique JSON and terminal-log outputs | Three-hook live capture survived two repeated critical attacks and logged their drops; 130-byte swing handling and 100-attack mode added; full run pending |
 | `rng-roll-override.py` | Operator CLI | Solver-generated replay by target roll and index | Two forced critical strikes confirmed |
 | `rng-dataset.py` | `damage-rng.py`, `capture-rng.sh` | Streaming attack-dataset recorder with resume and variable packet lengths | 100-attack JSONL dataset captured |
 | `rng-max-search.py` | `damage-rng.py`, `run-rng-max-search.sh` | Near-maximum candidate generation and resumable search | All 100 candidates completed; maximum observed damage 34 |
+| `drop-observe.py` | `capture-drops.sh`, `capture-interaction.sh` | Outgoing packet and client-memory differential recorder for drop research | 70-attack capture completed; optional full-memory mode added |
+| `capture-drops.sh` | Operator CLI | Auto-PID/endpoint full-duplex pcap and state-change capture for kill/drop/pickup | Full-duplex drop session captured and decrypted |
+| `memory-watch.py` | `drop-observe.py --full-memory` | Full writable-memory chunk snapshots and before/after diffs | Real modified-memory self-check passed |
+| `capture-interaction.sh` | Operator CLI | Full writable-memory plus full-duplex interaction capture for drop-origin analysis | Multiple sessions captured/decrypted; throttling added for responsiveness |
+| `focus-observe.py` | `capture-32b.sh` | Focused 0x32b/pickup-only packet and full-memory differential recorder | Compile/import checked; focused live capture pending |
+| `capture-32b.sh` | Operator CLI | Auto-PID/endpoint focused 0x32b and pickup capture | Shell syntax checked; focused live capture pending |
+| `alter-observe.py` | `capture-32b.sh` with `ALTER_32B=1` | Native/override 0x32b field test with post-send restoration | Compile/import checked; override experiment pending |
+| `capture-death.sh` | Operator CLI | Lightweight full-duplex mob-death and drop-communication capture | 37 attacks, 11 `0x32b` events, and full-duplex pcap captured |
+| `packet-observe.py` | `capture-packets.sh` | All-current-thread plaintext send/receive and constructor observer | Normal packet capture preserved; repeated-state drop experiments use `rng-state-override.py` instead |
+| `capture-packets.sh` | Operator CLI | Auto-PID plaintext packet-capture wrapper with streamed private JSONL and driver-error logs | Live packet capture passed; obsolete `RNG_MODE`/`RNG_REPLAY_WORDS` invocations are rejected in favor of the simpler replayer |
+| `duplicate-pickup.sh` | `capture-packets.sh` with `DUPLICATE_32B=1` | One-shot duplicate pickup wrapper with microsecond timing | Shell syntax checked; live duplicate result pending |
+| `protocol-static.py` | Operator CLI | Static outgoing constructor, encoder, and SendPacket call-site extractor | Fingerprint checks, compilation, and live-image analysis passed |
 
 `observe-incoming-display.py` reaches `observe-position-reset.py` and `try-collision-miss.py` transitively through `overhead-attacks.py`. These are not additional direct dependencies.
 

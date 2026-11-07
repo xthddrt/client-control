@@ -339,6 +339,10 @@ keystream-free, length-preserving.
 |------|-----|
 | **[`01-THE-ARSENAL.md`](01-THE-ARSENAL.md)** | Per-capability deep dive: addresses, mechanism, evidence, limits |
 | **[`DAMAGE-RNG.md`](DAMAGE-RNG.md)** | Deterministic RNG solver, state replay, datasets, critical strikes, and the 34-damage search |
+| **[`PACKETS.md`](PACKETS.md)** | Current plaintext send/receive hooks, outgoing layouts, serializer paths, and packet-capture status |
+| **[`INTERACTION.md`](INTERACTION.md)** | Full writable-memory and full-duplex capture for drop-origin analysis |
+| **[`32B.md`](32B.md)** | Focused 0x32b/pickup construction, field, and full-memory capture |
+| **[`DEATH.md`](DEATH.md)** | Full-duplex mob-death and drop-communication capture |
 | **[`00-RETROSPECTIVE.md`](00-RETROSPECTIVE.md)** | Full technical story, environment-first, honest accounting |
 | **[`ARTIFACT-INDEX.md`](ARTIFACT-INDEX.md)** | Every doc, capture, and tool, annotated |
 | **[`docs/`](docs/)** | Strategic index, control-plane crack, NGS-X static report |

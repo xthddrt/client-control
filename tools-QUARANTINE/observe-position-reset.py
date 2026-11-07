@@ -52,7 +52,11 @@ def wait_stop(pid, timeout):
             if os.WIFSTOPPED(status):
                 return status
             if os.WIFEXITED(status) or os.WIFSIGNALED(status):
-                raise RuntimeError(f"PID {pid} exited while waiting for a ptrace stop.")
+                reason = (
+                    f"exit code {os.WEXITSTATUS(status)}" if os.WIFEXITED(status)
+                    else f"signal {os.WTERMSIG(status)}"
+                )
+                raise RuntimeError(f"PID {pid} exited while waiting for a ptrace stop: {reason} (status {status:#x}).")
             raise RuntimeError(f"PID {pid} returned unexpected wait status {status:#x}.")
         remaining = deadline - time.monotonic()
         if remaining <= 0:

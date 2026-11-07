@@ -136,6 +136,8 @@ Captured read-only with `sendpacket-observe.py` (idle + active-play windows, NO 
 | `0x1ef` | ~1/60s (event) | 160 | **TELEMETRY** — LE dword counter/metrics block. The droppable one (`sendpacket-drop.py` default). | ✅ droppable, no DC |
 | `0x0d3` | rare | 37 | **FIELD request** — `…0600 "west0030"` field-name ASCII + coords. Server-facing field/portal info (NOT the client-side SetField of the external researcher's CRC thread). | observe |
 | `0x32b` | combat (×3) | 36 | Combat-adjacent — mobID-like u32 + positions; candidate hit-result/loot/mob-ctrl. Unconfirmed. | observe |
+
+**Current update:** later labeled captures confirm `0x32b` as the pickup request; its `0x0f` field is the drop object ID created by server `0x471`, not the item template or quantity. See `PACKETS.md` for the confirmed spawn/pickup/credit path and current per-field experiments.
 | `0x13f` | low | 27 | unnamed | observe |
 | `0x1a7` | low | 22/34 | unnamed | observe |
 | `0x1e6` | 1 | 6 | `e6 01 01000000` counter/ack | — |

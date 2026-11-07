@@ -72,10 +72,22 @@ scoped to a closed research LAN.
 | `rng-max-search.py` | — | Generates and tests 100 unique near-maximum states with resume |
 | `rng-damage-override.py` | — | Narrow single-roll override experiment with native/unchanged controls |
 | `capture-rng.sh`, `run-rng-max-search.sh` | — | Auto-PID wrappers with logging and output ownership handling |
+| `drop-observe.py` | — | Outgoing packet bodies and client-memory differential capture for drop analysis |
+| `capture-drops.sh` | — | Auto-PID/endpoint full-duplex pcap and state-change capture for kill/drop/pickup |
+| `memory-watch.py` | — | Full writable-memory chunk snapshots and before/after differential capture |
+| `capture-interaction.sh` | — | Full writable-memory plus full-duplex interaction capture for drop-origin analysis |
+| `focus-observe.py` | — | Focused 0x32b/pickup-only packet and full-memory differential recorder |
+| `capture-32b.sh` | — | Auto-PID/endpoint focused 0x32b and pickup capture |
+| `alter-observe.py` | — | Native/override 0x32b field test with exact readback and post-send restoration |
+| `capture-death.sh` | — | Lightweight full-duplex mob-death and drop-communication capture |
+| `packet-observe.py` | — | All-current-thread plaintext send/receive and constructor observer, with targeted 0x32b/0x407 field tracing |
+| `capture-packets.sh` | — | Auto-PID plaintext packet-capture wrapper with private streamed JSONL output |
+| `duplicate-pickup.sh` | — | One-shot duplicate 0x32b wrapper with microsecond timing and post-send restoration |
+| `protocol-static.py` | — | Static outgoing constructor, encoder, and SendPacket call-site extractor |
 
 ## Consolidated recovery artifacts
 
-`RECOVERY-PLAN.md` records the plan-2-based recovery and objective additions from plan 1. `LIVE-VALIDATION.md` records subsequent sequential live results, exact code corrections, and remaining work. `HANDOFF.md` is the latest cross-computer resume point, including RNG evidence and remaining server-HP questions. `DAMAGE-RNG.md` is the supported RNG toolkit guide. `requirements.txt` lists third-party Python packages. `tools-QUARANTINE/DEPENDENCIES.md` is the authoritative caller/artifact inventory and recovery-status matrix.
+`RECOVERY-PLAN.md` records the plan-2-based recovery and objective additions from plan 1. `LIVE-VALIDATION.md` records subsequent sequential live results, exact code corrections, and remaining work. `HANDOFF.md` is the latest cross-computer resume point, including RNG evidence and remaining server-HP questions. `DAMAGE-RNG.md` is the supported RNG toolkit guide. `PACKETS.md` is the current plaintext packet-boundary and outgoing-layout guide. `INTERACTION.md` is the full interaction/drop-origin capture guide. `32B.md` is the focused 0x32b and pickup capture guide. `DEATH.md` is the full-duplex mob-death and drop-communication guide. `requirements.txt` lists third-party Python packages. `tools-QUARANTINE/DEPENDENCIES.md` is the authoritative caller/artifact inventory and recovery-status matrix.
 
 | File | What |
 |------|------|

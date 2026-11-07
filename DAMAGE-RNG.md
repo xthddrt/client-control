@@ -86,6 +86,22 @@ A reproducible `34` state from the search is:
 
 Its roll 2 is `0xfffffffe`, and its roll 4 is `0x00100000`, which is critical.
 
+## Capture drop generation and pickup
+
+```bash
+tools-QUARANTINE/capture-drops.sh 120
+```
+
+Kill a mob and pick up its item during the capture window. The wrapper auto-detects the game PID and active remote endpoints, then records:
+
+- every outgoing packet body with timestamp, opcode, and length;
+- melee selectors and pre/post combat RNG states;
+- actor, calculator-context, and candidate-state memory diffs after combat;
+- a full-duplex pcap containing the server’s responses;
+- an offline-decrypted version of that pcap when IV recovery succeeds.
+
+Files are written under `captures/` with the `drop-` prefix and mode `0600`. The pcap and memory snapshots may contain private session data and must not be committed. This is passive observation, not an NGS HTTP proxy and not packet modification.
+
 ## Supporting modules
 
 - `rng-state-solver.py`: GF(2) solver for single or simultaneous roll targets.
@@ -95,5 +111,7 @@ Its roll 2 is `0xfffffffe`, and its roll 4 is `0x00100000`, which is critical.
 - `rng-max-search.py`: candidate generation and resumable maximum-damage search.
 - `rng-damage-override.py`: narrower negative experiment replacing one damage-roll register.
 - `rng-write-watch.py`: identifies actual RNG state writers through hardware watchpoints.
+- `drop-observe.py`: outgoing packet and client-memory differential recorder for drop research.
+- `capture-drops.sh`: auto-PID, auto-endpoint full-duplex drop-session capture wrapper.
 
 Use `HANDOFF.md` for the chronological research evidence and remaining unknowns. Run only one ptrace observer at a time, stop with SIGINT when necessary, and verify `TracerPid=0` afterward. Live modification and repeated maximum-damage attacks can trigger server-side plausibility enforcement or account penalties.

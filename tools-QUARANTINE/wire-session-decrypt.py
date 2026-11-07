@@ -83,10 +83,12 @@ def reassemble(segs):
     for t, s, sp, d, dp, seq, pl in segs:
         flows[(s, sp, d, dp)].append((t, seq, pl))
     streams = {}
+    timestamps = {}
     for k, lst in flows.items():
         lst.sort(key=lambda x: x[0])  # arrival order -> later writes win on overlap
         base = lst[0][1]
         buf = {}  # relative offset -> byte
+        times = {}
         maxoff = 0
         for t, seq, pl in lst:
             rel = (seq - base) & 0xffffffff
@@ -94,21 +96,24 @@ def reassemble(segs):
                 rel -= 0x100000000
             for i, byte in enumerate(pl):
                 buf[rel + i] = byte
+                times[rel + i] = t
             maxoff = max(maxoff, rel + len(pl))
         out = bytearray(maxoff)
         for off, byte in buf.items():
             if 0 <= off < maxoff:
                 out[off] = byte
         streams[k] = bytes(out)
-    return streams
+        timestamps[k] = times
+    return streams, timestamps
 
-def parse_frames(stream):
+def parse_frames(stream, times=None):
     off = 0; frames = []
     while off + 4 <= len(stream):
         w0, w1 = struct.unpack("<HH", stream[off:off + 4])
         blen = w0 ^ w1
         if blen == 0 or off + 4 + blen > len(stream): break
-        frames.append((w0, stream[off + 4:off + 4 + blen]))
+        timestamp = times.get(off) if times is not None else None
+        frames.append((w0, stream[off + 4:off + 4 + blen], timestamp))
         off += 4 + blen
     return frames, off, len(stream)
 
@@ -173,11 +178,11 @@ def decrypt_direction(frames, label, mask=VERMASK, max_n=None):
     cur = iv
     for i in range(j0, len(frames)):
         if max_n and (i - j0) >= max_n: break
-        w0, body = frames[i]
+        w0, body, timestamp = frames[i]
         synced = ((_hs(cur) ^ mask) == w0)
         pt = decrypt_body_recv(cur, body) if recv else decrypt_body(cur, body, sl)
         op = (pt[0] | (pt[1] << 8)) if len(pt) >= 2 else None
-        out.append({"i": i, "word0": w0, "len": len(body), "opcode": op,
+        out.append({"i": i, "time": timestamp, "word0": w0, "len": len(body), "opcode": op,
                     "iv": cur.hex(), "synced": synced, "plain": pt.hex()})
         cur = tc.getNewIv(cur, TABLE)
     return out
@@ -204,7 +209,7 @@ def main():
     ap.add_argument("pcap"); ap.add_argument("--max", type=int, default=None)
     args = ap.parse_args()
     segs = parse_pcap(args.pcap)
-    streams = reassemble(segs)
+    streams, timestamps = reassemble(segs)
     bytes_by_conn = Counter()
     for (s, sp, d, dp), data in streams.items():
         key = tuple(sorted([(s, sp), (d, dp)]))
@@ -214,9 +219,11 @@ def main():
     (ep1, ep2), _ = bytes_by_conn.most_common(1)[0]
     dirA = streams.get((ep1[0], ep1[1], ep2[0], ep2[1]), b"")
     dirB = streams.get((ep2[0], ep2[1], ep1[0], ep1[1]), b"")
+    timesA = timestamps.get((ep1[0], ep1[1], ep2[0], ep2[1]), {})
+    timesB = timestamps.get((ep2[0], ep2[1], ep1[0], ep1[1]), {})
     maskA = _dir_mask(ep1); maskB = _dir_mask(ep2)
-    fA, consA, totA = parse_frames(dirA)
-    fB, consB, totB = parse_frames(dirB)
+    fA, consA, totA = parse_frames(dirA, timesA)
+    fB, consB, totB = parse_frames(dirB, timesB)
     print(f"conn {ep1} <-> {ep2}")
     print(f"  dirA {ep1}->{ep2}: {len(dirA)}B framed={consA}/{totA} frames={len(fA)} mask={maskA:#06x}")
     print(f"  dirB {ep2}->{ep1}: {len(dirB)}B framed={consB}/{totB} frames={len(fB)} mask={maskB:#06x}")

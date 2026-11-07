@@ -28,6 +28,7 @@ character = model.character
 PROFILE = model.PROFILE
 SENDPACKET_RVA = 0x1661780
 SELECTOR_RVA = model.SELECTOR_RVA
+INBOUND_CALL_RVA = 0x1665364
 MELEE_OPCODE = 0xE1
 DAMAGE_OFFSET = 0x88
 REPLAY_WORDS = (0x0C2418D6, 0xCDF84FE7, 0x5E613E0A)
@@ -66,20 +67,35 @@ def state_words(state):
 
 
 def run(pid, duration, output, replays=1, replay_words=REPLAY_WORDS):
+    trace_flag = os.environ.get("TRACE_DROPS", "0")
+    fixed_flag = os.environ.get("FIXED_ONLY", "0")
+    if trace_flag not in ("0", "1") or fixed_flag not in ("0", "1"):
+        raise ValueError("TRACE_DROPS and FIXED_ONLY must be 0 or 1.")
+    trace_drops = trace_flag == "1"
+    fixed_only = fixed_flag == "1"
     reader = character.Reader(pid)
     base, _ = character.find_image(reader, pid, PROFILE)
     shared.verify_code(reader, base, PROFILE["polearm_attacks"])
     context_root = base + character.number(PROFILE["incoming_display"]["calculator_context_global_rva"])
     targets = {base + SENDPACKET_RVA: 0, base + SELECTOR_RVA: 1}
+    if trace_drops:
+        targets[base + INBOUND_CALL_RVA] = 2
+        expected = "488d542460488b8c24a0000000e8"
+        if reader.read(base + INBOUND_CALL_RVA, len(bytes.fromhex(expected))).hex() != expected:
+            raise RuntimeError("Incoming trace fingerprint differs; refusing to attach.")
     attached = stopped = False
     saved = None
+    saved_slots = (0, 1, 2, 6, 7) if trace_drops else (0, 1, 6, 7)
     deliver = 0
     stopping = False
     complete = False
-    stage = "native"
+    finished_at = None
+    stage = "override" if fixed_only else "native"
     done = {name: False for name in ("native", "unchanged", "override")}
     state_events = []
     packets = []
+    non_damage_packets = []
+    death_drop_events = []
     restore_pending = False
     override_original = None
     override_stats = None
@@ -111,7 +127,7 @@ def run(pid, duration, output, replays=1, replay_words=REPLAY_WORDS):
         deliver = shared.pending_signal(pid, state, targets)
         saved = {
             slot: observer.ptrace(pid, 3, 848 + slot * 8) & 0xFFFFFFFFFFFFFFFF
-            for slot in (0, 1, 6, 7)
+            for slot in saved_slots
         }
         control = saved[7]
         for address, slot in targets.items():
@@ -123,13 +139,19 @@ def run(pid, duration, output, replays=1, replay_words=REPLAY_WORDS):
         observer.ptrace(pid, 7, 0, deliver)
         deliver = 0
         stopped = False
-        print(
-            f"ARMED pid={pid}: attack the same mob with native state, unchanged state, then "
-            f"replayed state {replays} time(s). Record every displayed damage value.",
-            flush=True,
-        )
+        if fixed_only:
+            print(f"ARMED pid={pid}: recording {replays} fixed-state damaging attacks; no controls.", flush=True)
+        else:
+            print(
+                f"ARMED pid={pid}: attack the same mob with native state, unchanged state, then "
+                f"replayed state {replays} time(s). Record every displayed damage value.",
+                flush=True,
+            )
         started = time.monotonic()
         while not stopping and not complete and time.monotonic() - started < duration:
+            if finished_at is not None and time.monotonic() - finished_at >= 2:
+                complete = True
+                break
             try:
                 state = observer.wait_stop(pid, 0.1)
             except TimeoutError:
@@ -173,6 +195,10 @@ def run(pid, duration, output, replays=1, replay_words=REPLAY_WORDS):
                             override_original = original
                             override_stats = stats
                             restore_pending = True
+                    event["predicted_rolls"], predicted_state = model.rng_rolls(
+                        modified if modified is not None else original
+                    )
+                    event["predicted_state"] = predicted_state.hex()
                     state_events.append(event)
                     done[stage] = True
                     print(
@@ -180,18 +206,41 @@ def run(pid, duration, output, replays=1, replay_words=REPLAY_WORDS):
                         f"modified={event.get('modified_words') and [hex(word) for word in event['modified_words']]}",
                         flush=True,
                     )
-            else:
+            elif slot == 0:
                 packet = registers.rcx
                 opcode = reader.unpack("<I", packet + 0x434)[0]
                 if opcode == MELEE_OPCODE:
                     length = reader.unpack("<I", packet + 0x428)[0]
-                    if not DAMAGE_OFFSET + 4 <= length <= 4096:
+                    if not 2 <= length <= 4096:
                         raise RuntimeError(f"Invalid melee packet length {length}.")
                     body = reader.read(packet + 8, length)
+                    if length < DAMAGE_OFFSET + 4:
+                        non_damage_packets.append({
+                            "stage": stage, "timestamp": time.time(), "length": length,
+                            "body": body.hex(), "state_observed": done[stage],
+                        })
+                        if state_events and done[stage]:
+                            state_events[-1]["non_damaging_packet"] = True
+                        restore_override()
+                        done[stage] = False
+                        print(f"SWING length={length}: no damage field; not counted as an attack.", flush=True)
+                        observer.ptrace(pid, 6, 848 + 6 * 8, 0)
+                        observer.ptrace(pid, 7)
+                        stopped = False
+                        continue
                     damage = struct.unpack_from("<i", body, DAMAGE_OFFSET)[0]
+                    context = reader.qword(context_root)
+                    stats = reader.qword(context + 0x2998) if context else 0
+                    post_state = reader.read(stats, 0x2C) if stats else None
+                    expected = bytes.fromhex(state_events[-1]["predicted_state"]) if done[stage] else None
                     packets.append({
-                        "stage": stage, "timestamp": time.time(),
-                        "damage": damage, "state_observed": done[stage],
+                        "stage": stage, "timestamp": time.time(), "body": body.hex(),
+                        "damage": damage, "critical": body[0x87],
+                        "target_identifier": struct.unpack_from("<I", body, 0x7D)[0],
+                        "state_observed": done[stage],
+                        "post_state": post_state.hex() if post_state else None,
+                        "post_words": state_words(post_state) if post_state else None,
+                        "eleven_step_match": post_state == expected if post_state and expected else None,
                     })
                     print(f"PACKET stage={stage} damage={damage}", flush=True)
                     if not done[stage]:
@@ -206,10 +255,46 @@ def run(pid, duration, output, replays=1, replay_words=REPLAY_WORDS):
                         restore_override()
                         completed_replays = sum(packet["stage"] == "override" for packet in packets)
                         if completed_replays >= replays:
-                            complete = True
+                            if trace_drops:
+                                finished_at = time.monotonic()
+                                print("Final attack sent; tracing server responses for two more seconds.", flush=True)
+                            else:
+                                complete = True
                         else:
                             done["override"] = False
                             print(f"Attack the same mob again for replay {completed_replays + 1} of {replays}.", flush=True)
+            elif slot == 2:
+                header = reader.read(registers.rsp + 0x60, 0x28)
+                data = struct.unpack_from("<Q", header, 0x10)[0]
+                payload_length = struct.unpack_from("<I", header, 0x20)[0]
+                if not data or not 2 <= payload_length <= 1024 * 1024:
+                    raise RuntimeError("Invalid incoming packet while tracing drops.")
+                opcode = reader.unpack("<H", data + 4)[0]
+                if opcode in (0x3F3, 0x471):
+                    body = reader.read(data + 4, payload_length)
+                    context = reader.qword(context_root)
+                    stats = reader.qword(context + 0x2998) if context else 0
+                    state = reader.read(stats, 0x2C) if stats else None
+                    event = {
+                        "timestamp": time.time(), "stage": packets[-1]["stage"] if packets else stage,
+                        "attack_ordinal": len(packets) if packets else None, "opcode": hex(opcode),
+                        "body": body.hex(), "state": state.hex() if state else None,
+                        "words": state_words(state) if state else None,
+                    }
+                    if opcode == 0x3F3 and len(body) == 11:
+                        event["target_identifier"] = struct.unpack_from("<I", body, 2)[0]
+                        event["hp_candidate"] = body[6]
+                    elif opcode == 0x471 and len(body) >= 0x2E:
+                        event.update({
+                            "drop_object_id": struct.unpack_from("<I", body, 4)[0],
+                            "drop_value": struct.unpack_from("<I", body, 0x15)[0],
+                            "target_identifier": struct.unpack_from("<I", body, 0x2A)[0],
+                        })
+                        print(
+                            f"DROP stage={event['stage']} object={event['drop_object_id']:#x} "
+                            f"value={event['drop_value']} target={event['target_identifier']:#x}", flush=True,
+                        )
+                    death_drop_events.append(event)
             observer.ptrace(pid, 6, 848 + 6 * 8, 0)
             observer.ptrace(pid, 7)
             stopped = False
@@ -226,7 +311,7 @@ def run(pid, duration, output, replays=1, replay_words=REPLAY_WORDS):
                     restore_override()
                 finally:
                     if saved is not None:
-                        for slot in (7, 0, 1, 6):
+                        for slot in saved_slots:
                             observer.ptrace(pid, 6, 848 + slot * 8, saved[slot])
                     observer.ptrace(pid, 17, 0, deliver)
                 print("DETACHED: original debug registers restored.", flush=True)
@@ -236,8 +321,9 @@ def run(pid, duration, output, replays=1, replay_words=REPLAY_WORDS):
         result = {
             "pid": pid, "module_base": hex(base), "complete": complete,
             "state_restored": not restore_pending, "replays_requested": replays,
-            "replay_words": list(replay_words),
-            "state_events": state_events, "packets": packets,
+            "replay_words": list(replay_words), "trace_drops": trace_drops,
+            "fixed_only": fixed_only, "state_events": state_events, "packets": packets,
+            "non_damage_packets": non_damage_packets, "death_drop_events": death_drop_events,
             "visual_confirmation_required": "Compare every displayed result; packet damage alone does not prove server acceptance.",
         }
         with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
@@ -245,11 +331,15 @@ def run(pid, duration, output, replays=1, replay_words=REPLAY_WORDS):
         reader.close()
         for number, handler in handlers.items():
             signal.signal(number, handler)
-        print(f"WROTE {output}: packets={len(packets)} state_events={len(state_events)}", flush=True)
+        print(
+            f"WROTE {output}: packets={len(packets)} state_events={len(state_events)} "
+            f"non_damage_packets={len(non_damage_packets)} death_drop_events={len(death_drop_events)}", flush=True,
+        )
         if cleanup_error is not None:
             raise cleanup_error
     if not complete:
-        raise RuntimeError(f"Only {len(packets)} of {replays + 2} melee attacks completed; partial results were saved.")
+        expected_attacks = replays if fixed_only else replays + 2
+        raise RuntimeError(f"Only {len(packets)} of {expected_attacks} damaging attacks completed; partial results were saved.")
 
 
 def main():
@@ -259,8 +349,8 @@ def main():
     if not 1 <= duration <= 600:
         raise SystemExit("Use a capture duration from 1 to 600 seconds.")
     replays = int(sys.argv[4]) if len(sys.argv) >= 5 else 1
-    if not 1 <= replays <= 10:
-        raise SystemExit("Use 1 to 10 replay attacks.")
+    if not 1 <= replays <= 100:
+        raise SystemExit("Use 1 to 100 replay attacks.")
     replay_words = tuple(int(value, 0) for value in sys.argv[5:8]) if len(sys.argv) == 8 else REPLAY_WORDS
     if any(not 0 <= value <= 0xFFFFFFFF for value in replay_words):
         raise SystemExit("Replay state words must be 32-bit integers.")
