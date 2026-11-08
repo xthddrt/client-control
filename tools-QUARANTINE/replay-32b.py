@@ -39,7 +39,7 @@ def load(name, path):
 
 
 base_tools = load("outgoing_capture", DIRECTORY / "outgoing-packet-capture.py")
-shared = load("attack_observer", DIRECTORY / "overhead-attacks.py")
+shared = load("packet_memory", DIRECTORY / "packet-memory.py")
 observer = base_tools.observer
 character = observer.character
 execution_control = base_tools.execution_control

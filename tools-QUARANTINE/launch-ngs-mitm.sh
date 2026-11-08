@@ -26,10 +26,10 @@ for required in "$MITMDUMP" "$LAUNCHER"; do
 done
 mkdir -p "$CAPTURES"
 
-"$MITMDUMP" -s "$ROOT/tools-QUARANTINE/ngs-mitm.py" \
+"$MITMDUMP" -s "$ROOT/tools-QUARANTINE/ngs-proxy.py" \
     --listen-host 127.0.0.1 --listen-port 8080 \
     --set connection_strategy=lazy \
-    --set ngs_neutralize=true --set ngs_log="$EVENTS" \
+    --set ngs_log="$EVENTS" --set ngs_block="${NGS_BLOCK:-}" \
     -w "$FLOWS" > "$PROXY_LOG" 2>&1 &
 PROXY_PID=$!
 cleanup() {
@@ -48,7 +48,7 @@ if [[ ! -f $CA_SOURCE ]]; then
 fi
 cp "$CA_SOURCE" "$CA_TARGET"
 
-echo "Proxy active. Starting Nexon with NGS response neutralization."
+echo "Proxy active. Starting Nexon with raw communication logging and optional host/path filtering."
 echo "Event log: $EVENTS"
 echo "Flow capture: $FLOWS"
 

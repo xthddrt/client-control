@@ -31,47 +31,19 @@ def load(name, path):
     return module
 
 
-shared = load("attack_observer", DIRECTORY / "overhead-attacks.py")
-override_tools = load("rng_state_override", DIRECTORY / "rng-state-override.py")
-rng = load("rng_dataset", DIRECTORY / "rng-dataset.py")
+shared = load("packet_memory", DIRECTORY / "packet-memory.py")
+override_tools = shared
 observer = shared.observer
 character = shared.character
-RNG_GENERATOR_RVA = 0x7AC850
-
-
-def read_rng_state(reader, context_root):
-    context = reader.qword(context_root)
-    stats = reader.qword(context + 0x2998) if context else 0
-    if not stats:
-        raise RuntimeError("No RNG state context.")
-    return stats, reader.read(stats, 0x2C)
-
-
-def rng_record(state, rolls=False):
-    result = {"rng_state": state.hex(), "rng_words": rng.state_words(state)}
-    if rolls:
-        result["predicted_rolls"] = rng.model.rng_rolls(state)[0]
-    return result
 
 
 def restore_edit(pid, reader, edit):
-    if edit.get("kind") != "rng_state":
-        restored = restore_scalar(
-            pid, reader, edit["address"], edit["size"], edit["modified"], edit["original"]
-        )
-        return restored, {
-            "kind": "packet_field", "field": hex(edit["offset"]),
-            "original": edit["original"], "modified": edit["modified"],
-        }
-    before = reader.read(edit["address"], 0x2C)
-    override_tools.write_memory(pid, edit["address"], edit["original"])
-    after = reader.read(edit["address"], 0x2C)
-    return after == edit["original"], {
-        "kind": "rng_state", "attack_stage": edit["attack_stage"],
-        "state_address": hex(edit["address"]), "original_state": edit["original"].hex(),
-        "replacement_state": edit["replacement"].hex(), "state_before_restore": before.hex(),
-        "state_after_restore": after.hex(), "advanced_state_match": before == edit["advanced"],
-        "state_restored": after == edit["original"],
+    restored = restore_scalar(
+        pid, reader, edit["address"], edit["size"], edit["modified"], edit["original"]
+    )
+    return restored, {
+        "kind": "packet_field", "field": hex(edit["offset"]),
+        "original": edit["original"], "modified": edit["modified"],
     }
 
 
@@ -177,20 +149,6 @@ def run(pid, duration, output):
     duplicate_enabled = duplicate_flag == "1"
     if duplicate_enabled and mode:
         raise ValueError("DUPLICATE_32B cannot be combined with TEST_MODE field experiments.")
-    rng_mode = os.environ.get("RNG_MODE", "off")
-    if rng_mode not in ("off", "observe", "replay", "both"):
-        raise ValueError("RNG_MODE must be off, observe, replay, or both.")
-    if rng_mode != "off" and (mode or duplicate_enabled):
-        raise ValueError("RNG_MODE cannot be combined with TEST_MODE or DUPLICATE_32B experiments.")
-    replay_words = os.environ.get("RNG_REPLAY_WORDS", "").split()
-    if replay_words:
-        if rng_mode not in ("replay", "both") or len(replay_words) != 3:
-            raise ValueError("RNG_REPLAY_WORDS requires RNG_MODE=replay/both and exactly three state words.")
-        replay_words = tuple(int(word, 0) for word in replay_words)
-        if any(not 0 <= word <= 0xFFFFFFFF for word in replay_words):
-            raise ValueError("RNG_REPLAY_WORDS values must be 32-bit integers.")
-    else:
-        replay_words = None
     reader = character.Reader(pid)
     profile = json.loads((DIRECTORY / "profile.json").read_text())
     base, _ = character.find_image(reader, pid, profile)
@@ -200,9 +158,6 @@ def run(pid, duration, output):
         (COUTPACKET_CTOR_RVA + 0x3A, "899134040000"),
         (0x7615A0, "40534883ec20488b"),
     )
-    if rng_mode != "off":
-        fingerprints += ((RNG_GENERATOR_RVA, "40534883ec20488bd933c065488b0c25"),)
-        shared.verify_code(reader, base, profile["polearm_attacks"])
     for rva, expected in fingerprints:
         if reader.read(base + rva, len(bytes.fromhex(expected))).hex() != expected:
             raise RuntimeError(f"Packet hook fingerprint differs at RVA {rva:#x}; refusing to attach.")
@@ -211,15 +166,6 @@ def run(pid, duration, output):
         base + INBOUND_CALL_RVA: 1,
         base + COUTPACKET_CTOR_RVA: 2,
     }
-    if rng_mode != "off":
-        rva = RNG_GENERATOR_RVA if rng_mode == "observe" else rng.model.SELECTOR_RVA
-        targets[base + rva] = 3
-    stop_targets = dict(targets)
-    if rng_mode == "both":
-        stop_targets[base + RNG_GENERATOR_RVA] = 3
-    context_root = base + character.number(
-        profile["incoming_display"]["calculator_context_global_rva"]
-    )
     status = dict(line.split(":", 1) for line in Path(f"/proc/{pid}/status").read_text().splitlines())
     if int(status["TracerPid"]) or status["State"].strip()[0] in "Tt":
         raise RuntimeError("Game is already traced or paused.")
@@ -236,14 +182,9 @@ def run(pid, duration, output):
     duplicate_armed = False
     experiment = PICKUP_EXPERIMENTS.get(mode)
     experiment_state = {"native": False, "done": False}
-    rng_source = None
-    rng_source_address = None
-    rng_attack_count = 0
-    rng_slots = {}
-    rng_pending = {}
     counts = {
-        "client_to_server": 0, "server_to_client": 0, "constructor": 0, "field_trace": 0,
-        "rng_selector": 0, "rng_generator": 0, "observer_notice": 0,
+        "client_to_server": 0, "server_to_client": 0, "constructor": 0,
+        "field_trace": 0, "observer_notice": 0,
     }
     seen_notices = set()
     stopping = False
@@ -260,10 +201,10 @@ def run(pid, duration, output):
         stream.write(json.dumps(record, separators=(",", ":")) + "\n")
         stream.flush()
 
-    if mode or duplicate_enabled or rng_mode != "off":
+    if mode or duplicate_enabled:
         write({
             "direction": "capture_start", "timestamp": time.time(), "pid": pid,
-            "test_mode": mode, "rng_mode": rng_mode, "replay_words": replay_words,
+            "test_mode": mode,
             "test_field": "0x06" if mode == 12 else "duplicate" if duplicate_enabled else (hex(experiment[0]) if experiment else "0x15"),
             "duplicate_32b": duplicate_enabled,
         })
@@ -273,15 +214,12 @@ def run(pid, duration, output):
             print("TEST_MODE=12: zero one nonzero 0x3f3+6 value and restore it after dispatch.", flush=True)
         elif mode == 1:
             print("TEST_MODE=1: double meso amount in 0x471; 0x32b remains native.", flush=True)
-        elif mode:
+        else:
             print(
                 f"TEST_MODE={mode}: first pickup native; next pickup increments {experiment[0]:#x} "
                 f"by one, restores after sending, and leaves the drop object ID unchanged.",
                 flush=True,
             )
-        elif rng_mode in ("replay", "both"):
-            scope = "every attack after the native control" if replay_words else "the second attack"
-            print(f"First attack native; replay state before damage selection on {scope}.", flush=True)
 
     def stop(tid):
         if tid in stopped:
@@ -289,11 +227,7 @@ def run(pid, duration, output):
         observer.ptrace(tid, INTERRUPT)
         state = observer.wait_stop(tid, 2)
         stopped.add(tid)
-        thread_targets = stop_targets
-        if rng_mode == "both" and tid in rng_slots:
-            thread_targets = {address: slot for address, slot in targets.items() if slot < 2}
-            thread_targets.update({address: slot for slot, address in rng_slots[tid].items()})
-        pending[tid] = shared.pending_signal(tid, state, thread_targets)
+        pending[tid] = shared.pending_signal(tid, state, targets)
 
     def resume(tid):
         signal_to_deliver = pending.pop(tid, 0)
@@ -314,103 +248,9 @@ def run(pid, duration, output):
                 raise RuntimeError(f"Thread {tid} already uses hardware breakpoint slot {slot}.")
             observer.ptrace(tid, 6, DEBUG_BASE + slot * 8, address)
             control = (control & ~((0xF << (16 + slot * 4)) | (3 << (slot * 2)))) | (1 << (slot * 2))
-        if rng_mode != "off":
-            slot3 = next(address for address, slot in targets.items() if slot == 3)
-            rng_slots[tid] = {3: slot3}
-            if rng_mode == "both":
-                rng_slots[tid][2] = base + COUTPACKET_CTOR_RVA
         observer.ptrace(tid, 6, DEBUG_BASE + 7 * 8, control)
         saved[tid]["armed_control"] = control
         resume(tid)
-
-    def switch_rng_slots(current_tid, slot2_rva, slot3_rva):
-        addresses = {2: base + slot2_rva, 3: base + slot3_rva}
-        for tid in list(attached):
-            if tid == current_tid:
-                continue
-            stop(tid)
-            for slot, address in addresses.items():
-                observer.ptrace(tid, 6, DEBUG_BASE + slot * 8, address)
-                rng_slots[tid][slot] = address
-            resume(tid)
-        for slot, address in addresses.items():
-            observer.ptrace(current_tid, 6, DEBUG_BASE + slot * 8, address)
-            rng_slots[current_tid][slot] = address
-
-    def select_rng(tid, timestamp, registers):
-        nonlocal rng_source, rng_source_address, rng_attack_count
-        if tid in rng_pending:
-            return None
-        if rng_attack_count >= 2 and replay_words is None:
-            if rng_mode == "both":
-                switch_rng_slots(tid, COUTPACKET_CTOR_RVA, RNG_GENERATOR_RVA)
-            return None
-        stats, original = read_rng_state(reader, context_root)
-        if original[0x10:0x1C] != bytes(12):
-            raise RuntimeError("RNG object is locked; refusing a concurrent state write.")
-        rng_attack_count += 1
-        stage = "native" if rng_attack_count == 1 else "replay"
-        if stage == "native":
-            rng_source, rng_source_address = original, stats
-        elif stats != rng_source_address:
-            raise RuntimeError("RNG state address changed between native and replay attacks.")
-        effective = original if stage == "native" else (
-            override_tools.state_for_stage("override", original, replay_words)
-            if replay_words is not None else rng_source
-        )
-        event = {
-            "direction": "rng_selector", "timestamp": timestamp, "pid": pid, "tid": tid,
-            "rng_stage": stage, "attack_ordinal": rng_attack_count,
-            "state_address": hex(stats), **rng_record(original, True),
-            "caller": stack(registers)[0],
-        }
-        attack = {
-            "selector_timestamp": timestamp, "rng_stage": stage, "attack_ordinal": rng_attack_count,
-            "state_address": hex(stats), "pre_state": effective.hex(),
-            "pre_words": rng.state_words(effective), "predicted_rolls": rng.model.rng_rolls(effective)[0],
-        }
-        if stage == "replay":
-            kind = "fixed_words" if replay_words is not None else "first_attack"
-            event.update({
-                "replay_kind": kind, "replay_source_state": effective.hex(),
-                "replay_source_words": rng.state_words(effective),
-                "effective_words": rng.state_words(effective),
-            })
-            attack.update({
-                "replay_kind": kind, "pre_replay_state": original.hex(),
-                "replay_source_state": effective.hex(),
-            })
-            outbound_edits[tid] = {
-                "kind": "rng_state", "attack_stage": stage, "address": stats,
-                "original": original, "replacement": effective,
-                "advanced": rng.model.rng_rolls(effective)[1],
-            }
-            override_tools.write_memory(pid, stats, effective)
-            if reader.read(stats, 0x2C) != effective:
-                raise RuntimeError("RNG state write did not read back exactly.")
-            event["readback_verified"] = True
-            if rng_mode == "both":
-                switch_rng_slots(tid, COUTPACKET_CTOR_RVA, RNG_GENERATOR_RVA)
-                event["generator_trace_armed"] = True
-        rng_pending[tid] = attack
-        print(f"RNG {stage.upper()} words={[hex(word) for word in rng.state_words(effective)]}", flush=True)
-        return event
-
-    def generator_event(tid, timestamp, registers):
-        state = reader.read(registers.rcx, 0x2C)
-        return {
-            "direction": "rng_generator", "timestamp": timestamp, "pid": pid, "tid": tid,
-            "state_address": hex(registers.rcx), "caller": hex(reader.qword(registers.rsp)),
-            "caller_rva": hex(reader.qword(registers.rsp) - base), **rng_record(state),
-            "next_roll": rng.model.rng_rolls(state, 1)[0][0],
-        }
-
-    def attach_rng(record):
-        try:
-            stats, state = read_rng_state(reader, context_root)
-            record.update({"state_address": hex(stats), **rng_record(state)})
-        except (OSError, RuntimeError) as error:
-            record["rng_state_error"] = str(error)
 
     def clear_watch(tid):
         if tid not in watches:
@@ -594,11 +434,6 @@ def run(pid, duration, output):
             raise RuntimeError("No game threads could be attached.")
         behavior = (
             "Duplicate the first 0x32b once with no field edits." if duplicate_enabled
-            else f"RNG_MODE={rng_mode}: replay the selected words on every attack after the native control; restore after each send."
-            if replay_words is not None
-            else f"RNG_MODE={rng_mode}: replay the second attack and restore its original state after sending."
-            if rng_mode in ("replay", "both")
-            else "Log combat RNG generator calls; no memory writes." if rng_mode == "observe"
             else "No memory or packet writes." if mode == 0 else "Scoped test overrides enabled."
         )
         print(
@@ -643,8 +478,6 @@ def run(pid, duration, output):
                 saved.pop(tid, None)
                 pending.pop(tid, None)
                 watches.pop(tid, None)
-                rng_slots.pop(tid, None)
-                rng_pending.pop(tid, None)
                 continue
             if not os.WIFSTOPPED(state):
                 raise RuntimeError(f"Unexpected wait status {state:#x} for thread {tid}.")
@@ -702,11 +535,9 @@ def run(pid, duration, output):
                 observer.ptrace(tid, 6, DEBUG_BASE + 6 * 8, 0)
                 if not restored:
                     raise RuntimeError(f"{details['kind']} did not restore exactly.")
-                if edit["kind"] == "rng_state" and rng_mode == "both":
-                    switch_rng_slots(tid, RNG_GENERATOR_RVA, rng.model.SELECTOR_RVA)
                 resume(tid)
                 continue
-            if debug_status & 8 and rng_mode == "off":
+            if debug_status & 8:
                 if tid not in watches:
                     notice(tid, "unexpected_length_watch", registers, debug_status, state)
                     pending[tid] = number
@@ -741,26 +572,12 @@ def run(pid, duration, output):
                 resume(tid)
                 continue
             slot = targets.get(registers.rip)
-            if rng_mode == "both" and tid in rng_slots:
-                dynamic = {address: number for number, address in rng_slots[tid].items()}
-                if registers.rip in dynamic:
-                    slot = dynamic[registers.rip]
-                elif slot in (2, 3):
-                    slot = None
             if slot is None or not debug_status & (1 << slot):
                 notice(tid, "unexpected_trap", registers, debug_status, state)
                 pending[tid] = number
                 resume(tid)
                 continue
             timestamp = time.time()
-            if slot in (2, 3) and registers.rip == base + RNG_GENERATOR_RVA:
-                record = generator_event(tid, timestamp, registers)
-            elif slot == 3:
-                record = select_rng(tid, timestamp, registers)
-                if record is None:
-                    observer.ptrace(tid, 6, DEBUG_BASE + 6 * 8, 0)
-                    resume(tid)
-                    continue
             if slot == 0:
                 packet = registers.rcx
                 try:
@@ -827,22 +644,10 @@ def run(pid, duration, output):
                     record["field_trace"] = watches[tid]["fields"]
                     clear_watch(tid)
                 if opcode == 0xE1:
-                    record.update(rng_pending.pop(tid, {}))
-                    if record.get("rng_stage") == "replay":
-                        edit = outbound_edits[tid]
-                        edit["return_address"] = reader.qword(registers.rsp)
-                        observer.ptrace(tid, 6, DEBUG_BASE, edit["return_address"])
                     record["damage"] = struct.unpack_from("<i", body, 0x88)[0] if len(body) >= 0x8C else None
                     record["critical"] = body[0x87] if len(body) >= 0x88 else None
                     record["target_identifier"] = struct.unpack_from("<I", body, 0x7D)[0] if len(body) >= 0x81 else None
-                    if rng_mode != "off":
-                        attach_rng(record)
-                        record["post_state"] = record.get("rng_state")
-                        record["post_words"] = record.get("rng_words")
-                    print(
-                        f"ATTACK damage={record['damage']} stage={record.get('rng_stage', 'untraced')} "
-                        f"record_id={body[0x20:0x24].hex()}", flush=True,
-                    )
+                    print(f"ATTACK damage={record['damage']} record_id={body[0x20:0x24].hex()}", flush=True)
                 elif opcode not in (0xDB, 0x2FE):
                     print(f"OUT tid={tid} opcode={opcode:#x} length={len(body)}", flush=True)
             elif slot == 1:
@@ -896,8 +701,7 @@ def run(pid, duration, output):
                 body = bytes.fromhex(record["body"])
                 opcode = struct.unpack_from("<H", body)[0]
                 record["opcode"] = hex(opcode)
-                if rng_mode != "off" and opcode in (0x3F3, 0x471):
-                    attach_rng(record)
+                if opcode in (0x3F3, 0x471):
                     if opcode == 0x3F3 and len(body) == 11:
                         record["target_identifier"] = struct.unpack_from("<I", body, 2)[0]
                         record["hp_candidate"] = body[6]
@@ -914,7 +718,7 @@ def run(pid, duration, output):
                     "caller": stack(registers)[0], "return_stack": stack(registers),
                 }
                 constructors[(tid, packet)] = record
-                if rng_mode == "off" and opcode in (0x32B, 0x407):
+                if opcode in (0x32B, 0x407):
                     set_watch(tid, packet, hex(opcode))
             counts[record["direction"]] += 1
             record["index"] = counts[record["direction"]]

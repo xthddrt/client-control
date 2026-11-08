@@ -22,7 +22,7 @@ def load(n, p):
 
 
 observer = load('reset_observer', WS / 'observe-position-reset.py')
-shared = load('attack_observer', WS / 'overhead-attacks.py')
+shared = load('packet_memory', WS / 'packet-memory.py')
 ch = observer.character
 prof = json.loads((WS / 'profile.json').read_text())
 

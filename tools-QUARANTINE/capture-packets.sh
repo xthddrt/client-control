@@ -5,10 +5,6 @@ ROOT=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 DURATION=${1:-120}
 TEST_MODE=${TEST_MODE:-0}
 DUPLICATE_32B=${DUPLICATE_32B:-0}
-if [[ ${RNG_MODE:-off} != off || -n ${RNG_REPLAY_WORDS:-} ]]; then
-    echo "Use TRACE_DROPS=1 with tools-QUARANTINE/damage-rng.py replay for fixed-state drop tests." >&2
-    exit 1
-fi
 if [[ $DUPLICATE_32B != 0 && $DUPLICATE_32B != 1 ]]; then
     echo "DUPLICATE_32B must be 0 or 1." >&2
     exit 1
