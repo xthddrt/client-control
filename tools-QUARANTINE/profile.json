@@ -1,0 +1,267 @@
+{
+ "observed_date": "2026-10-25",
+ "process_name": "MapleStory.exe",
+ "observed_image_base": "0x140000000",
+ "game_launch": {
+  "wine_prefix": "~/Games/nexx",
+  "proton_directory": "~/.local/share/Steam/compatibilitytools.d/GE-Proton11-11-x86_64",
+  "runtime_directory": "~/.local/share/umu/steamrt4",
+  "umu_runner": "/usr/bin/umu-run",
+  "executable": "~/Games/nexx/drive_c/Program Files (x86)/Nexon/Nexon Launcher/nexon_launcher.exe",
+  "game_directory": "~/Games/maplestorycw/appdata",
+  "game_id": "umu-default",
+  "environment": {
+   "WINE_DISABLE_QPC_TSC": "1",
+   "WINEESYNC": "1",
+   "WINEFSYNC": "1",
+   "WINEDLLOVERRIDES": "d3d10core,d3d11,d3d12,d3d12core,d3d8,d3d9,d3dcompiler_33,d3dcompiler_34,d3dcompiler_35,d3dcompiler_36,d3dcompiler_37,d3dcompiler_38,d3dcompiler_39,d3dcompiler_40,d3dcompiler_41,d3dcompiler_42,d3dcompiler_43,d3dcompiler_46,d3dcompiler_47,d3dx10,d3dx10_33,d3dx10_34,d3dx10_35,d3dx10_36,d3dx10_37,d3dx10_38,d3dx10_39,d3dx10_40,d3dx10_41,d3dx10_42,d3dx10_43,d3dx11_42,d3dx11_43,d3dx9_24,d3dx9_25,d3dx9_26,d3dx9_27,d3dx9_28,d3dx9_29,d3dx9_30,d3dx9_31,d3dx9_32,d3dx9_33,d3dx9_34,d3dx9_35,d3dx9_36,d3dx9_37,d3dx9_38,d3dx9_39,d3dx9_40,d3dx9_41,d3dx9_42,d3dx9_43,dxgi,nvapi,nvapi64,nvofapi64=n;winemenubuilder="
+  }
+ },
+ "incoming_display": {
+  "player_function_rva": "0x280ce60",
+  "player_function_size": "0x5d9",
+  "player_function_sha256": "5b88d789ecfd1f48f7ace629af75451cd12628883b4773d372c9f3347478597c",
+  "miss_renderer_rva": "0xe9d250",
+  "miss_renderer_size": "0x345",
+  "miss_renderer_sha256": "9b0d69bce0e3b3e85dd3c2fb128024f41991738bff1f31d85ed2b5efa23458c5",
+  "miss_call_rva": "0x280d28b",
+  "damage_call_rva": "0x280d137",
+  "observed_hit_caller_return_rva": "0x296d6ed",
+  "hit_caller_function_rva": "0x296acb0",
+  "hit_caller_function_size": "0x393f",
+  "hit_caller_function_sha256": "38d6bca901af09779eba0bd79c16cf1385fcc7ebecf9a07634b2e425e09ed8a8",
+  "observed_healing_caller_return_rva": "0x281b878",
+  "calculator_wrapper_rva": "0x2b2fb0",
+  "calculator_wrapper_size": "0x104",
+  "calculator_wrapper_sha256": "58f8020b233f382d76929ac56d2c8148e560bf15f41a7205692fc8bc7384189f",
+  "avoidance_function_rva": "0x2b50c0",
+  "avoidance_function_size": "0x389",
+  "avoidance_function_sha256": "457a51444ee5a99b002a48c6db88884fd697d4d5780410dafec975b02e2b6754",
+  "avoidance_compare_rva": "0x2b5289",
+  "avoidance_result_rva": "0x2b5403",
+  "avoidance_wrapper_return_rva": "0x2b3018",
+  "calculator_caller_return_rva": "0x296b45d",
+  "calculator_context_global_rva": "0x3bda7b0",
+  "calculator_context_offset": "0x2998",
+  "rng_state_offset": "0x60",
+  "rng_snapshot_offset": "0x90",
+  "rng_next_wrapper_rva": "0x2b50a0",
+  "rng_next_wrapper_size": "0x9",
+  "rng_next_wrapper_sha256": "1a25ce90d2a0c0e586b9316509c2f57a7a10c801bd8d7d2bb8858c27741f2467",
+  "rng_snapshot_wrapper_rva": "0x2b50b0",
+  "rng_core_rva": "0x7ac850",
+  "rng_core_size": "0xf3",
+  "rng_core_sha256": "aee2afcae2528f3a44bcbf4a8833ab92cb04334e3518d31b16f9dfb8dbb352b0",
+  "range_sampler_rva": "0x2d3ba0",
+  "range_sampler_size": "0x60",
+  "range_sampler_sha256": "cb5c03a73e45ba27727fd09cb487e5eacdfbf5671cc24110c8b389c80e2dff14",
+  "stat_context_offset": "0x2350",
+  "hp_value_offset": "0x67",
+  "hp_stat_mask": "0x800",
+  "stat_accessor_rva": "0x2d7feb0",
+  "stat_accessor_size": "0x8",
+  "stat_accessor_sha256": "c83f3440a94a05aa844099bcca5f82c4f4c25650cf30dcfc4de6d08593b0a2ea",
+  "hp_update_block_rva": "0x319c9a",
+  "hp_update_block_size": "0x36",
+  "hp_update_block_sha256": "e9f82867daa6b82af1a60fcf7d11a77a6b125b753dd8d9ee04551e20e373d94c",
+  "hp_write_rva": "0x319cb0",
+  "result_serializer_rva": "0x2aa710",
+  "result_serializer_size": "0x274",
+  "result_serializer_sha256": "a192c3288c9a9582607bfe55048afbdf22f2e3cd4b7596b00b81592be3c6f6a4",
+  "result_serialize_call_rva": "0x296e3b3",
+  "collision_source_rva": "0x298bde0",
+  "collision_source_size": "0xeea",
+  "collision_source_sha256": "877660b9716d67dba9c4866bd31597c5dba3d33446605b958f26513a25bfdccb",
+  "collision_return_rva": "0x298ce45",
+  "heal_call_rva": "0x280121e",
+  "display_call_rva": "0x296d6e8",
+  "damage_magnitude_calculator_rva": "0x2b3370",
+  "attack_record_status_offset": "0x140",
+  "_2026_11_05_reprofile": "Decision/display anchors re-derived; RNG core, range scaler, and damage routine statically reanchored; healing and old RNG wrapper fields remain pending",
+  "_1_1_0_display_validated": "2026-10-29 live 30-hit test: 28 hit + 2 miss, matched user on-screen count (pid 517743)",
+  "_1_1_0_decision_layer": "2026-11-04 live validation: calculator/avoidance decisions and r13/r14+0x140 gates re-derived; HP stat context remains unresolved"
+ },
+ "native_reset": {
+  "rva": "0xa46750",
+  "size": "0x1c10",
+  "sha256": "ac22d5a0096189a9859c038fb8b4d708edd0c1c5efbbeb9bf3db003c3a837fa5",
+  "update_boundary_rva": "0x283717d",
+  "update_boundary_bytes": "f30f107748488b4608488d95",
+  "character_seventh_argument_offset": "0x7e4",
+  "controller_bounds_offset": "0x340"
+ },
+ "polearm_attacks": {
+  "temporary_action_offset": "0x7ec",
+  "weapon_id_offset": "0x6a8",
+  "action_family_offset": "0x6dc",
+  "selector_return_rva": "0x2982f57",
+  "selector_rva": "0x859480",
+  "selector_size": "0x1d3",
+  "selector_sha256": "e8bfc3235e9bf6fc0fa3d40ded55b5b9f7539c7d10102f75db2ac7f062407a6f",
+  "caller_rva": "0x2982aa0",
+  "caller_size": "0x3ab0",
+  "caller_sha256": "9974ee3299d6aa8b7934c62dbac79916d87052919efef26fe229c1a8057fd227",
+  "skill_selector_return_rva": null,
+  "skill_caller_rva": null,
+  "skill_caller_size": null,
+  "skill_caller_sha256": null,
+  "skills": {
+   "1001001": "Power Strike",
+   "1001002": "Slash Blast"
+  },
+  "weapon_categories": [
+   142,
+   144
+  ],
+  "families": [
+   2,
+   5
+  ],
+  "overhead_actions": [
+   9,
+   10,
+   11
+  ],
+  "stab_actions": [
+   16,
+   17
+  ],
+  "replacement_action": 9
+ },
+ "pe": {
+  "machine": "0x8664",
+  "timestamp": "0x6AEB667B",
+  "size_of_image": "0x5F2E000"
+ },
+ "rvas": {
+  "character_global": "0x3bda828",
+  "movement_vector_vtable": "0x34113a8",
+  "physics_x_scale": "0x3483480",
+  "physics_y_scale": "0x348348c"
+ },
+ "code_fingerprints": [
+  {
+   "name": "character_identifier_getter",
+   "rva": "0x2809A60",
+   "bytes": "8b81d0110000c3cccccccccccccccccc488b"
+  },
+  {
+   "name": "character_cached_position_getter",
+   "rva": "0x28585F0",
+   "bytes": "48895c2408574883ec20488d99f00f00"
+  },
+  {
+   "name": "controller_snapshot_copy",
+   "rva": "0xA2D700",
+   "bytes": "48895c24104889742418574883ec30488bd94881"
+  },
+  {
+   "name": "encoded_integer_position_assignment",
+   "rva": "0xA56590",
+   "bytes": "48895c241048896c241848897424205741544155415641574883ec208b"
+  },
+  {
+   "name": "portal_array_accessor",
+   "rva": "0x1F7DB20",
+   "bytes": "48895c2410574883ec204863da85d2786a488b4108488d79"
+  },
+  {
+   "name": "portal_minimap_xy_reader",
+   "rva": "0x250116E",
+   "bytes": "8b8e04030000458b7e144403befc0200"
+  }
+ ],
+ "portal_layout": {
+  "manager_global_rva": "0x3bf5788",
+  "manager_vtable_rva": "0x3526248",
+  "array_pointer": "0x8",
+  "array_count_offset": -8,
+  "entry_size": 16,
+  "entry_object_pointer": "0x8",
+  "record_id": "0x0",
+  "record_name_pointer": "0x8",
+  "record_type": "0x10",
+  "record_x": "0x14",
+  "record_y": "0x18",
+  "record_accessor_exclusion": "0xb8",
+  "record_destination_fallback": "0x40"
+ },
+ "character_offsets": {
+  "cached_y": "0xff8",
+  "cached_x": "0x1010",
+  "identifier": "0x11d0",
+  "vector_interface": "0x12b8",
+  "physics_body": "0x3ba8"
+ },
+ "controller_offsets": {
+  "interface_adjustment": "0x20",
+  "world_x_pre_copy": "0x170",
+  "world_x_post_copy": "0x1d0",
+  "foothold_relative_position": "0x248",
+  "foothold_relative_velocity": "0x260",
+  "foothold_relative_position_secondary": "0x278",
+  "encoded_foothold_pointer": "0x2b0",
+  "plain_foothold_reference": "0x2c8"
+ },
+ "body_offsets": {
+  "x_fields": [
+   "0xc",
+   "0x1c",
+   "0x34",
+   "0x3c"
+  ],
+  "y": "0x10",
+  "user_data": "0xc0"
+ },
+ "foothold_offsets": {
+  "x1": "0x0",
+  "y1": "0x4",
+  "x2": "0x8",
+  "y2": "0xc",
+  "cosine": "0x38",
+  "sine": "0x40",
+  "length": "0x48",
+  "previous": "0x60",
+  "next": "0x68"
+ },
+ "mob_offsets": {
+  "cmob_vtable_rva": "0x3516c98",
+  "cvecctrl_vtable_rva": "0x35906e0",
+  "ctrl_a": "0x2b8",
+  "ctrl_b": "0x2c0",
+  "x": "0x170",
+  "y": "0x188",
+  "y2": "0x128",
+  "x_post": "0x1d0",
+  "vx": "0x1b8",
+  "vy": "0x1a0",
+  "b_rel": "0x248",
+  "b_rel2": "0x278",
+  "b_vrel": "0x260",
+  "b_vrel2": "0x290",
+  "fh_enc": "0x2b0",
+  "fh_plain": "0x2c8",
+  "mob_id": "0x3a0",
+  "hp": "0x420",
+  "controlled": "0xaf0"
+ },
+ "_reprofile_report": {
+  "last_live_reprofile": "2026-11-05",
+  "resolved": [
+   "pe",
+   "code_fingerprints",
+   "character_global",
+   "movement_vector_vtable",
+   "incoming_display",
+   "mob_offsets",
+   "sendpacket"
+  ],
+  "pending": [
+   "native_reset",
+   "polearm_attacks",
+   "portal_layout",
+   "physics_x_scale",
+   "physics_y_scale"
+  ]
+ }
+}
