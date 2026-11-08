@@ -84,6 +84,8 @@ scoped to a closed research LAN.
 | `capture-packets.sh` | — | Auto-PID plaintext packet-capture wrapper with private streamed JSONL output |
 | `duplicate-pickup.sh` | — | One-shot duplicate 0x32b wrapper with microsecond timing and post-send restoration |
 | `protocol-static.py` | — | Static outgoing constructor, encoder, and SendPacket call-site extractor |
+| `outgoing-packet-capture.py` | — | Rich outgoing packet/constructor logger with optional single-opcode suppression |
+| `capture-outgoing.sh` | — | Auto-PID/endpoint wrapper for outgoing capture and one-opcode filtering |
 
 ## Consolidated recovery artifacts
 

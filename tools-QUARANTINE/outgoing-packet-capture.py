@@ -1,4 +1,4 @@
-"""Capture outgoing MapleStory packets and selected construction timelines."""
+"""Capture outgoing MapleStory packets and construction timelines, with optional single-opcode suppression."""
 
 import argparse
 import ctypes
@@ -21,6 +21,7 @@ GETEVENTMSG = 0x4201
 CONT = 7
 DETACH = 17
 GETREGS = 12
+SETREGS = 13
 GETFPREGS = 14
 PEEK = 3
 POKE = 6
@@ -239,7 +240,7 @@ def self_test():
     print("PASS: debug control, packet bounds, construction correlation, and deep-watch conflicts.")
 
 
-def run(pid, duration, output, deep_opcodes):
+def run(pid, duration, output, deep_opcodes, drop_opcode=None):
     reader = character.Reader(pid)
     profile = json.loads((DIRECTORY / "profile.json").read_text())
     base, _ = character.find_image(reader, pid, profile)
@@ -267,7 +268,7 @@ def run(pid, duration, output, deep_opcodes):
     targets = {base + SENDPACKET_RVA: 0, base + COUTPACKET_CTOR_RVA: 1}
     counts = {
         "events": 0, "sends": 0, "constructors": 0, "linked_sends": 0,
-        "field_changes": 0, "notices": 0, "send_errors": 0, "deep_gaps": 0,
+        "field_changes": 0, "notices": 0, "send_errors": 0, "deep_gaps": 0, "dropped": 0,
     }
     attached = set()
     stopped = set()
@@ -455,6 +456,7 @@ def run(pid, duration, output, deep_opcodes):
             "sendpacket_rva": hex(SENDPACKET_RVA),
             "constructor_rva": hex(COUTPACKET_CTOR_RVA),
             "deep_opcodes": [hex(opcode) for opcode in sorted(deep_opcodes)],
+            "drop_opcode": hex(drop_opcode) if drop_opcode is not None else None,
             "duration_seconds": duration,
             "max_packet_bytes": MAX_PACKET_BYTES,
         })
@@ -465,7 +467,10 @@ def run(pid, duration, output, deep_opcodes):
         for tid in sorted(attached):
             arm_stopped_thread(tid)
             observer.ptrace(tid, SETOPTIONS, 0, PTRACE_OPTIONS)
-        print(f"ARMED pid={pid} threads={len(attached)} deep_opcodes={sorted(deep_opcodes)}", flush=True)
+        print(
+            f"ARMED pid={pid} threads={len(attached)} deep_opcodes={sorted(deep_opcodes)} "
+            f"drop_opcode={hex(drop_opcode) if drop_opcode is not None else None}", flush=True,
+        )
         started = time.monotonic()
         last_status = started
         for tid in sorted(attached):
@@ -609,6 +614,22 @@ def run(pid, duration, output, deep_opcodes):
                         "body": body.hex(),
                     })
                     add_context(record, reader, registers, base, image_size)
+                    dropped = drop_opcode is not None and opcode == drop_opcode
+                    record["dropped"] = dropped
+                    if dropped:
+                        return_address = reader.qword(registers.rsp)
+                        if not return_address:
+                            raise RuntimeError("Cannot drop a packet with no SendPacket return address.")
+                        registers.rip = return_address
+                        registers.rsp = (registers.rsp + 8) & 0xFFFFFFFFFFFFFFFF
+                        registers.rax = 1
+                        observer.ptrace(tid, SETREGS, 0, ctypes.addressof(registers))
+                        check = observer.Registers()
+                        observer.ptrace(tid, GETREGS, 0, ctypes.addressof(check))
+                        if check.rip != return_address or check.rsp != registers.rsp or check.rax != 1:
+                            raise RuntimeError("Packet-drop register update did not read back exactly.")
+                        counts["dropped"] += 1
+                        print(f"DROP opcode={opcode:#x} length={len(body)}", flush=True)
                     write(record)
                     counts["sends"] += 1
                     if state is not None:
@@ -693,15 +714,18 @@ def main():
     parser.add_argument("seconds", type=float)
     parser.add_argument("output", type=Path)
     parser.add_argument("--deep-opcode", action="append", default=[], type=lambda value: int(value, 0))
+    parser.add_argument("--drop-opcode", type=lambda value: int(value, 0), default=None)
     args = parser.parse_args()
     if not 1 <= args.seconds <= 3600:
         parser.error("Use a capture duration from 1 to 3600 seconds.")
     deep_opcodes = set(args.deep_opcode)
     if any(not 0 <= opcode <= 0xFFFFFFFF for opcode in deep_opcodes):
         parser.error("Deep opcodes must be 32-bit integers.")
+    if args.drop_opcode is not None and not 0 <= args.drop_opcode <= 0xFFFFFFFF:
+        parser.error("Drop opcode must be a 32-bit integer.")
     profile = json.loads((DIRECTORY / "profile.json").read_text())
     pid = character.find_pid(profile["process_name"]) if args.pid == "auto" else int(args.pid)
-    run(pid, args.seconds, args.output, deep_opcodes)
+    run(pid, args.seconds, args.output, deep_opcodes, args.drop_opcode)
 
 
 if __name__ == "__main__":

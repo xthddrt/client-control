@@ -117,6 +117,28 @@ These are transforms observed in one earlier session, not semantic opcode names 
 tools-QUARANTINE/capture-packets.sh 120
 ```
 
+### Outgoing logger and one-opcode filter
+
+For the richer outgoing logger built in the other session, use:
+
+```bash
+tools-QUARANTINE/capture-outgoing.sh 300
+```
+
+This records outgoing plaintext bodies, timestamps, thread IDs, registers, caller stacks, constructor links, and a raw full-duplex pcap. `outgoing-events-*.jsonl` contains the semantic send/constructor records, `outgoing-session-*.pcap` contains the network traffic, and `outgoing-driver-*.log` contains terminal diagnostics. Newly created threads are tracked, and `--deep-opcode HEX` optionally records detailed construction field writes for selected opcodes.
+
+The default performs no packet-content modification. To suppress exactly one outgoing opcode while logging it, add:
+
+```bash
+tools-QUARANTINE/capture-outgoing.sh 300 --drop-opcode 0x1ef
+```
+
+Only that opcode is redirected to return `TRUE` from `SendPacket` without transmitting. Its record has `dropped: true`; all other packets have `dropped: false`, and the incoming raw pcap is unchanged. `counts.dropped` and `session_start.drop_opcode` record the experiment configuration. The wrapper rejects repeated or invalid drop options before sudo.
+
+Use one filter at a time and treat the result as phase-specific: a packet that can be dropped during combat may be required at login, a portal, or a later heartbeat. `send_complete` reports observer health, not that dropping was safe for gameplay. A previous four-minute test dropped two `0x1ef` messages without a disconnect, but that does not prove every `0x1ef` form is nonessential.
+
+This logger covers the MapleStory game process, not every launcher/NGS protocol. Use the NGS proxy for HTTPS control traffic. The pcap uses endpoints discovered at startup, so a later reconnect to a different endpoint needs another capture. `capture-packets.sh` remains the simpler full-duplex plaintext observer; do not run two ptrace observers concurrently.
+
 ### Repeated combat state versus drops
 
 Use the existing repeated-state replayer, not the packet observer, for this experiment:
