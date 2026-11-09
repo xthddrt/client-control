@@ -35,6 +35,7 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 | `decode-flows.py` | Decode captured control-plane flows |
 | `decode-heartbeats.py` | Decode `x-csauth` heartbeats |
 | `ngs-mitm.py` | NGS request logger and live response decoder/neutralizer |
+| `ngs-proxy.py` | Raw communication logger with exact-host/path-prefix blocking |
 | `launch-ngs-mitm.sh` | Persistent proxy and proxied Nexon launcher |
 
 ### Packet, interaction, and experimental research

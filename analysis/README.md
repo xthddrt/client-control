@@ -12,6 +12,16 @@ Runnable decoders, packet and memory observers, capture wrappers, and research e
 
 `ngs-mitm.py` and `launch-ngs-mitm.sh` provide the live GRAP control-plane proxy workflow. See the [replication guide](../docs/research/05-ngsx-control-plane-REPLICATION.md).
 
+`ngs-proxy.py` separately provides raw JSONL communication logging and exact-host/path-prefix blocking without payload decoding:
+
+```bash
+.venv/bin/mitmdump -s analysis/ngs-proxy.py \
+  --set ngs_log=captures/ngs-raw.jsonl \
+  --set ngs_block=example.com:/blocked-prefix
+```
+
+Raw captures can contain sensitive request and response bodies; keep them in the Git-ignored `captures/` directory.
+
 ## Packet and interaction research
 
 - `protocol-static.py`: static packet constructor and serializer analysis.
