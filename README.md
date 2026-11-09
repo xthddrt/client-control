@@ -5,6 +5,15 @@ Proton/Wine on Linux. This is the highlight reel — the full write-up, evidence
 tooling are in the drop. Every claim below is backed by decoded wire captures in
 [`evidence/`](evidence/).*
 
+## Repository layout
+
+- **[`foundations/`](foundations/)** — shared cipher primitives, client/memory helpers, and `profile.json`.
+- **[`analysis/`](analysis/)** — reusable decoders, packet capture, and research experiments.
+- **[`tools/`](tools/)** — applicable RNG, VAC/park, combat, GUI, and anti-disconnect tools.
+- **[`docs/guides/`](docs/guides/)** — current task-oriented guides; **[`docs/research/`](docs/research/)** — findings and project history.
+
+Run Python commands from the repository root with `.venv/bin/python`. Start with each directory's README or the [complete artifact index](docs/ARTIFACT-INDEX.md).
+
 ---
 
 ## ⚔️ First, what we can actually do to the game
@@ -273,7 +282,7 @@ Classic MapleStory crypto, done properly and then fully unwound:
   `getNewIv` links consecutive sends — so from a **pure pcap** we recover the IV
   chain and decrypt everything.
 - **Inbound (server→client) is even cheaper:** body = single-byte XOR with `iv[0]`.
-- **Deliverable:** `tools-QUARANTINE/wire-session-decrypt.py` — a *passive* pcap
+- **Deliverable:** `analysis/wire-session-decrypt.py` — a *passive* pcap
   decryptor. Validated full-duplex on live traffic. 5/5 trap-captured client→server
   packets recovered from ciphertext alone; 207-opcode inbound vocabulary catalogued.
 
@@ -288,7 +297,7 @@ tag cipher + 16-bit MAC at `0x140348ca0` — recovered to `header-cipher.py`, wh
 
 ## ⚔️ The in-game arsenal (the fun part)
 
-All driven by a PySide6 control GUI (`tools-QUARANTINE/position-gui.py`) with global
+All driven by a PySide6 control GUI (`tools/position-gui.py`) with global
 Wayland/evdev hotkeys, a kill-process panic button, teleport/position-reset, and portals.
 
 ### Mob VAC — `vac-sprites.py`
@@ -324,7 +333,7 @@ one hook drives both the hitbox and the animation.
 
 ## 🧰 Active MITM: we can tamper live, without getting kicked
 
-`tools-QUARANTINE/` ships the pieces of an **inline, transparent, DC-safe** proxy:
+`analysis/` ships the pieces of an **inline, transparent, DC-safe** proxy:
 iptables REDIRECT + `SO_ORIGINAL_DST`, ciphertext-only IV seeding from live wire,
 OnAliveReq identified every ~9 s, byte-exact pass-through, pluggable addons. It ran
 end-to-end against the live game with **zero disconnects**. One built addon zeroes the
@@ -337,20 +346,23 @@ keystream-free, length-preserving.
 
 | Read | For |
 |------|-----|
-| **[`01-THE-ARSENAL.md`](01-THE-ARSENAL.md)** | Per-capability deep dive: addresses, mechanism, evidence, limits |
-| **[`DAMAGE-RNG.md`](DAMAGE-RNG.md)** | Deterministic RNG solver, state replay, datasets, critical strikes, and the 34-damage search |
-| **[`PACKETS.md`](PACKETS.md)** | Current plaintext send/receive hooks, outgoing layouts, serializer paths, and packet-capture status |
-| **[`INTERACTION.md`](INTERACTION.md)** | Full writable-memory and full-duplex capture for drop-origin analysis |
-| **[`32B.md`](32B.md)** | Focused 0x32b/pickup construction, field, and full-memory capture |
-| **[`DEATH.md`](DEATH.md)** | Full-duplex mob-death and drop-communication capture |
-| **[`00-RETROSPECTIVE.md`](00-RETROSPECTIVE.md)** | Full technical story, environment-first, honest accounting |
-| **[`ARTIFACT-INDEX.md`](ARTIFACT-INDEX.md)** | Every doc, capture, and tool, annotated |
-| **[`docs/`](docs/)** | Strategic index, control-plane crack, NGS-X static report |
+| **[`foundations/`](foundations/)** | Shared cipher, client-resolution, memory, and profile building blocks |
+| **[`analysis/`](analysis/)** | Decoders, capture workflows, and research experiments |
+| **[`tools/`](tools/)** | Applicable RNG, VAC/park, combat, GUI, and anti-disconnect tools |
+| **[`01-THE-ARSENAL.md`](docs/research/01-THE-ARSENAL.md)** | Per-capability deep dive: addresses, mechanism, evidence, limits |
+| **[`DAMAGE-RNG.md`](docs/guides/DAMAGE-RNG.md)** | Deterministic RNG solver, state replay, datasets, critical strikes, and the 34-damage search |
+| **[`PACKETS.md`](docs/guides/PACKETS.md)** | Current plaintext send/receive hooks, outgoing layouts, serializer paths, and packet-capture status |
+| **[`INTERACTION.md`](docs/guides/INTERACTION.md)** | Full writable-memory and full-duplex capture for drop-origin analysis |
+| **[`32B.md`](docs/guides/32B.md)** | Focused 0x32b/pickup construction, field, and full-memory capture |
+| **[`DEATH.md`](docs/guides/DEATH.md)** | Full-duplex mob-death and drop-communication capture |
+| **[`00-RETROSPECTIVE.md`](docs/research/00-RETROSPECTIVE.md)** | Full technical story, environment-first, honest accounting |
+| **[`ARTIFACT-INDEX.md`](docs/ARTIFACT-INDEX.md)** | Every doc, capture, and tool, annotated |
+| **[`docs/research/`](docs/research/)** | Strategic index, control-plane crack, NGS-X static report |
 | **[`evidence/`](evidence/)** | Decrypted captures: detection map, CRC table, heartbeat corpus |
-| **[`tools-QUARANTINE/`](tools-QUARANTINE/)** | The tools. **Quarantined for a reason — read the index first.** |
 
 **Evidence tags** used throughout: `[C]` = reproduced from the client/dumps ·
 `[R]` = runtime-observed live · `[H]` = hypothesis / not yet proven.
 
-> ⚠️ `tools-QUARANTINE/` contains working game-manipulation and anti-cheat-evasion code
-> for a **closed research LAN**. It is not for use against live Nexon services.
+> ⚠️ `analysis/` and `tools/` contain working game-manipulation and
+> anti-cheat-evasion code for a **closed research LAN**. They are not for use
+> against live Nexon services.
