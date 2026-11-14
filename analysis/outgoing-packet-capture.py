@@ -1,4 +1,4 @@
-"""Capture outgoing MapleStory packets and construction timelines, with optional single-opcode suppression."""
+"""Capture outgoing MapleStory packets and construction timelines, with optional policy suppression."""
 
 import argparse
 import ctypes
@@ -51,6 +51,25 @@ def load(name, path):
 
 observer = load("outgoing_ptrace", FOUNDATIONS / "observe-position-reset.py")
 character = observer.character
+packet_fields = load("outgoing_packet_fields", FOUNDATIONS / "packet_fields.py")
+traffic_policy = load("outgoing_traffic_policy", FOUNDATIONS / "traffic_policy.py")
+
+
+def packet_decision(policy, process_name, pid, opcode, body, drop_opcode=None):
+    decoded = packet_fields.decode_game_body(body)
+    message = {
+        "process": {"name": process_name}, "pid": pid, "protocol": "maple",
+        "type": decoded["type"], "direction": "client_to_server",
+        "fields": decoded["fields"], "destination": None,
+    }
+    decision = policy.decide(message)
+    if drop_opcode is not None and opcode == drop_opcode:
+        decision = {
+            "action": "drop", "effective_action": "drop", "forward": False,
+            "matched": True, "rule_id": "legacy:drop-opcode", "rule_index": None,
+            "reason": "--drop-opcode", "mode": "enforce", "policy_sha256": policy.sha256,
+        }
+    return decoded, decision
 
 
 def execution_control(control, slot):
@@ -257,10 +276,24 @@ def self_test():
     assert stack[1]["rva"] is None
     broken = stack_values(BrokenReader(), frame, 0x140000000, 0x2000000)
     assert broken[0]["stack_address"] == "0x7000" and "error" in broken[0]
-    print("PASS: debug control, packet bounds, construction correlation, deep-watch conflicts, and stack reads.")
+    body = bytearray(36)
+    struct.pack_into("<H", body, 0, 0x32B)
+    struct.pack_into("<I", body, 0x0F, 99)
+    policy = traffic_policy.Policy({"version": 1, "rules": [{
+        "id": "test-drop", "action": "drop", "process": "MapleStory.exe", "protocol": "maple",
+        "type": "0x32b", "field": {"name": "drop_object_id", "equals": 99},
+    }]})
+    decoded, decision = packet_decision(policy, "MapleStory.exe", 10, 0x32B, body)
+    assert decoded["fields"]["drop_object_id"] == 99 and decision["effective_action"] == "drop"
+    struct.pack_into("<I", body, 0x0F, 100)
+    _, decision = packet_decision(policy, "MapleStory.exe", 10, 0x32B, body)
+    assert decision["forward"]
+    print("PASS: debug control, packet bounds, construction correlation, deep-watch conflicts, stack reads, and policy fields.")
 
 
-def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None):
+def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None, policy=None):
+    if policy is None:
+        policy = traffic_policy.Policy()
     if profile is None:
         profile = json.loads((FOUNDATIONS / "profile.json").read_text())
     reader = character.Reader(pid)
@@ -578,7 +611,13 @@ def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None):
                     "body": body.hex(),
                 })
                 add_context(record, reader, registers, base, image_size)
-                dropped = drop_opcode is not None and opcode == drop_opcode
+                decoded, decision = packet_decision(
+                    policy, profile["process_name"], pid, opcode, body, drop_opcode,
+                )
+                record["decode"] = decoded
+                record["filter_decision"] = decision
+                record["destination_evidence"] = "unavailable_at_SendPacket"
+                dropped = not decision["forward"]
                 record["dropped"] = dropped
                 if dropped:
                     return_address = reader.qword(registers.rsp)
@@ -661,10 +700,14 @@ def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None):
         start.update({
             "module_base": hex(base),
             "pe_timestamp": profile["pe"]["timestamp"],
+            "game_build": {"process_name": profile["process_name"], "observed_date": profile["observed_date"],
+                           **profile["pe"], "code_fingerprints_verified": True},
             "sendpacket_rva": hex(SENDPACKET_RVA),
             "constructor_rva": hex(COUTPACKET_CTOR_RVA),
             "deep_opcodes": [hex(opcode) for opcode in sorted(deep_opcodes)],
             "drop_opcode": hex(drop_opcode) if drop_opcode is not None else None,
+            "policy": {"sha256": policy.sha256, "source": policy.source, "document": policy.document},
+            "destination_evidence": "unavailable_at_SendPacket",
             "duration_seconds": duration,
             "max_packet_bytes": MAX_PACKET_BYTES,
         })
@@ -783,6 +826,7 @@ def main():
     parser.add_argument("output", type=Path)
     parser.add_argument("--deep-opcode", action="append", default=[], type=lambda value: int(value, 0))
     parser.add_argument("--drop-opcode", type=lambda value: int(value, 0), default=None)
+    parser.add_argument("--policy", type=Path, default=None, help="JSON process/type/field policy; audit mode never drops")
     args = parser.parse_args()
     if not 1 <= args.seconds <= 3600:
         parser.error("Use a capture duration from 1 to 3600 seconds.")
@@ -793,7 +837,7 @@ def main():
         parser.error("Drop opcode must be a 32-bit integer.")
     profile = json.loads((FOUNDATIONS / "profile.json").read_text())
     pid = character.find_pid(profile["process_name"]) if args.pid == "auto" else int(args.pid)
-    run(pid, args.seconds, args.output, deep_opcodes, args.drop_opcode, profile)
+    run(pid, args.seconds, args.output, deep_opcodes, args.drop_opcode, profile, traffic_policy.Policy.load(args.policy))
 
 
 if __name__ == "__main__":

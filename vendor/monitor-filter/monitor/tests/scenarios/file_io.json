@@ -1,0 +1,9 @@
+{
+  "name": "file_io",
+  "sensors": [
+    "file.pre_create", "file.post_create", "file.pre_op", "file.post_op",
+    "event.file_create", "event.file_read", "event.file_write",
+    "event.file_flush", "event.file_section", "event.file_query_security",
+    "event.file_close"
+  ]
+}

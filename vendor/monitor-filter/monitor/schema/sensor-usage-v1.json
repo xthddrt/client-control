@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "msc-outside-monitor sensor usage v1",
+  "type": "object",
+  "required": ["schema_version", "session_uuid", "generated_utc", "sensors"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "session_uuid": {"type": "string"},
+    "generated_utc": {"type": "string"},
+    "sensors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["sensor_id", "activity", "health", "verification"],
+        "properties": {
+          "sensor_id": {"type": "string"},
+          "implementation": {"type": "string"},
+          "event_types": {"type": "array", "items": {"type": "string"}},
+          "entered": {"type": "integer", "minimum": 0},
+          "logged": {"type": "integer", "minimum": 0},
+          "attempted": {"type": "integer", "minimum": 0},
+          "dropped": {"type": "integer", "minimum": 0},
+          "registration_status": {"type": "string"},
+          "activity": {
+            "type": "string",
+            "enum": ["observed", "enabled_not_observed", "skipped", "disabled", "registration_failed", "unsupported", "not_applicable", "not_instrumented"]
+          },
+          "health": {"type": "string", "enum": ["ok", "lossy", "degraded", "unknown"]},
+          "verification": {"type": "string", "enum": ["verified", "failing", "unverified"]},
+          "mapped": {"type": "boolean"},
+          "expected_for_scenario": {"type": "boolean"}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

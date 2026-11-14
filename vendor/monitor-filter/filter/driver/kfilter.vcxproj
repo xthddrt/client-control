@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64"><Configuration>Debug</Configuration><Platform>x64</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64"><Configuration>Release</Configuration><Platform>x64</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A1B2C3D4-1111-4222-9333-444455556666}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>kfilter</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>Driver</ConfigurationType>
+    <DriverType>WDM</DriverType>
+    <SignMode>Off</SignMode>
+    <SupportsPackaging>false</SupportsPackaging>
+    <SkipPackageVerification>true</SkipPackageVerification>
+    <PlatformToolset>WindowsKernelModeDriver10.0</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration"><UseDebugLibraries>true</UseDebugLibraries></PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration"><UseDebugLibraries>false</UseDebugLibraries><WholeProgramOptimization>true</WholeProgramOptimization></PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets"><Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" /></ImportGroup>
+  <PropertyGroup><OutDir>$(SolutionDir)build\$(Configuration)\driver\</OutDir><IntDir>$(SolutionDir)build\obj\driver\$(Configuration)\</IntDir><TargetName>kfilter</TargetName></PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile><WarningLevel>Level4</WarningLevel><TreatWarningAsError>true</TreatWarningAsError><PreprocessorDefinitions>_AMD64_;POOL_NX_OPTIN=1;%(PreprocessorDefinitions)</PreprocessorDefinitions></ClCompile>
+    <Link><AdditionalDependencies>ntoskrnl.lib;fltmgr.lib;fwpkclnt.lib;Wdmsec.lib;uuid.lib;%(AdditionalDependencies)</AdditionalDependencies><AdditionalOptions>/INTEGRITYCHECK %(AdditionalOptions)</AdditionalOptions></Link>
+    <DriverSign><SignMode>Off</SignMode></DriverSign>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c" /><ClCompile Include="policy.c" /><ClCompile Include="match.c" /><ClCompile Include="events.c" /><ClCompile Include="process.c" /><ClCompile Include="file_filter.c" /><ClCompile Include="registry.c" /><ClCompile Include="object.c" /><ClCompile Include="disk.c" /><ClCompile Include="device.c" /><ClCompile Include="network.c" />
+  </ItemGroup>
+  <ItemGroup><ClInclude Include="kf.h" /><ClInclude Include="kfilter.h" /><ClInclude Include="match.h" /><Inf Include="kfilter.inf" /></ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

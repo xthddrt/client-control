@@ -12,6 +12,7 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 | `tools/README.md` | Applicable tools and main entrypoints |
 | `requirements.txt` | Pinned third-party Python packages |
 | `DEPENDENCIES.md` | Direct caller/artifact inventory and recovery status |
+| `vendor/monitor-filter/` | Internal monitor/filter/ABI/orchestrator source snapshot from commit `637d78b`; no external checkout is needed |
 
 ## foundations/ — shared building blocks
 
@@ -24,6 +25,11 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 | `mob_profile.py` | Strict mob-offset parsing and validation |
 | `memory-watch.py` | Writable-memory snapshots and before/after diffs |
 | `profile.json` | Single build-specific profile used by all callers |
+| `packet_fields.py` | Evidence-labelled build-scoped packet types and bounded field decoders |
+| `traffic_capture.py` | pcap/pcapng parsing and loss-aware TCP reassembly |
+| `traffic_protocols.py` | MapleStory/TLS/HTTP/DNS framing with unknown and incomplete evidence markers |
+| `traffic_policy.py` | Shared ordered live/offline message policy engine |
+| `process_sockets.py` | Conservative process attribution through socket inodes under Wine |
 
 ## analysis/ — decryption and research
 
@@ -32,6 +38,7 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 | Path | What |
 |---|---|
 | `wire-session-decrypt.py` | Passive full-duplex pcap decryptor |
+| `traffic-ledger.py` | Ordered chained traffic record joining packets, msmon payloads, construction traces, NGS events, and policy evidence |
 | `decode-flows.py` | Decode captured control-plane flows |
 | `decode-heartbeats.py` | Decode `x-csauth` heartbeats |
 | `ngs-mitm.py` | NGS request logger and live response decoder/neutralizer |

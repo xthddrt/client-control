@@ -1,27 +1,37 @@
-"""Observe or neutralize NGS control-plane responses in mitmproxy."""
+"""Log/filter requests and observe or neutralize NGS control-plane responses in mitmproxy."""
 
 import base64
 import json
 import os
 from pathlib import Path
 import sys
+import time
+import uuid
 import zlib
 
 from mitmproxy import ctx, http
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "foundations"))
 import ngs_cipher
+from traffic_policy import Policy
+from process_sockets import SocketOwnerResolver
 
 
 MAX_BODY = 4 * 1024 * 1024
 SENSITIVE_HEADERS = {"authorization", "cookie", "set-cookie", "proxy-authorization", "x-api-key"}
 stream = None
 stream_path = None
+policy = Policy()
+session_id = uuid.uuid4().hex
+socket_owners = SocketOwnerResolver()
 
 
 def load(loader):
+    global policy
     loader.add_option("ngs_neutralize", bool, False, "Rewrite NGS responses to a clean control state.")
     loader.add_option("ngs_log", str, "", "JSONL capture path; may contain credentials.")
+    loader.add_option("traffic_policy", str, "", "JSON process/protocol/destination/type/field policy.")
+    policy = Policy.load(ctx.options.traffic_policy or None)
 
 
 def redacted_headers(headers):
@@ -73,16 +83,41 @@ def request_record(request):
         "method": request.method,
         "host": request.pretty_host,
         "path": request.path,
+        "scheme": request.scheme,
         "headers": redacted_headers(request.headers),
         "body_base64": base64.b64encode(content).decode("ascii"),
     }
+
+
+def request(flow: http.HTTPFlow):
+    process = flow.metadata.get("process") or socket_owners.lookup(flow.client_conn.address)
+    flow.metadata["process"] = process
+    flow.metadata["socket_inode"] = process.get("socket_inode")
+    decision = policy.decide({
+        "process": process, "protocol": flow.request.scheme,
+        "type": f"{flow.request.method} {flow.request.path}", "direction": "client_to_server",
+        "destination": {"host": flow.request.pretty_host, "port": flow.request.port},
+        "fields": {"method": flow.request.method, "target": flow.request.path, "host": flow.request.pretty_host},
+    })
+    flow.metadata["client_control_decision"] = decision
+    flow.metadata["client_control_blocked"] = not decision["forward"]
+    emit({
+        "kind": "request", "timestamp": time.time(), "flow_id": flow.id, "session_id": session_id,
+        "process": process, "socket_inode": process.get("socket_inode"),
+        "request": request_record(flow.request), "decision": decision,
+        "raw_scope": "exact_application_body_not_original_TLS_or_HTTP_framing",
+    })
+    if not decision["forward"]:
+        flow.response = http.Response.make(403, b"Blocked by client-control policy.")
 
 
 def response(flow: http.HTTPFlow):
     host = flow.request.pretty_host
     if not (host.startswith("x-") and host.endswith(".ngs.nexon.com")):
         return
-    event = {"kind": "response", "request": request_record(flow.request)}
+    event = {"kind": "response", "timestamp": time.time(), "flow_id": flow.id, "session_id": session_id,
+             "process": flow.metadata.get("process"), "socket_inode": flow.metadata.get("socket_inode"),
+             "decision": flow.metadata.get("client_control_decision"), "request": request_record(flow.request)}
     if flow.response is None:
         event["error"] = "No response."
         emit(event)
@@ -95,6 +130,11 @@ def response(flow: http.HTTPFlow):
         "headers": redacted_headers(flow.response.headers),
         "body_base64": base64.b64encode(content).decode("ascii"),
     }
+    if flow.metadata.get("client_control_blocked"):
+        event["blocked"] = True
+        event["decode_error"] = "blocked_before_transmission"
+        emit(event)
+        return
     try:
         payload = ngs_cipher.decrypt_response(content, want="json")
     except (ValueError, zlib.error, json.JSONDecodeError) as error:
@@ -122,8 +162,9 @@ def response(flow: http.HTTPFlow):
 def error(flow: http.HTTPFlow):
     if flow.request.pretty_host.endswith(".ngs.nexon.com"):
         emit({
-            "kind": "error", "request": request_record(flow.request),
-            "error": str(flow.error),
+            "kind": "error", "timestamp": time.time(), "flow_id": flow.id, "session_id": session_id,
+            "process": flow.metadata.get("process"), "decision": flow.metadata.get("client_control_decision"),
+            "request": request_record(flow.request), "error": str(flow.error),
         })
 
 

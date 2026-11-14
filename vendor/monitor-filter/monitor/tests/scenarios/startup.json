@@ -1,0 +1,8 @@
+{
+  "name": "startup",
+  "sensors": [
+    "process.notify", "thread.notify", "image.notify",
+    "registration.process.notify", "registration.thread.notify",
+    "registration.image.notify", "registration.filter.register", "registration.filter.start"
+  ]
+}

@@ -1,0 +1,10 @@
+build/
+.vs/
+*.user
+*.suo
+*.cat
+*.cer
+*.jsonl
+sessions/
+*.zip
+__pycache__/

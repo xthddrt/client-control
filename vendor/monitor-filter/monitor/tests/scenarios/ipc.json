@@ -1,0 +1,7 @@
+{
+  "name": "ipc",
+  "sensors": [
+    "event.file_create", "event.file_read", "event.file_write", "event.file_close",
+    "file.pre_create", "file.post_create", "file.pre_op", "file.post_op"
+  ]
+}

@@ -1,0 +1,47 @@
+[Version]
+Signature="$WINDOWS NT$"
+Class=System
+ClassGuid={4D36E97D-E325-11CE-BFC1-08002BE10318}
+Provider=%Provider%
+DriverVer=10/29/2026,1.0.0.0
+CatalogFile=kfilter.cat
+PnpLockdown=1
+
+[SourceDisksNames]
+1="kfilter driver",,,
+
+[SourceDisksFiles]
+kfilter.sys=1
+
+[DestinationDirs]
+DefaultDestDir=12
+
+[DefaultInstall.NTamd64]
+CopyFiles=DriverFiles
+
+[DefaultInstall.NTamd64.Services]
+AddService=kfilter,0x00000002,Service,Minifilter
+
+[DriverFiles]
+kfilter.sys
+
+[Service]
+DisplayName=%ServiceName%
+ServiceType=2
+StartType=3
+ErrorControl=1
+ServiceBinary=%12%\kfilter.sys
+Dependencies=FltMgr
+LoadOrderGroup="FSFilter Activity Monitor"
+
+[Minifilter]
+AddReg=MinifilterRegistry
+
+[MinifilterRegistry]
+HKR,"Instances","DefaultInstance",0x00000000,"kfilter"
+HKR,"Instances\kfilter","Altitude",0x00000000,"385700"
+HKR,"Instances\kfilter","Flags",0x00010001,0x00000000
+
+[Strings]
+Provider="kfilter"
+ServiceName="MapleStory containment filter"

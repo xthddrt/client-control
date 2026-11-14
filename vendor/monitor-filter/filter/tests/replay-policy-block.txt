@@ -1,0 +1,13 @@
+mode block
+protect \MapleStory.exe
+block-files on
+block-registry on
+block-volume-serial off
+block-process-memory off
+block-process-create off
+block-raw-disk off
+block-network off
+default-deny on
+deny|file|\Device\HarddiskVolume*\Outside|rights=read
+deny|registry|\REGISTRY\MACHINE\Key|value=Secret|rights=read
+allow|registry|\REGISTRY\MACHINE\Key|rights=read,enumerate

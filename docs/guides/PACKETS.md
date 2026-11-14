@@ -137,6 +137,8 @@ Only that opcode is redirected to return `TRUE` from `SendPacket` without transm
 
 Use one filter at a time and treat the result as phase-specific: a packet that can be dropped during combat may be required at login, a portal, or a later heartbeat. `send_complete` reports observer health, not that dropping was safe for gameplay. A previous four-minute test dropped two `0x1ef` messages without a disconnect, but that does not prove every `0x1ef` form is nonessential.
 
+For an ordered JSON policy instead of one opcode, use `--policy FILE`. Rules can select process, protocol (`maple`), message type, direction, and a decoded field; `audit` mode logs `would_drop` without suppressing. Every send records `decode` and `filter_decision`, including default allows. For example, a rule with `"type":"0x32b"` and `"field":{"name":"drop_object_id","equals":"0x143ff"}` selects only that observed pickup. Unknown fields and unavailable destinations do not match. Destination is not known at `SendPacket`; use the NGS/HTTP proxy or socket-layer filter for destination rules. See `analysis/README.md` for the full policy and ledger workflow.
+
 This logger covers the MapleStory game process, not every launcher/NGS protocol. Use the NGS proxy for HTTPS control traffic. The pcap uses endpoints discovered at startup, so a later reconnect to a different endpoint needs another capture. `capture-packets.sh` remains the simpler full-duplex plaintext observer; do not run two ptrace observers concurrently.
 
 ### Repeated combat state versus drops

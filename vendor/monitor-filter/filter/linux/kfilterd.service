@@ -1,0 +1,27 @@
+# Manual install only (the build installs nothing):
+#   sudo install -m 0755 build/linux/kfilterd build/linux/kfilterctl /usr/local/sbin/
+#   sudo install -m 0644 build/linux/kfilterd.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl start kfilterd
+# Do not `enable` it until a policy has been reviewed in audit mode: with no policy
+# loaded kfilterd allows everything, but a bad block-mode policy can stop programs.
+#
+# Block mode fails closed: if kfilterd dies, its pinned BPF links keep enforcing and the
+# restarted kfilterd adopts the saved policy (/run/kfilter/policy). `systemctl stop` runs
+# `kfilterctl stop` first, which turns the policy off and removes the pins explicitly.
+[Unit]
+Description=kfilter policy daemon (BPF LSM; fanotify, proc connector, nftables fallback)
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/kfilterd
+ExecStop=/usr/local/sbin/kfilterctl stop
+Restart=on-failure
+# CAP_BPF, CAP_PERFMON and CAP_MAC_ADMIN load the BPF LSM layer and pin it in bpffs;
+# CAP_SYS_ADMIN (fanotify permission events), CAP_NET_ADMIN (proc connector, nftables)
+# and CAP_SYS_PTRACE (/proc/<tid>/syscall to see how a file is opened) are the fallback's.
+CapabilityBoundingSet=CAP_SYS_ADMIN CAP_NET_ADMIN CAP_SYS_PTRACE CAP_DAC_READ_SEARCH CAP_DAC_OVERRIDE CAP_BPF CAP_PERFMON CAP_MAC_ADMIN CAP_SYS_RESOURCE
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target

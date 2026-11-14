@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "msc-outside-monitor session manifest v1",
+  "type": "object",
+  "required": [
+    "schema_version", "session_uuid", "session_id", "test_id", "scenario",
+    "phase", "machine_label", "started_utc", "ended_utc", "outcome",
+    "client_version", "agent_sha256", "driver_sha256", "build_commit",
+    "config", "parts", "record_count", "chain_head", "sensitivity"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "session_uuid": {"type": "string", "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"},
+    "session_id": {"type": "integer", "minimum": 1},
+    "session_label": {"type": "string"},
+    "test_id": {"type": "string", "minLength": 1},
+    "scenario": {"type": "string", "minLength": 1},
+    "phase": {"type": "string", "enum": ["startup", "steady", "shutdown"]},
+    "iteration": {"type": "integer", "minimum": 1},
+    "machine_label": {"type": "string", "minLength": 1},
+    "machine_id_hash": {"type": "string"},
+    "started_utc": {"type": "string", "minLength": 1},
+    "ended_utc": {"type": "string"},
+    "outcome": {
+      "type": "string",
+      "enum": ["completed", "agent_stopped", "agent_killed", "driver_stopped", "crash", "timeout", "unknown", "incomplete", "in_progress"]
+    },
+    "client_root": {"type": "string"},
+    "scope_root": {"type": "string"},
+    "client_version": {"type": "string"},
+    "client_sha256": {"type": "string"},
+    "agent_sha256": {"type": "string"},
+    "driver_sha256": {"type": "string"},
+    "build_commit": {"type": "string"},
+    "build_info_present": {"type": "boolean"},
+    "build_info_sha256": {"type": "string"},
+    "config": {
+      "type": "object",
+      "required": ["payload_mode", "etw", "queue_records", "queue_bytes"],
+      "properties": {
+        "payload_mode": {"type": "string", "enum": ["full", "metadata"]},
+        "etw": {"type": "boolean"},
+        "queue_records": {"type": "integer", "minimum": 1},
+        "queue_bytes": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": true
+    },
+    "parts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "bytes", "sha256"],
+        "properties": {
+          "name": {"type": "string"},
+          "bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "record_count": {"type": "integer", "minimum": 0},
+    "raw_bytes": {"type": "integer", "minimum": 0},
+    "part_count": {"type": "integer", "minimum": 0},
+    "chain_head": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sensitivity": {"type": "string", "enum": ["metadata", "payload", "secrets"]},
+    "environment": {"type": "object"},
+    "notes": {"type": "string"}
+  },
+  "additionalProperties": true
+}
