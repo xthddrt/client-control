@@ -23,7 +23,11 @@ The saved profile was observed on 2026-10-25 and describes `MapleStory.exe` with
 
 | Artifact | Direct caller(s) | Role | Recovery status |
 |---|---|---|---|
-| `transport-cipher.py` | `wire-session-decrypt.py` | Four-round transport IV roll and strict table loading | Reconstructed; offline known-answer checked |
+| `transport-cipher.py` | `wire-session-decrypt.py`, `traffic_protocols.py` | Four-round transport IV roll and strict table loading | Reconstructed; offline known-answer checked |
+| `packet_fields.py` | `traffic-ledger.py`, `outgoing-packet-capture.py` | Shared build-scoped message names and bounded field decoding | Synthetic known-answer and policy checks |
+| `traffic_capture.py`, `traffic_protocols.py` | `traffic-ledger.py` | Packet ingestion, retransmission-aware TCP reassembly, and protocol framing | Synthetic split/combined/retransmitted/gap checks |
+| `traffic_policy.py`, `process_sockets.py` | `outgoing-packet-capture.py`, `ngs-proxy.py`, `ngs-mitm.py`, `traffic-ledger.py` | Ordered message decisions and unique process/socket attribution | Offline checks; live client enforcement remains unverified |
+| `traffic-ledger.py` | Operator CLI | Ordered hash-chained raw traffic record and trace/NGS/msmon correlation | Synthetic end-to-end checks; real-client capture remains unverified |
 | `transport-shuffle-table.bin` | `wire-session-decrypt.py`, `transport-cipher.py` | Standard 256-byte MapleStory shuffle permutation | Restored; length/permutation checked |
 | `observe-position-reset.py` | `atkspeed.py`, `edit-melee-swap.py`, `overhead-attacks.py`, `sendpacket-drop.py`, `sendpacket-observe.py` | Character resolver export, x86-64 registers, checked ptrace, bounded stop waiting | Reconstructed; offline layout/helper checked; no attach performed |
 | `mob_profile.py` | `vac-sprites.py`, `mob-count.py` | Strict conversion and schema validation for `profile.json` mob offsets | Reconstructed; offline parsing checked |
@@ -52,8 +56,8 @@ The saved profile was observed on 2026-10-25 and describes `MapleStory.exe` with
 | `capture-packets.sh` | Operator CLI | Auto-PID plaintext packet-capture wrapper with streamed private JSONL and driver-error logs | Live packet capture passed; obsolete `RNG_MODE`/`RNG_REPLAY_WORDS` invocations are rejected in favor of the simpler replayer |
 | `duplicate-pickup.sh` | `capture-packets.sh` with `DUPLICATE_32B=1` | One-shot duplicate pickup wrapper with microsecond timing | Shell syntax checked; live duplicate result pending |
 | `protocol-static.py` | Operator CLI | Static outgoing constructor, encoder, and SendPacket call-site extractor | Fingerprint checks, compilation, and live-image analysis passed |
-| `outgoing-packet-capture.py` | `capture-outgoing.sh` | Rich outgoing plaintext/constructor logger with optional single-opcode suppression | Other-session live capture completed 100 sends and 24 deep-field changes; child test passed one allowed packet, one logged drop, and clean detach; live filter pending |
-| `capture-outgoing.sh` | Operator CLI | Auto-PID/endpoint wrapper for rich outgoing capture, deep tracing, and one-opcode filtering | Shell syntax and invalid/repeated-option rejection passed; defaults to no packet suppression |
+| `outgoing-packet-capture.py` | `capture-outgoing.sh` | Rich outgoing plaintext/constructor logger with legacy opcode or ordered JSON-policy suppression | Existing child detach evidence; policy helper passes offline checks, live policy enforcement remains unverified |
+| `capture-outgoing.sh` | Operator CLI | Auto-PID/endpoint wrapper for rich outgoing capture, deep tracing, and opcode/JSON-policy filtering | Shell syntax checked; defaults to no packet suppression |
 
 `observe-incoming-display.py` reaches `observe-position-reset.py` and `try-collision-miss.py` transitively through `overhead-attacks.py`. These are not additional direct dependencies.
 

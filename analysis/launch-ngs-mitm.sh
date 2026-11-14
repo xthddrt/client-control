@@ -13,6 +13,14 @@ CAPTURES="$ROOT/captures"
 FLOWS="$CAPTURES/ngs-flows-$STAMP.mitm"
 EVENTS="$CAPTURES/ngs-events-$STAMP.jsonl"
 PROXY_LOG="$CAPTURES/ngs-proxy-$STAMP.log"
+POLICY_ARGS=()
+if [[ -n ${TRAFFIC_POLICY:-} ]]; then
+    if [[ ! -r $TRAFFIC_POLICY ]]; then
+        echo "Traffic policy is not readable: $TRAFFIC_POLICY" >&2
+        exit 1
+    fi
+    POLICY_ARGS=(--set "traffic_policy=$TRAFFIC_POLICY")
+fi
 
 if pgrep -f 'nexon_launcher.exe|nexon_client.exe|nexon_runtime.exe|MapleStory.exe' >/dev/null; then
     echo "Close MapleStory and the Nexon launcher before starting the proxied session." >&2
@@ -30,7 +38,7 @@ mkdir -p "$CAPTURES"
     --listen-host 127.0.0.1 --listen-port 8080 \
     --set connection_strategy=lazy \
     --set ngs_neutralize=true --set ngs_log="$EVENTS" \
-    -w "$FLOWS" > "$PROXY_LOG" 2>&1 &
+    "${POLICY_ARGS[@]}" -w "$FLOWS" > "$PROXY_LOG" 2>&1 &
 PROXY_PID=$!
 cleanup() {
     kill "$PROXY_PID" 2>/dev/null || true
