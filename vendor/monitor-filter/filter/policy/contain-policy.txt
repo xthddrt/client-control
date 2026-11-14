@@ -1,0 +1,203 @@
+# kfilter containment policy (ABI 3)
+#
+# Start in audit mode. Run a full client session, review `kfilterctl watch`,
+# and add one specific allow at a time. Do not flip to block until the only
+# recorded would-denies are the intended ones.
+#
+# Rights are independent: execute means the loader may map the image; it does
+# not grant FILE_READ_DATA. A deny with rights=read matches a mixed
+# read+execute open, which closes the old data-only bypass.
+
+mode audit
+root C:\Nexon\Library\maplestorycw
+appcontainer MapleStoryCW
+# Every Nexon program, wherever it starts (unverified on Windows, 2026-11-08).
+protect \nexon_launcher.exe
+protect \nexon_client.exe
+protect \nexon_agent.exe
+protect \nexon_runtime.exe
+protect \MapleStory.exe
+protect \DwarfAxe.exe
+protect \CrashReportClient.exe
+protect \NGService.exe
+protect \grap-core64.aes
+protect \grap-updater.aes
+protect \grap-communicator64.aes
+
+block-files on
+block-registry on
+block-volume-serial on
+block-process-memory on
+block-process-create on
+block-raw-disk on
+block-network off
+default-deny on
+network-default deny
+network-loopback on
+
+# ---------------------------------------------------------------------------
+# 1. The client's own tree and private state.
+# ---------------------------------------------------------------------------
+
+allow|file|\Device\HarddiskVolume*\Nexon\Library\maplestorycw|rights=read,write,execute,delete,rename,set-security|risk=anti-cheat-surface
+allow|file|\Device\HarddiskVolume*\Users\*\AppData\Local\Nexon|rights=read,write,execute,delete,rename,set-security
+allow|file|\Device\HarddiskVolume*\Users\*\AppData\Roaming\Nexon|rights=read,write,execute,delete,rename,set-security
+allow|file|\Device\HarddiskVolume*\Users\*\AppData\Local\D3DSCache|rights=read,write,execute,delete,rename,set-security
+allow|file|\Device\HarddiskVolume*\Users\*\AppData\Local\kfilter\Temp|rights=read,write,execute,delete,rename,set-security
+# The launcher's tree (its programs only) and NGService's (the service; the launcher installs it).
+allow|file|\Device\HarddiskVolume*\Program Files (x86)\Nexon\Nexon Launcher|rights=read,write,execute,delete,rename,set-security|image=nexon_*
+allow|file|\Device\HarddiskVolume*\ProgramData\Nexon\NGS|rights=read,write,execute,delete,rename,set-security|image=NGService.exe|risk=anti-cheat-surface
+allow|file|\Device\HarddiskVolume*\ProgramData\Nexon|rights=read,write,execute,delete,rename,set-security|image=nexon_*
+
+# Directory enumeration has its own rights. Deny sensitive Windows subtrees
+# before the broad Windows directory allows.
+deny|dir|\Device\HarddiskVolume*\Windows\Prefetch
+deny|dir|\Device\HarddiskVolume*\Windows\INF
+deny|dir|\Device\HarddiskVolume*\Windows\Temp
+deny|dir|\Device\HarddiskVolume*\Windows\Panther
+deny|dir|\Device\HarddiskVolume*\Windows\System32\config
+deny|dir|\Device\HarddiskVolume*\Windows\System32\winevt
+deny|dir|\Device\HarddiskVolume*\Windows\System32\LogFiles
+deny|dir|\Device\HarddiskVolume*\Windows\System32\Tasks
+allow|dir|\Device\HarddiskVolume*\Nexon\Library\maplestorycw|rights=enumerate,read,execute,write,delete,rename,set-security
+allow|dir|\Device\HarddiskVolume*\Users\*\AppData\Local\Nexon|rights=enumerate,read,execute,write,delete,rename,set-security
+allow|dir|\Device\HarddiskVolume*\Users\*\AppData\Roaming\Nexon|rights=enumerate,read,execute,write,delete,rename,set-security
+allow|dir|\Device\HarddiskVolume*\Users\*\AppData\Local\D3DSCache|rights=enumerate,read,execute,write,delete,rename
+allow|dir|\Device\HarddiskVolume*\Users\*\AppData\Local\kfilter\Temp|rights=enumerate,read,execute,write,delete,rename
+allow|dir|\Device\HarddiskVolume*\Program Files (x86)\Nexon\Nexon Launcher|rights=enumerate,read,execute,write,delete,rename|image=nexon_*
+allow|dir|\Device\HarddiskVolume*\ProgramData\Nexon|rights=enumerate,read,execute,write,delete,rename
+allow|dir|\Device\HarddiskVolume*\Windows|rights=enumerate,read
+allow|dir|\Device\HarddiskVolume*\Windows\System32|rights=enumerate,read
+allow|dir|\Device\HarddiskVolume*\Windows\SysWOW64|rights=enumerate,read
+allow|dir|\Device\HarddiskVolume*\Windows\WinSxS|rights=enumerate,read
+allow|dir|\Device\HarddiskVolume*\Windows\System32\DriverStore|rights=enumerate,read
+allow|dir|\Device\HarddiskVolume*\Windows\Fonts|rights=enumerate,read
+deny|dir|\Device\HarddiskVolume*\Program Files
+deny|dir|\Device\HarddiskVolume*\Program Files (x86)
+deny|dir|\Device\HarddiskVolume*\Users\*
+
+# ---------------------------------------------------------------------------
+# 2. Windows loader surface. Execute/map is allowed; raw reads are not.
+# ---------------------------------------------------------------------------
+
+# Modules that exist to fetch host/security information. These must stay above
+# the System32 execute allow so the image load is denied too.
+deny|file|\Device\HarddiskVolume*\Windows\*\wbem\wbemprox.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\wbem\fastprox.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\wbemcomn.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\wbemsvc.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\dxdiagn.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\wlanapi.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\dhcpcsvc.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\dhcpcsvc6.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\wtsapi32.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\netapi32.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\pdh.dll
+
+allow|file|\Device\HarddiskVolume*\Windows\System32|rights=execute|ext=dll|risk=windows-dll-surface
+allow|file|\Device\HarddiskVolume*\Windows\SysWOW64|rights=execute|ext=dll|risk=windows-dll-surface
+allow|file|\Device\HarddiskVolume*\Windows\WinSxS|rights=execute|ext=dll,mui|risk=windows-dll-surface
+allow|file|\Device\HarddiskVolume*\Windows\Microsoft.NET|rights=execute|ext=dll
+allow|file|\Device\HarddiskVolume*\Windows\assembly|rights=execute|ext=dll
+allow|file|\Device\HarddiskVolume*\Windows\System32\DriverStore|rights=execute|ext=dll
+allow|file|\Device\HarddiskVolume*\Windows\Fonts|rights=read
+allow|file|\Device\HarddiskVolume*\Windows\System32\catroot|rights=read
+allow|file|\Device\HarddiskVolume*\Windows\System32\spool\drivers\color|rights=read
+allow|file|\Device\HarddiskVolume*\Windows\System32\en-US|rights=read|ext=mui
+allow|file|\Device\HarddiskVolume*\Windows\System32\drivers\en-US|rights=read|ext=mui
+allow|file|\Device\HarddiskVolume*\Windows\System32\C_*.NLS|rights=read
+allow|file|\Device\HarddiskVolume*\Windows\System32\l_intl.nls|rights=read
+allow|file|\Device\HarddiskVolume*\Windows\System32\locale.nls|rights=read
+allow|file|\Device\HarddiskVolume*\Windows\System32\drivers\etc\hosts|rights=read
+
+# ---------------------------------------------------------------------------
+# 3. Deny raw reads and identity-bearing OS data before the DLL execute allow.
+# ---------------------------------------------------------------------------
+
+deny|file|\Device\HarddiskVolume*\Windows\System32|rights=read|ext=dll
+deny|file|\Device\HarddiskVolume*\Windows\System32\config
+deny|file|\Device\HarddiskVolume*\Windows\System32\winevt
+deny|file|\Device\HarddiskVolume*\Windows\System32\LogFiles
+deny|file|\Device\HarddiskVolume*\Windows\System32\Tasks
+deny|file|\Device\HarddiskVolume*\Windows\System32|rights=read|ext=exe
+deny|file|\Device\HarddiskVolume*\Windows\System32\drivers|rights=read|ext=sys
+deny|file|\Device\HarddiskVolume*\Windows\Prefetch
+deny|file|\Device\HarddiskVolume*\Windows\INF
+deny|file|\Device\HarddiskVolume*\Windows\Temp
+deny|file|\Device\HarddiskVolume*\Windows\Panther
+
+# ---------------------------------------------------------------------------
+# 4. Other users, other volumes, network shares, devices and pipes.
+# ---------------------------------------------------------------------------
+
+deny|file|\Device\HarddiskVolume*\Users\*|rights=read
+deny|file|\Device\Mup
+deny|file|\Device\CdRom*
+deny|file|\Device\Floppy*
+deny|file|\Device\Harddisk*
+deny|file|\Device\Volume*
+deny|file|\Device\PhysicalMemory
+deny|file|\Device\MountPointManager
+
+allow|pipe|\Device\NamedPipe\grap-core64*|rights=read,write,create,connect,listen
+allow|pipe|\Device\NamedPipe\mojo.*|rights=read,write,create,connect,listen
+deny|pipe|\Device\NamedPipe
+deny|pipe|\Device\Mailslot
+
+# ---------------------------------------------------------------------------
+# 5. Registry: own settings and the minimum runtime surface.
+# ---------------------------------------------------------------------------
+
+allow|registry|\REGISTRY\USER\*\Software\Wizet|rights=read,write,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Wizet|rights=read,write,enumerate
+allow|registry|\REGISTRY\USER\*\Software\Nexon|rights=read,write,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Nexon|rights=read,write,enumerate
+allow|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Services\WinSock2|rights=read,enumerate
+allow|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Services\Dnscache|rights=read,enumerate
+allow|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Control\Nls|rights=read,enumerate
+allow|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation|rights=read,enumerate
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=ProductId
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=InstallDate
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=RegisteredOwner
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|rights=read,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\SideBySide|rights=read,enumerate
+allow|registry|\REGISTRY\USER\*\Software\Microsoft\Windows\CurrentVersion\Internet Settings|rights=read,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\SystemCertificates|rights=read,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\EnterpriseCertificates|rights=read,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Cryptography\OID|rights=read,enumerate
+
+# Audit-only compatibility candidates. They allow and record; convert to a
+# narrow allow after a session proves the client needs them.
+audit|registry|\REGISTRY\MACHINE\SOFTWARE\Classes\CLSID
+audit|registry|\REGISTRY\MACHINE\SOFTWARE\Classes\Interface
+audit|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\WindowsRuntime
+audit|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModel
+
+# Identity and inventory keys stay denied.
+deny|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Enum
+deny|registry|\REGISTRY\MACHINE\SYSTEM\ControlSet001\Enum
+deny|registry|\REGISTRY\MACHINE\HARDWARE
+deny|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\MMDevices
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FolderDescriptions
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\UserAssist
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\TypedPaths
+deny|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Control\Class\{4d36e968-e325-11ce-bfc1-08002be10318}
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Cryptography|value=MachineGuid
+
+# ---------------------------------------------------------------------------
+# 6. Child programs and network defaults.
+# ---------------------------------------------------------------------------
+
+allow|process|\Device\HarddiskVolume*\Nexon\Library\maplestorycw|rights=create
+# The launcher starts its own programs (nexon_client, nexon_agent, nexon_runtime) from its tree.
+allow|process|\Device\HarddiskVolume*\Program Files (x86)\Nexon\Nexon Launcher|rights=create|image=nexon_*
+deny|process|\Device\HarddiskVolume*
+deny|process|\SystemRoot\*
+
+# Driver IP filtering stays off until reviewed per-address allow rules exist.
+# Generate a candidate fragment with tools/Install-NetworkPolicy.ps1, review it,
+# then enable block-network with network-default deny. FQDN mediation is not implemented.

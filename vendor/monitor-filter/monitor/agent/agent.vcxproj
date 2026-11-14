@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64"><Configuration>Debug</Configuration><Platform>x64</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64"><Configuration>Release</Configuration><Platform>x64</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals"><ProjectGuid>{0F04456A-DA27-4B12-B778-0B60C78C57C8}</ProjectGuid><Keyword>Win32Proj</Keyword><RootNamespace>msmonagent</RootNamespace><WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion></PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration"><ConfigurationType>Application</ConfigurationType><PlatformToolset>v143</PlatformToolset><CharacterSet>Unicode</CharacterSet></PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration"><UseDebugLibraries>true</UseDebugLibraries></PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration"><UseDebugLibraries>false</UseDebugLibraries><WholeProgramOptimization>true</WholeProgramOptimization></PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets"><Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" /></ImportGroup>
+  <PropertyGroup><OutDir>$(SolutionDir)build\$(Configuration)\agent\</OutDir><IntDir>$(SolutionDir)build\obj\agent\$(Configuration)\</IntDir><TargetName>msmon-agent</TargetName></PropertyGroup>
+  <ItemDefinitionGroup><ClCompile><WarningLevel>Level4</WarningLevel><TreatWarningAsError>true</TreatWarningAsError><LanguageStandard>stdcpp17</LanguageStandard><ConformanceMode>true</ConformanceMode></ClCompile><Link><SubSystem>Console</SubSystem><AdditionalDependencies>bcrypt.lib;tdh.lib;%(AdditionalDependencies)</AdditionalDependencies></Link></ItemDefinitionGroup>
+  <ItemGroup><ClCompile Include="agent.cpp" /><ClCompile Include="telemetry.cpp" /><ClCompile Include="etw.cpp" /><ClCompile Include="rpc_names.cpp" /><ClCompile Include="classify.cpp" /><ClCompile Include="integrations.cpp" /></ItemGroup>
+  <ItemGroup><ClInclude Include="telemetry.h" /><ClInclude Include="etw.h" /><ClInclude Include="rpc_names.h" /><ClInclude Include="classify.h" /><ClInclude Include="integrations.h" /><ClInclude Include="..\include\msmon_protocol.h" /><ClInclude Include="..\..\filter\driver\kfilter.h" /></ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

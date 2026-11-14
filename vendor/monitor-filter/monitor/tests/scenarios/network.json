@@ -1,0 +1,7 @@
+{
+  "name": "network",
+  "sensors": [
+    "wfp.classify", "wfp.notify",
+    "event.network_connect", "event.network_accept", "event.network_flow_close"
+  ]
+}

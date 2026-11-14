@@ -12,6 +12,7 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 | `tools/README.md` | Applicable tools and main entrypoints |
 | `requirements.txt` | Pinned third-party Python packages |
 | `DEPENDENCIES.md` | Direct caller/artifact inventory and recovery status |
+| `vendor/monitor-filter/` | Internal monitor/filter/ABI/orchestrator source snapshot from commit `637d78b`; no external checkout is needed |
 
 ## foundations/ — shared building blocks
 

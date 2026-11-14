@@ -1,0 +1,113 @@
+# Strict policy: allow the client's own data and the minimum Windows surface,
+# deny every other file and registry access by the protected processes.
+#
+# This is the closest this driver gets to "the client may only touch its own
+# data". It is still NOT a sandbox: kernel-mode code, device IOCTLs, WMI/RPC,
+# SMBIOS/CPUID, network and ALPC are outside the driver's reach (docs/DESIGN.md).
+#
+# Expect to iterate. Start in audit mode, run a full client session, and add an
+# allow line for every WOULD_DENY the client actually needs. Do not jump to
+# mode block on the first run.
+
+mode audit
+
+# Every Nexon program (the same list as default-policy.txt; children inherit protection).
+protect \nexon_launcher.exe
+protect \nexon_client.exe
+protect \nexon_agent.exe
+protect \nexon_runtime.exe
+protect \MapleStory.exe
+protect \DwarfAxe.exe
+protect \CrashReportClient.exe
+protect \NGService.exe
+protect \grap-core64.aes
+protect \grap-updater.aes
+protect \grap-communicator64.aes
+
+block-files on
+block-registry on
+block-volume-serial on
+block-process-memory on
+block-process-create on
+block-raw-disk on
+
+# ---------------------------------------------------------------------------
+# 1. Image loads anywhere. Mapping a DLL does not read file data through this
+#    filter, so this keeps the loader working while data reads stay denied.
+#    It also lets the client load third-party DLLs; remove this line if you
+#    want to block overlay/injector DLLs as well.
+# ---------------------------------------------------------------------------
+
+allow|file|\Device\HarddiskVolume*|execute-only|risk=windows-dll-surface
+
+# ---------------------------------------------------------------------------
+# 2. Data the client is allowed to read: its own tree, its publisher, the
+#    Windows loader paths, fonts and its temp directory. Note that System32 is
+#    limited to dll/other, so reading System32\*.exe or System32\drivers\*.sys
+#    (process and driver inventory) stays denied.
+# ---------------------------------------------------------------------------
+
+allow|file|\Device\HarddiskVolume*\Nexon\Library\maplestorycw|rights=read,write,execute,delete,rename,set-security|risk=anti-cheat-surface
+allow|file|\Device\HarddiskVolume*\Users\*\AppData\Local\Nexon|rights=read,write,execute,delete,rename,set-security
+allow|file|\Device\HarddiskVolume*\Users\*\AppData\Roaming\Nexon|rights=read,write,execute,delete,rename,set-security
+allow|file|\Device\HarddiskVolume*\Users\*\AppData\Local\D3DSCache|rights=read,write,execute,delete,rename,set-security
+# The launcher's tree (its programs only) and NGService's (the service; the launcher installs it).
+allow|file|\Device\HarddiskVolume*\Program Files (x86)\Nexon\Nexon Launcher|rights=read,write,execute,delete,rename,set-security|image=nexon_*
+allow|file|\Device\HarddiskVolume*\ProgramData\Nexon\NGS|rights=read,write,execute,delete,rename,set-security|image=NGService.exe|risk=anti-cheat-surface
+allow|file|\Device\HarddiskVolume*\ProgramData\Nexon|rights=read,write,execute,delete,rename,set-security|image=nexon_*
+
+allow|file|\Device\HarddiskVolume*\Windows\System32|rights=read,write,execute,delete,rename,set-security|ext=dll,other|risk=windows-dll-surface
+allow|file|\Device\HarddiskVolume*\Windows\SysWOW64|rights=read,write,execute,delete,rename,set-security|ext=dll,other|risk=windows-dll-surface
+allow|file|\Device\HarddiskVolume*\Windows\WinSxS|rights=read,write,execute,delete,rename,set-security|ext=dll,other|risk=windows-dll-surface
+allow|file|\Device\HarddiskVolume*\Windows\Microsoft.NET|rights=read,write,execute,delete,rename,set-security|ext=dll,other
+allow|file|\Device\HarddiskVolume*\Windows\assembly|rights=read,write,execute,delete,rename,set-security|ext=dll,other
+allow|file|\Device\HarddiskVolume*\Windows\Fonts|rights=read,write,execute,delete,rename,set-security
+allow|file|\Device\HarddiskVolume*\Windows\System32\catroot|rights=read,write,execute,delete,rename,set-security
+allow|file|\Device\HarddiskVolume*\Windows\System32\spool\drivers\color|rights=read,write,execute,delete,rename,set-security
+allow|file|\Device\HarddiskVolume*\Users\*\AppData\Local\Temp|rights=read,write,execute,delete,rename,set-security
+
+# If the client needs a redistributable from a shared vendor directory, add it
+# explicitly, for example:
+# allow|file|\Device\HarddiskVolume*\Program Files\Common Files|rights=read,execute|ext=dll
+
+# ---------------------------------------------------------------------------
+# 3. Registry the client needs: its own settings, the network stack, locale,
+#    version data and activation contexts.
+# ---------------------------------------------------------------------------
+
+allow|registry|\REGISTRY\USER\*\Software\Wizet|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Wizet|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\USER\*\Software\Nexon|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Nexon|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Services\WinSock2|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Services\Dnscache|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\USER\*\Software\Microsoft\Windows\CurrentVersion\Internet Settings|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Control\Nls|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SYSTEM\CurrentControlSet\Control\TimeZoneInformation|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\SideBySide|rights=read,write,delete,rename,set-security,enumerate
+
+# ---------------------------------------------------------------------------
+# 3. Process creation: only the client's own tree may be started. This refuses
+#    launches of ROUTE.EXE, chrome.exe, WerFault.exe and helper binaries from
+#    other directories, which the captures show MapleStory.exe doing.
+# ---------------------------------------------------------------------------
+
+allow|process|\Device\HarddiskVolume*\Nexon\Library\maplestorycw|rights=create
+# The launcher starts its own programs (nexon_client, nexon_agent, nexon_runtime) from its tree.
+allow|process|\Device\HarddiskVolume*\Program Files (x86)\Nexon\Nexon Launcher|rights=create|image=nexon_*
+deny|process|\Device\HarddiskVolume*
+deny|process|\SystemRoot\*
+
+# ---------------------------------------------------------------------------
+# 4. Everything else. The registry rule is a prefix catch-all, the file rule
+#    covers all volumes and all extensions, so documents, caches and
+#    application data outside the allow list are denied too.
+# ---------------------------------------------------------------------------
+
+deny|file|\Device\HarddiskVolume*
+# Named pipes are not filtered by a volume rule. Enable this if the client does
+# not need pipe access; it may break the launcher or the anti-cheat handshake.
+# deny|file|\Device\NamedPipe
+
+deny|registry|\REGISTRY

@@ -1,0 +1,8 @@
+{
+  "name": "registry",
+  "sensors": [
+    "registry.callback", "event.registry_open", "event.registry_create",
+    "event.registry_set_value", "event.registry_query", "event.registry_enumerate",
+    "event.registry_delete"
+  ]
+}

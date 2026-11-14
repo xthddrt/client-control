@@ -1,0 +1,1301 @@
+{
+  "schema_version": 1,
+  "sensors": [
+    {
+      "sensor_id": "event.process_start",
+      "kind": "event",
+      "event_type": "process_start",
+      "type_id": 1,
+      "implementation": "driver event MsMonProcessStart",
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.process_exit",
+      "kind": "event",
+      "event_type": "process_exit",
+      "type_id": 2,
+      "implementation": "driver event MsMonProcessExit",
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.thread_start",
+      "kind": "event",
+      "event_type": "thread_start",
+      "type_id": 3,
+      "implementation": "driver event MsMonThreadStart",
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.thread_exit",
+      "kind": "event",
+      "event_type": "thread_exit",
+      "type_id": 4,
+      "implementation": "driver event MsMonThreadExit",
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.image_load",
+      "kind": "event",
+      "event_type": "image_load",
+      "type_id": 5,
+      "implementation": "driver event MsMonImageLoad",
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.process_handle",
+      "kind": "event",
+      "event_type": "process_handle",
+      "type_id": 6,
+      "implementation": "driver event MsMonProcessHandle",
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.thread_handle",
+      "kind": "event",
+      "event_type": "thread_handle",
+      "type_id": 7,
+      "implementation": "driver event MsMonThreadHandle",
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_create",
+      "kind": "event",
+      "event_type": "file_create",
+      "type_id": 10,
+      "implementation": "driver event MsMonFileCreate",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_read",
+      "kind": "event",
+      "event_type": "file_read",
+      "type_id": 11,
+      "implementation": "driver event MsMonFileRead",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_write",
+      "kind": "event",
+      "event_type": "file_write",
+      "type_id": 12,
+      "implementation": "driver event MsMonFileWrite",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_set_information",
+      "kind": "event",
+      "event_type": "file_set_information",
+      "type_id": 13,
+      "implementation": "driver event MsMonFileSetInformation",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_directory_control",
+      "kind": "event",
+      "event_type": "file_directory_control",
+      "type_id": 14,
+      "implementation": "driver event MsMonFileDirectoryControl",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_cleanup",
+      "kind": "event",
+      "event_type": "file_cleanup",
+      "type_id": 15,
+      "implementation": "driver event MsMonFileCleanup",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_device_control",
+      "kind": "event",
+      "event_type": "file_device_control",
+      "type_id": 16,
+      "implementation": "driver event MsMonFileDeviceControl",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_system_control",
+      "kind": "event",
+      "event_type": "file_system_control",
+      "type_id": 17,
+      "implementation": "driver event MsMonFileSystemControl",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_query_volume_information",
+      "kind": "event",
+      "event_type": "file_query_volume_information",
+      "type_id": 18,
+      "implementation": "driver event MsMonFileQueryVolumeInformation",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_query_information",
+      "kind": "event",
+      "event_type": "file_query_information",
+      "type_id": 19,
+      "implementation": "driver event MsMonFileQueryInformation",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.registry_open",
+      "kind": "event",
+      "event_type": "registry_open",
+      "type_id": 20,
+      "implementation": "driver event MsMonRegistryOpen",
+      "expected_in": [
+        "registry",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.registry_create",
+      "kind": "event",
+      "event_type": "registry_create",
+      "type_id": 21,
+      "implementation": "driver event MsMonRegistryCreate",
+      "expected_in": [
+        "registry",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.registry_set_value",
+      "kind": "event",
+      "event_type": "registry_set_value",
+      "type_id": 22,
+      "implementation": "driver event MsMonRegistrySetValue",
+      "expected_in": [
+        "registry",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.registry_delete",
+      "kind": "event",
+      "event_type": "registry_delete",
+      "type_id": 23,
+      "implementation": "driver event MsMonRegistryDelete",
+      "expected_in": [
+        "registry",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.registry_rename",
+      "kind": "event",
+      "event_type": "registry_rename",
+      "type_id": 24,
+      "implementation": "driver event MsMonRegistryRename",
+      "expected_in": [
+        "registry",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.registry_query",
+      "kind": "event",
+      "event_type": "registry_query",
+      "type_id": 25,
+      "implementation": "driver event MsMonRegistryQuery",
+      "expected_in": [
+        "registry",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.registry_enumerate",
+      "kind": "event",
+      "event_type": "registry_enumerate",
+      "type_id": 26,
+      "implementation": "driver event MsMonRegistryEnumerate",
+      "expected_in": [
+        "registry",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.network_connect",
+      "kind": "event",
+      "event_type": "network_connect",
+      "type_id": 30,
+      "implementation": "driver event MsMonNetworkConnect",
+      "expected_in": [
+        "network",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.network_accept",
+      "kind": "event",
+      "event_type": "network_accept",
+      "type_id": 31,
+      "implementation": "driver event MsMonNetworkAccept",
+      "expected_in": [
+        "network",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.network_flow_established",
+      "kind": "event",
+      "event_type": "network_flow_established",
+      "type_id": 32,
+      "implementation": "driver event MsMonNetworkFlowEstablished",
+      "expected_in": [
+        "network",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.network_flow_close",
+      "kind": "event",
+      "event_type": "network_flow_close",
+      "type_id": 33,
+      "implementation": "driver event MsMonNetworkFlowClose",
+      "expected_in": [
+        "network",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_section",
+      "kind": "event",
+      "event_type": "file_section",
+      "type_id": 34,
+      "implementation": "driver event MsMonFileSection",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_close",
+      "kind": "event",
+      "event_type": "file_close",
+      "type_id": 35,
+      "implementation": "driver event MsMonFileClose",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_flush",
+      "kind": "event",
+      "event_type": "file_flush",
+      "type_id": 36,
+      "implementation": "driver event MsMonFileFlush",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_query_security",
+      "kind": "event",
+      "event_type": "file_query_security",
+      "type_id": 37,
+      "implementation": "driver event MsMonFileQuerySecurity",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active",
+      "linux": "linux.ebpf_wineserver: get/set_security_object on a file, key or named object (value0 the SECURITY_INFORMATION)"
+    },
+    {
+      "sensor_id": "event.file_set_security",
+      "kind": "event",
+      "event_type": "file_set_security",
+      "type_id": 38,
+      "implementation": "driver event MsMonFileSetSecurity",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active",
+      "linux": "linux.ebpf_wineserver: get/set_security_object on a file, key or named object (value0 the SECURITY_INFORMATION)"
+    },
+    {
+      "sensor_id": "event.file_query_ea",
+      "kind": "event",
+      "event_type": "file_query_ea",
+      "type_id": 39,
+      "implementation": "driver event MsMonFileQueryEa",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.file_set_ea",
+      "kind": "event",
+      "event_type": "file_set_ea",
+      "type_id": 40,
+      "implementation": "driver event MsMonFileSetEa",
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.etw_wmi",
+      "kind": "event",
+      "event_type": "etw_wmi",
+      "type_id": 100,
+      "implementation": "driver event MsMonEtwWmi",
+      "expected_in": [
+        "wmi",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.etw_dns",
+      "kind": "event",
+      "event_type": "etw_dns",
+      "type_id": 101,
+      "implementation": "driver event MsMonEtwDns",
+      "expected_in": [
+        "dns",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.etw_rpc",
+      "kind": "event",
+      "event_type": "etw_rpc",
+      "type_id": 102,
+      "implementation": "driver event MsMonEtwRpc",
+      "expected_in": [
+        "rpc",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.etw_unattributed",
+      "kind": "event",
+      "event_type": "etw_unattributed",
+      "type_id": 103,
+      "implementation": "driver event MsMonEtwUnattributed",
+      "expected_in": [
+        "startup",
+        "shutdown"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.etw_tcp",
+      "kind": "event",
+      "event_type": "etw_tcp",
+      "type_id": 104,
+      "implementation": "driver event MsMonEtwTcp",
+      "expected_in": [
+        "network",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.etw_code_integrity",
+      "kind": "event",
+      "event_type": "etw_code_integrity",
+      "type_id": 105,
+      "implementation": "agent/etw.cpp::OnCodeIntegrityRecord",
+      "expected_in": [],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.coverage",
+      "kind": "event",
+      "event_type": "coverage",
+      "type_id": 110,
+      "implementation": "driver event MsMonCoverage",
+      "expected_in": [
+        "startup",
+        "shutdown"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.coverage_usage",
+      "kind": "event",
+      "event_type": "coverage_usage",
+      "type_id": 111,
+      "implementation": "driver event MsMonCoverageUsage",
+      "expected_in": [
+        "startup",
+        "shutdown"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "event.kfilter_decision",
+      "kind": "event",
+      "event_type": "kfilter_decision",
+      "type_id": 120,
+      "implementation": "agent/integrations.cpp::KFilterDecisionEvent",
+      "expected_in": [],
+      "status": "active"
+    },
+    {
+      "sensor_id": "process.notify",
+      "kind": "callback",
+      "slot": 0,
+      "implementation": "driver/process.c::MsMonProcessNotifyInner",
+      "event_types": [
+        "process_start",
+        "process_exit"
+      ],
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "thread.notify",
+      "kind": "callback",
+      "slot": 1,
+      "implementation": "driver/process.c::MsMonThreadNotify",
+      "event_types": [
+        "thread_start",
+        "thread_exit"
+      ],
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "image.notify",
+      "kind": "callback",
+      "slot": 2,
+      "implementation": "driver/process.c::MsMonImageNotify",
+      "event_types": [
+        "image_load"
+      ],
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "object.process",
+      "kind": "callback",
+      "slot": 3,
+      "implementation": "driver/object.c::MsMonObjectPre",
+      "event_types": [
+        "process_handle"
+      ],
+      "expected_in": [
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "object.thread",
+      "kind": "callback",
+      "slot": 4,
+      "implementation": "driver/object.c::MsMonObjectPre",
+      "event_types": [
+        "thread_handle"
+      ],
+      "expected_in": [
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "file.pre_create",
+      "kind": "callback",
+      "slot": 5,
+      "implementation": "driver/file_filter.c::MsMonPreCreate",
+      "event_types": [
+        "file_create"
+      ],
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "file.post_create",
+      "kind": "callback",
+      "slot": 6,
+      "implementation": "driver/file_filter.c::MsMonPostCreate",
+      "event_types": [
+        "file_create"
+      ],
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "file.pre_op",
+      "kind": "callback",
+      "slot": 7,
+      "implementation": "driver/file_filter.c::MsMonPreOperation",
+      "event_types": [
+        "file_read",
+        "file_write"
+      ],
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "file.post_op",
+      "kind": "callback",
+      "slot": 8,
+      "implementation": "driver/file_filter.c::MsMonPostOperation",
+      "event_types": [
+        "file_read",
+        "file_write"
+      ],
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registry.callback",
+      "kind": "callback",
+      "slot": 9,
+      "implementation": "driver/registry.c::MsMonRegistryCallback",
+      "event_types": [
+        "registry_open",
+        "registry_query"
+      ],
+      "expected_in": [
+        "registry",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "wfp.classify",
+      "kind": "callback",
+      "slot": 10,
+      "implementation": "driver/network.c::MsMonWfpClassify",
+      "event_types": [
+        "network_connect",
+        "network_accept"
+      ],
+      "expected_in": [
+        "network",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "wfp.notify",
+      "kind": "callback",
+      "slot": 11,
+      "implementation": "driver/network.c::MsMonWfpNotify",
+      "event_types": [],
+      "expected_in": [
+        "network",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "blackcat.check",
+      "kind": "callback",
+      "slot": 12,
+      "implementation": "driver/attribution.c::MsMonCurrentIsBlackCat",
+      "event_types": [],
+      "expected_in": [
+        "gameplay"
+      ],
+      "status": "active",
+      "linux": "linux.ebpf_wineserver: winedevice.exe records (driver loads, devices, IRPs, work inside an IRP) carry component=<driver>.sys and attribution=brokered_winedevice (service_correlated)"
+    },
+    {
+      "sensor_id": "ioctl.dispatch",
+      "kind": "callback",
+      "slot": 13,
+      "implementation": "driver/driver.c::MsMonDeviceControl",
+      "event_types": [],
+      "expected_in": [
+        "startup",
+        "shutdown"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.fanotify",
+      "kind": "callback",
+      "slot": 40,
+      "implementation": "agent/linux/fanotify.cpp::FanotifyRun",
+      "event_types": [
+        "file_create",
+        "file_read",
+        "file_write",
+        "file_close",
+        "file_set_information"
+      ],
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.proc_connector",
+      "kind": "callback",
+      "slot": 41,
+      "implementation": "agent/linux/proc_connector.cpp::ProcConnectorRun",
+      "event_types": [
+        "process_start",
+        "process_exit"
+      ],
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.maps_poll",
+      "kind": "callback",
+      "slot": 42,
+      "implementation": "agent/linux/images.cpp::ImagesScan (image_unload;source=maps_poll: an image a poll no longer lists)",
+      "event_types": [
+        "image_load",
+        "etw_wmi",
+        "file_section"
+      ],
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.net_poll",
+      "kind": "callback",
+      "slot": 43,
+      "implementation": "agent/linux/net.cpp::NetPoll",
+      "event_types": [
+        "network_connect",
+        "network_accept",
+        "network_flow_close"
+      ],
+      "expected_in": [
+        "network",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.ebpf_process",
+      "kind": "callback",
+      "slot": 48,
+      "implementation": "agent/linux/bpf/monitor.bpf.c::mm_fork,mm_exec,mm_exit,mm_mmap_file,mm_file_mprotect (exit codes; the whole environment at exec, process_environment; a Wine loader exec'd in a directory under a root joins at once; kfilterctl launch's child joins at its first exec, scope=kfilter_launch:, its wrapper in scope until Wine's exec; the sign-in hand-off winebrowser.exe forks followed to native depth max(--native-depth, 8); a process kfilter decides for joins as a native helper when it runs a native program, never again once dropped past the depth)",
+      "event_types": [
+        "process_start",
+        "process_exit",
+        "thread_start",
+        "thread_exit",
+        "coverage"
+      ],
+      "expected_in": [
+        "startup",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.ebpf_file",
+      "kind": "callback",
+      "slot": 49,
+      "implementation": "agent/linux/bpf/monitor.bpf.c::mm_sys_enter,mm_sys_exit; agent/linux/bpf/kev.bpf.h::mm_uring_*,mm_kev_signal,mm_kev_umip,mm_seccomp_* (io_uring and AIO operations via=, system:<trapped instruction>, calls stopped by seccomp or syscall user dispatch as system:seccomp:/dispatch:<call>; a native helper's opens and renames as records, its reads, writes, sends and receives as kernel summaries per inode and its type (ino=, inode_type=) with a first record a second, native_io=sampled)",
+      "event_types": [
+        "file_create",
+        "file_read",
+        "file_write",
+        "file_close",
+        "file_set_information",
+        "file_set_security",
+        "file_query_information",
+        "file_directory_control",
+        "file_set_ea",
+        "file_query_ea",
+        "coverage"
+      ],
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.ebpf_net",
+      "kind": "callback",
+      "slot": 50,
+      "implementation": "agent/linux/bpf/monitor.bpf.c::mm_sys_enter,mm_sys_exit,mm_sock_*,mm_tcp_*,mm_skb_*",
+      "event_types": [
+        "network_connect",
+        "network_accept",
+        "network_flow_established",
+        "network_flow_close",
+        "file_read",
+        "file_write",
+        "etw_dns",
+        "etw_tcp"
+      ],
+      "expected_in": [
+        "network",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.ebpf_ipc",
+      "kind": "callback",
+      "slot": 51,
+      "implementation": "agent/linux/bpf/monitor.bpf.c::mm_sys_enter,mm_sys_exit; agent/linux/bpf/unix.bpf.h::unix_head (X11, D-Bus and PulseAudio requests and messages: a sampled request's etw_rpc record and per-op kernel summaries, coverage x11_display); agent/linux/bpf/kev.bpf.h::mm_kev_signal (signal_received)",
+      "event_types": [
+        "network_connect",
+        "network_accept",
+        "process_handle",
+        "etw_rpc",
+        "coverage"
+      ],
+      "expected_in": [
+        "ipc",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.ebpf_device",
+      "kind": "callback",
+      "slot": 52,
+      "implementation": "agent/linux/bpf/monitor.bpf.c::mm_sys_enter,mm_sys_exit (arg_bytes= of a DRM or socket ioctl with --log-content)",
+      "event_types": [
+        "file_device_control"
+      ],
+      "expected_in": [
+        "file_io",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.ebpf_memory",
+      "kind": "callback",
+      "slot": 53,
+      "implementation": "agent/linux/bpf/monitor.bpf.c::mm_sys_exit,mm_mmap_file,mm_file_mprotect,mm_ptrace,mm_kill,mm_bpf,mm_perf; agent/linux/bpf/kev.bpf.h::mm_kev_signal,mm_kev_outside,mm_kev_capable,mm_kev_module,mm_kev_cred,mm_fault_user (self_signal signal:<name>, outside_access, capability, module_request, cred_change, page_fault via= with --page-faults); anonymous PE images (anon_pe:); agent/linux/watch.cpp with agent/linux/bpf/watch.bpf.c::mm_watch_hit,mm_watch_ptrace (watch_* records with --watch)",
+      "event_types": [
+        "file_section",
+        "process_handle",
+        "image_load",
+        "file_read",
+        "file_write"
+      ],
+      "expected_in": [
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "linux.ebpf_wineserver",
+      "kind": "callback",
+      "slot": 60,
+      "implementation": "agent/linux/bpf/ws.bpf.h::mm_ws_enter,mm_ws_exit; agent/linux/wineserver.cpp::WsDecoder",
+      "event_types": [
+        "registry_open",
+        "registry_create",
+        "registry_set_value",
+        "registry_delete",
+        "registry_rename",
+        "registry_query",
+        "registry_enumerate",
+        "process_handle",
+        "thread_handle",
+        "file_create",
+        "file_section",
+        "file_query_volume_information",
+        "file_query_information",
+        "network_connect",
+        "network_accept",
+        "file_read",
+        "file_write",
+        "file_system_control",
+        "file_close",
+        "file_flush",
+        "file_device_control",
+        "etw_rpc",
+        "etw_wmi",
+        "etw_code_integrity",
+        "coverage"
+      ],
+      "expected_in": [
+        "registry",
+        "startup",
+        "gameplay",
+        "rpc",
+        "wmi",
+        "ipc"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.process.notify",
+      "kind": "registration",
+      "slot": 20,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.thread.notify",
+      "kind": "registration",
+      "slot": 21,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.image.notify",
+      "kind": "registration",
+      "slot": 22,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.object.process",
+      "kind": "registration",
+      "slot": 23,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.object.thread",
+      "kind": "registration",
+      "slot": 24,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.filter.register",
+      "kind": "registration",
+      "slot": 25,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.filter.start",
+      "kind": "registration",
+      "slot": 26,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.registry.callback",
+      "kind": "registration",
+      "slot": 27,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.wfp.callout0",
+      "kind": "registration",
+      "slot": 28,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.wfp.callout1",
+      "kind": "registration",
+      "slot": 29,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.wfp.callout2",
+      "kind": "registration",
+      "slot": 30,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.wfp.callout3",
+      "kind": "registration",
+      "slot": 31,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.wfp.callout4",
+      "kind": "registration",
+      "slot": 32,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.wfp.callout5",
+      "kind": "registration",
+      "slot": 33,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.wfp.engine",
+      "kind": "registration",
+      "slot": 34,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.attribution",
+      "kind": "registration",
+      "slot": 38,
+      "implementation": "driver registration call",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.fanotify",
+      "kind": "registration",
+      "slot": 44,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.proc_connector",
+      "kind": "registration",
+      "slot": 45,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.maps_poll",
+      "kind": "registration",
+      "slot": 46,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.net_poll",
+      "kind": "registration",
+      "slot": 47,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.ebpf_process",
+      "kind": "registration",
+      "slot": 54,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.ebpf_file",
+      "kind": "registration",
+      "slot": 55,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.ebpf_net",
+      "kind": "registration",
+      "slot": 56,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.ebpf_ipc",
+      "kind": "registration",
+      "slot": 57,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.ebpf_device",
+      "kind": "registration",
+      "slot": 58,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.ebpf_memory",
+      "kind": "registration",
+      "slot": 59,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "registration.linux.ebpf_wineserver",
+      "kind": "registration",
+      "slot": 61,
+      "implementation": "agent/linux/session.cpp::LinuxSession::Start",
+      "expected_in": [
+        "startup"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "etw.wmi",
+      "kind": "agent",
+      "provider": "wmi",
+      "implementation": "agent/etw.cpp",
+      "expected_in": [
+        "wmi",
+        "gameplay"
+      ],
+      "status": "active",
+      "linux": "linux.ebpf_wineserver (WMI COM activation by CLSID key), linux.maps_poll (wbemprox/wbemdisp/wmiutils/fastprox loads) and the uprobes group (query:<class> with the WQL of each IWbemServices::ExecQuery in wbemprox.dll)"
+    },
+    {
+      "sensor_id": "etw.dns",
+      "kind": "agent",
+      "provider": "dns",
+      "implementation": "agent/etw.cpp",
+      "expected_in": [
+        "dns",
+        "gameplay"
+      ],
+      "status": "active"
+    },
+    {
+      "sensor_id": "etw.rpc",
+      "kind": "agent",
+      "provider": "rpc",
+      "implementation": "agent/etw.cpp",
+      "expected_in": [
+        "rpc",
+        "gameplay"
+      ],
+      "status": "active",
+      "linux": "linux.ebpf_wineserver: DCE/RPC bind and request PDUs on Wine ncacn_np/ncalrpc pipes (wineserver read/write, FSCTL_PIPE_TRANSCEIVE): endpoint, interface UUID and name, opnum; response status only when the read completes at once"
+    },
+    {
+      "sensor_id": "etw.codeintegrity",
+      "kind": "agent",
+      "provider": "codeintegrity",
+      "implementation": "agent/etw.cpp",
+      "expected_in": [],
+      "status": "active",
+      "linux": "N/A (no WDAC under Wine); linux.ebpf_wineserver records winedevice.exe driver image loads as etw_code_integrity decision=not_enforced"
+    },
+    {
+      "sensor_id": "blind_spot.per_page_mmap",
+      "kind": "blind_spot",
+      "implementation": "section acquire only; no page-fault callbacks",
+      "expected_in": [],
+      "status": "blind_spot"
+    },
+    {
+      "sensor_id": "blind_spot.memory_ops",
+      "kind": "blind_spot",
+      "implementation": "no process-memory/APC/remote-thread callbacks",
+      "expected_in": [],
+      "status": "blind_spot",
+      "linux": "linux.ebpf_memory and linux.ebpf_wineserver: ptrace, process_vm_readv/writev (remote address), read/write_process_memory and pid-taking calls keep a record per distinct target and address (repeat collapsing only of identical calls); wineserver get/set_thread_context (debug registers), suspend/resume, terminate, queue_apc (remote alloc/protect/query/map/create_thread) and get_apc_result as process_handle/thread_handle; wineserver's own syscalls name the client served (served_pid, attribution=brokered_wineserver)"
+    },
+    {
+      "sensor_id": "blind_spot.ui_clipboard_input",
+      "kind": "blind_spot",
+      "implementation": "no UI/clipboard/input sensor",
+      "expected_in": [],
+      "status": "blind_spot",
+      "linux": "linux.ebpf_wineserver: system:set_hook, send_hardware_message (injected input each; the user's own keys and mouse moves as a summary per type a second with its first recorded, keys withheld without --log-real-input), send_message and get_message (window messages sent and received), get_key_state, set_key_state, register_hotkey, attach_thread_input, set_cursor (moves and clips each, shape changes per second), get_rawinput_buffer, update_rawinput_devices, get/set_clipboard_data (format and size, no contents), clipboard listeners; the uprobes group: system:NtUserXxx/NtGdiXxx of win32u.so (GetAsyncKeyState, GetKeyState, GetCursorPos, GetForegroundWindow, window lists and texts, FindWindow, clipboard reads, raw input, hooks, SendInput, GetDC, BitBlt/StretchBlt/GetPixel/GetDIBits, display enumeration), one record per process, function and key argument a second"
+    },
+    {
+      "sensor_id": "blind_spot.broker_com",
+      "kind": "blind_spot",
+      "implementation": "no broker/COM/DPAPI correlation",
+      "expected_in": [],
+      "status": "blind_spot"
+    },
+    {
+      "sensor_id": "blind_spot.tls_plaintext",
+      "kind": "blind_spot",
+      "implementation": "no TLS plaintext",
+      "expected_in": [],
+      "status": "blind_spot",
+      "linux": "the uprobes group: GnuTLS record send/receive (Wine's schannel: WinHTTP, WinINet, SSPI) as tls_plaintext payloads on tls:session=<session> file_write/file_read; TLS inside PE code (OpenSSL/BoringSSL DLLs, CEF) and game crypto stay ciphertext"
+    },
+    {
+      "sensor_id": "blind_spot.direct_hardware",
+      "kind": "blind_spot",
+      "implementation": "no direct firmware/port/MSR sensor",
+      "expected_in": [],
+      "status": "blind_spot"
+    }
+  ]
+}

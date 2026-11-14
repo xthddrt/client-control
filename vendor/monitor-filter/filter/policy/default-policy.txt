@@ -1,0 +1,273 @@
+# kfilter default policy: strict, relaxed one fatal block at a time
+#
+# 2026-10-31. Nothing the client does is allowed unless a rule below allows it:
+# default-deny is on, there are no standing allow rules, and default-deny also
+# turns off every built-in allowance (child processes from the client folder)
+# and filters outside processes opening the client (csrss, the launcher, the
+# elevation broker, the anti-cheat service...), which keep no access right a
+# handle rule does not grant. Everything is logged: every allow (with the rule
+# that allowed it) and every deny.
+#
+# Relaxations are counted rules, added one per run for the block that stopped
+# the client, each for one exact object and exact rights:
+#
+#   allow|<target>|<exact path>|rights=...|uses=N[|phase=P][|opens]
+#
+#   uses=N   the rule allows N requests per Play, in any order; the count is
+#            restored when the launch pass is armed (kfilterctl allow-launch).
+#            A request that repeats is measured once (an audit rule allows and
+#            records it), then tried at N-1 (must fail) and N (must pass).
+#   phase=P  the rule works only once phase P is open (phase 1 is open at the
+#            start); a rule marked `opens` opens the next phase on its first
+#            use. Used where a run shows a reliable order.
+#
+# A denial of a request that a counted rule matched, after its uses were spent
+# or before its phase opened, carries the EXHAUSTED flag and that rule's ID.
+#
+# Not covered by kfilter (outside its reach, by design of Windows): DLLs mapped
+# from \KnownDlls and ntdll (no file open by the client), work other processes
+# do on their own (csrss reading manifests, services the client calls over
+# ALPC/RPC), and the kernel. Network: the client's own connections, listens
+# and accepts are filtered (with loopback); DNS lookups are made by the DNS
+# service on its behalf and are not.
+
+mode audit
+
+# The application the policy applies to: every Nexon program (the launcher under
+# C:\Program Files (x86)\Nexon\Nexon Launcher, its Electron UI, agent and runtime; NGService
+# from C:\ProgramData\Nexon\NGS and the game's grap folder; the game and its parts). Names are
+# matched against the tail of the image path, case-insensitively; children inherit protection.
+# The launcher programs were added on 2026-11-08 (unverified on Windows): like the game, in
+# block mode each needs its relaxations, found one fatal block at a time as below.
+protect \nexon_launcher.exe
+protect \nexon_client.exe
+protect \nexon_agent.exe
+protect \nexon_runtime.exe
+protect \MapleStory.exe
+protect \DwarfAxe.exe
+protect \CrashReportClient.exe
+protect \NGService.exe
+protect \grap-core64.aes
+protect \grap-updater.aes
+protect \grap-communicator64.aes
+
+default-deny on
+block-files on
+block-registry on
+block-volume-serial on
+block-process-memory on
+block-process-create on
+block-raw-disk on
+block-network on
+block-network-adapter on
+network-default deny
+network-loopback off
+
+# ---------------------------------------------------------------------------
+# Identity: never relaxed (owner, 2026-10-31). Deny rules come before every relaxation and
+# the first matching rule decides, so no allow below can open these.
+# ---------------------------------------------------------------------------
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Cryptography|value=MachineGuid
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Control\ComputerName
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Services\Tcpip\Parameters|value=*Hostname
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Services\Tcpip\Parameters|value=*Domain*
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Services\Tcpip\Parameters\Interfaces
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Services\Tcpip6\Parameters\Interfaces
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Control\Class\{4d36e972-e325-11ce-bfc1-08002be10318}
+deny|registry|\REGISTRY\MACHINE\HARDWARE\DESCRIPTION
+deny|registry|\REGISTRY\MACHINE\HARDWARE\ACPI
+deny|registry|\REGISTRY\MACHINE\HARDWARE\DEVICEMAP
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Enum
+deny|registry|\REGISTRY\MACHINE\SYSTEM\MountedDevices
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Control\IDConfigDB
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Control\SystemInformation
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=ProductId
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=DigitalProductId*
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=Install*
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=Registered*
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon|value=DefaultUserName
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon|value=DefaultDomainName
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate|value=SusClientId*
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack
+deny|registry|\REGISTRY\USER\*\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\SQMClient
+deny|registry|\REGISTRY\USER\S-1-5-21-3269302126-3588241254-1089387560-1001\Volatile Environment
+deny|registry|\REGISTRY\USER\S-1-5-21-3269302126-3588241254-1089387560-1001\Software\Microsoft\IdentityCRL
+deny|registry|\REGISTRY\USER\S-1-5-21-3269302126-3588241254-1089387560-1001\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders
+deny|registry|\REGISTRY\USER\S-1-5-21-3269302126-3588241254-1089387560-1001\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders
+deny|registry|\REGISTRY\USER\*\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2
+deny|registry|\REGISTRY\USER\*\Software\Valve
+deny|registry|\REGISTRY\USER\*\Software\Blizzard Entertainment
+deny|registry|\REGISTRY\USER\*\Software\Battle.net
+deny|registry|\REGISTRY\USER\*\Software\Epic Games
+deny|registry|\REGISTRY\USER\*\Software\Riot Games
+deny|registry|\REGISTRY\USER\*\Software\Electronic Arts
+deny|registry|\REGISTRY\USER\*\Software\Ubisoft
+deny|registry|\REGISTRY\USER\*\Software\Microsoft\XboxLive
+deny|file|\Device\HarddiskVolume*\Windows\*\wbemprox.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\fastprox.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\wbemcomn.dll
+deny|file|\Device\HarddiskVolume*\Windows\*\wbemsvc.dll
+deny|volume|\Device
+deny|device|\Device
+# ---------------------------------------------------------------------------
+# Relaxations, in the order they were found.
+# ---------------------------------------------------------------------------
+
+# Z1 (zero run 1, 2026-10-31): the new game copy never runs: the launcher and csrss get no
+# access to it. Identity check: these give the launcher / csrss access INTO the game (resume
+# its thread, its memory); nothing about the machine or user reaches the game. Requested rights.
+allow|thread-handle|\Device\HarddiskVolume3\Program Files (x86)\Nexon\Nexon Launcher\bin\nexon_client\nexon_client.exe|rights=0x1FFFFF|risk=cross-process-handle|uses=1
+allow|handle|\Device\HarddiskVolume3\Program Files (x86)\Nexon\Nexon Launcher\bin\nexon_client\nexon_client.exe|rights=0x1FFFFF|risk=cross-process-handle|uses=1
+allow|handle|\Device\HarddiskVolume3\Windows\System32\csrss.exe|rights=0x1FFFFF|risk=cross-process-handle|account=system|uses=10
+allow|thread-handle|\Device\HarddiskVolume3\Windows\System32\csrss.exe|rights=0x1FFFFF|risk=cross-process-handle|account=system|uses=6
+# Z2 (zero run 2): csrss's follow-up read of the new game's memory (component context).
+# Identity check: csrss reads the game; nothing about the machine or user reaches the game.
+allow|handle|\Device\HarddiskVolume3\Windows\System32\csrss.exe|rights=vm-read|risk=cross-process-handle|account=system|uses=1
+# Z3 (zero run 3): the first copy exits (needs administrator) and Appinfo, the elevation service,
+# starts the elevated copy for the launcher; launch pass now 2 starts. Identity check: who may
+# start the game only; no data reaches the game.
+allow|launch|\Device\HarddiskVolume3\Windows\System32\svchost.exe|rights=create|account=system|uses=1
+# Z4 (zero run 4): the elevated copy, started by Appinfo, is frozen the same way: Appinfo's and
+# csrss's handles to it get nothing (csrss's Z1 rules raised to 2 uses, one per start).
+# Identity check: access INTO the game by two Windows system processes; nothing reaches the game.
+allow|thread-handle|\Device\HarddiskVolume3\Windows\System32\svchost.exe|rights=0x1FFFFF|risk=cross-process-handle|account=system|uses=1
+allow|handle|\Device\HarddiskVolume3\Windows\System32\svchost.exe|rights=0x1FFFFF|risk=cross-process-handle|account=system|uses=1
+# Z5 (zero run 5): 0xc0000142 while kernel32/KernelBase initialise; csrss's further opens of the
+# elevated copy (session 1: full, full thread, query; session 0: query+read, query) were denied:
+# csrss process rule above 2 -> 6 uses, thread rule 2 -> 3. Identity check: access INTO the game.
+# Z6 (zero run 6): 0xc0000135, startup DLLs not found; each denied at its real location.
+# Identity check: reading program code files reveals nothing (MachineIdLib.dll is the game's
+# machine-ID library: its own reads stay filtered, incl. the identity denies above).
+allow|file|\Device\HarddiskVolume3\Windows\System32\winmm.dll|rights=read|uses=1
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\WzMss.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\MachineIdLib.dll|rights=read|uses=2|risk=machine-id-library
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\WzMss.dll|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Windows\System32\winmm.dll|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\MachineIdLib.dll|rights=read,execute|uses=1|risk=machine-id-library
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\nexon_api_x64.dll|rights=read|uses=2
+# Z9 (zero run 9): 0xc0000022 right after WzMss/MachineIdLib load; the loader's read of the
+# component-store settings key was denied (earlier evidence: this key causes exactly this error).
+# Identity check: component-store settings only; no machine, network, hardware or user data.
+allow|registry|\Registry\MACHINE\Software\Microsoft\Windows\CurrentVersion\SideBySide|rights=read,enumerate|uses=16|exact
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\nexon_api_x64.dll|rights=read,execute|uses=1
+# Z11 (zero run 14): 0xc00000a5 (bad impersonation level) after rpcrt4: csrss's further handle
+# requests on the game were refused; its Z1 rules raised by the counts denied (process 6 -> 10,
+# thread 3 -> 6). Identity check: the same csrss access into the game as Z1.
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\CrashReporter.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\libcurl.dll|rights=read|uses=2
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\CrashReporter.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\libcurl.dll|rights=read,execute|uses=1
+# Z18 (zero run 18): 0xc0000022 after ole32/psapi; the loader's enumerate of the component-store
+# roots key was denied. Identity check: lists WinSxS store locations only; not identity.
+allow|registry|\Registry\Machine\Software\Microsoft\Windows\CurrentVersion\SideBySide\AssemblyStorageRoots|rights=enumerate|uses=2|exact
+# Z21 (zero run 21): 0xc0000022 after crypt32: the loader's traverse of the common-controls
+# component folder was denied. Identity check: a Windows component folder, traverse only; not identity.
+allow|dir|\Device\HarddiskVolume3\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_5.82.26100.8328_none_87eede957a2ccddd|rights=execute|uses=1|exact
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\NxOverlay_x64.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\steam_api64.dll|rights=read|uses=2
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\NxOverlay_x64.dll|rights=read,execute|uses=1
+# Z26 (zero run 26): 0xc0000022 after imm32: traverse of the gdiplus component folder denied.
+# Identity check: a Windows component folder, traverse only; not identity.
+allow|dir|\Device\HarddiskVolume3\Windows\WinSxS\amd64_microsoft.windows.gdiplus_6595b64144ccf1df_1.1.26100.9711_none_6ef2ab963dc761f3|rights=execute|uses=1|exact
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\steam_api64.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\IPHLPAPI.DLL|risk=adapter-mac|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\System32\wininet.dll|rights=read|uses=2
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\wininet.dll|rights=read,execute|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\System32\IPHLPAPI.DLL|risk=adapter-mac|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\WinSxS\amd64_microsoft.windows.gdiplus_6595b64144ccf1df_1.1.26100.9711_none_6ef2ab963dc761f3\GdiPlus.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_5.82.26100.8328_none_87eede957a2ccddd\comctl32.dll|rights=read|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\WinSxS\amd64_microsoft.windows.common-controls_6595b64144ccf1df_5.82.26100.8328_none_87eede957a2ccddd\comctl32.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\ZLZ64.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\grap64.dll|risk=anti-cheat|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\System32\pdh.dll|risk=process-list|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\WinSxS\amd64_microsoft.windows.gdiplus_6595b64144ccf1df_1.1.26100.9711_none_6ef2ab963dc761f3\GdiPlus.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\pdh.dll|risk=process-list|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\ZLZ64.dll|rights=read,execute|uses=2
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\grap64.dll|risk=anti-cheat|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Windows\System32\hid.dll|risk=device-id|rights=read|uses=2
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\tdh.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\System32\hid.dll|risk=device-id|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Windows\System32\wtsapi32.dll|risk=session-user|rights=read|uses=2
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\tdh.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\wtsapi32.dll|risk=session-user|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Windows\System32\dinput8.dll|rights=read|uses=2
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\dinput8.dll|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Windows\System32\netapi32.dll|risk=host-name|rights=read|uses=2
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\netapi32.dll|risk=host-name|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\nmcogame64.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\System32\version.dll|rights=read|uses=4
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\nmcogame64.dll|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Windows\System32\version.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\libcrypto-3-x64.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\libssl-3-x64.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\System32\bcrypt.dll|rights=read|uses=2
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\libcrypto-3-x64.dll|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\libssl-3-x64.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\bcrypt.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\vcruntime140.dll|rights=read|uses=4
+allow|file|\Device\HarddiskVolume3\Windows\System32\dxgi.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\D3DX9_43.dll|rights=read|uses=2
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\vcruntime140.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\D3DX9_43.dll|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Windows\System32\dxgi.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\sspicli.dll|risk=user-name|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\System32\powrprof.dll|rights=read|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\sspicli.dll|risk=user-name|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\netutils.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\System32\powrprof.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\netutils.dll|rights=read,execute|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\umpdc.dll|rights=read|uses=2
+allow|file|\Device\HarddiskVolume3\Windows\System32\msasn1.dll|rights=read|uses=1
+# auto (zero): DLL requests at their real location; identity: program code only.
+allow|file|\Device\HarddiskVolume3\Windows\System32\umpdc.dll|rights=read,execute|uses=1
+allow|file|\Device\HarddiskVolume3\Windows\System32\msasn1.dll|rights=read,execute|uses=1
+# Z27 (zero run 27): 0xc0000142 in the DLLs' start-up code; first candidate: Windows' opens of the
+# HKLM root key itself (full access asked, 19x). Exact: the root key object only; every key opened
+# through it is still checked by its full path. Identity check: the root key holds no data; none.
+allow|registry|\REGISTRY\MACHINE|rights=read,write,delete,rename,set-security,enumerate|uses=19|exact
+# Z28 (zero run 28): 0xc0000142: ws2_32's start-up opens its settings key with write too (0x6B).
+# Exact, requested rights, once. Identity check: protocol-catalog settings, no machine/adapter/user data;
+# write is limited to this one key (an integrity matter, not identity). Network stays blocked.
+allow|registry|\REGISTRY\MACHINE\System\CurrentControlSet\Services\WinSock2\Parameters|rights=read,write,delete,set-security,enumerate|uses=1|exact
+# Z29 (zero run 29): the same WinSock settings key under its other name (ControlSet001), same rights.
+# Identity check: as Z28; none.
+allow|registry|\REGISTRY\MACHINE\SYSTEM\ControlSet001\Services\WinSock2\Parameters|rights=read,write,delete,set-security,enumerate|uses=6|exact
+# anchor: relaxations go above this line

@@ -1,0 +1,4 @@
+{
+  "name": "wmi",
+  "sensors": ["etw.wmi", "event.etw_wmi"]
+}

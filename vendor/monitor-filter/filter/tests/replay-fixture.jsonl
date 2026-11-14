@@ -1,0 +1,6 @@
+{"type":"file_read","process_id":100,"desired_access":1,"text":"\\Device\\HarddiskVolume3\\Outside\\a.txt"}
+{"type":"registry_enumerate","process_id":100,"desired_access":9,"text":"\\REGISTRY\\MACHINE\\Key"}
+{"type":"registry_open","process_id":100,"desired_access":1,"text":"\\REGISTRY\\MACHINE\\Key"}
+{"type":"file_read","process_id":100,"desired_access":1}
+{"type":"file_read","process_id":100,"desired_access":1,"text":""}
+{"type":"registry_query","process_id":100,"desired_access":1}

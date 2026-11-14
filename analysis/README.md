@@ -39,7 +39,18 @@ Captures remain in the Git-ignored `captures/` directory. Experimental modificat
 
 ## Ordered traffic ledger
 
-`traffic-ledger.py` joins packet captures, msmon socket payloads, ptrace construction traces, and NGS proxy events into one timestamp-ordered, SHA-256-chained JSONL record. It has no source-level dependency on `monitor-filter`; it reads its documented bundle format directly.
+`traffic-ledger.py` joins packet captures, msmon socket payloads, ptrace construction traces, and NGS proxy events into one timestamp-ordered, SHA-256-chained JSONL record. The full monitor/filter implementation is vendored under `vendor/monitor-filter/`; no sibling checkout, submodule, or separately installed monitor-filter package is used.
+
+Build and test the internal sensor/filter copy:
+
+```bash
+python3 vendor/monitor-filter/monfilter.py build
+python3 vendor/monitor-filter/monfilter.py test
+```
+
+For full-family capture, run `python3 vendor/monitor-filter/monfilter.py run` (or its documented `--attach` mode) and use the resulting session below. Its root-only eBPF/kernel sensors, build prerequisites, safety limits, and real-client validation status remain those documented in `vendor/monitor-filter/README.md`; building it does not load a driver or start enforcement.
+
+Build the ordered ledger from any combination of internal-capture sources:
 
 ```bash
 python3 analysis/traffic-ledger.py build captures/traffic-ledger \

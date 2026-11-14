@@ -1,0 +1,28 @@
+<Sysmon schemaversion="4.90">
+  <HashAlgorithms>sha256</HashAlgorithms>
+  <EventFiltering>
+    <RuleGroup name="client-processes" groupRelation="or">
+      <ProcessCreate onmatch="include">
+        <Image condition="begin with">C:\Nexon\Library\maplestorycw\</Image>
+      </ProcessCreate>
+      <ProcessTerminate onmatch="include">
+        <Image condition="begin with">C:\Nexon\Library\maplestorycw\</Image>
+      </ProcessTerminate>
+      <ProcessAccess onmatch="include">
+        <SourceImage condition="begin with">C:\Nexon\Library\maplestorycw\</SourceImage>
+      </ProcessAccess>
+      <NetworkConnect onmatch="include">
+        <Image condition="begin with">C:\Nexon\Library\maplestorycw\</Image>
+      </NetworkConnect>
+      <DnsQuery onmatch="include">
+        <Image condition="begin with">C:\Nexon\Library\maplestorycw\</Image>
+      </DnsQuery>
+      <FileCreate onmatch="include">
+        <Image condition="begin with">C:\Nexon\Library\maplestorycw\</Image>
+      </FileCreate>
+      <RegistryEvent onmatch="include">
+        <Image condition="begin with">C:\Nexon\Library\maplestorycw\</Image>
+      </RegistryEvent>
+    </RuleGroup>
+  </EventFiltering>
+</Sysmon>

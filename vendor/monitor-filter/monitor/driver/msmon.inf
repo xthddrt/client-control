@@ -1,0 +1,47 @@
+[Version]
+Signature="$WINDOWS NT$"
+Class=System
+ClassGuid={4D36E97D-E325-11CE-BFC1-08002BE10318}
+Provider=%Provider%
+DriverVer=10/27/2026,1.0.0.0
+CatalogFile=msmon.cat
+PnpLockdown=1
+
+[SourceDisksNames]
+1="ms-monitor driver",,,
+
+[SourceDisksFiles]
+msmon.sys=1
+
+[DestinationDirs]
+DefaultDestDir=12
+
+[DefaultInstall.NTamd64]
+CopyFiles=DriverFiles
+
+[DefaultInstall.NTamd64.Services]
+AddService=msmon,0x00000002,Service,Minifilter
+
+[DriverFiles]
+msmon.sys
+
+[Service]
+DisplayName=%ServiceName%
+ServiceType=2
+StartType=3
+ErrorControl=1
+ServiceBinary=%12%\msmon.sys
+Dependencies=FltMgr
+LoadOrderGroup="FSFilter Activity Monitor"
+
+[Minifilter]
+AddReg=MinifilterRegistry
+
+[MinifilterRegistry]
+HKR,"Instances","DefaultInstance",0x00000000,"msmon"
+HKR,"Instances\msmon","Altitude",0x00000000,"370030"
+HKR,"Instances\msmon","Flags",0x00010001,0x00000000
+
+[Strings]
+Provider="ms-monitor"
+ServiceName="MapleStory application telemetry monitor"

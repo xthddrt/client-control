@@ -1,0 +1,30 @@
+# Device routes are deny-by-default for protected processes. Every allow below is
+# exact, counted and risk-bearing. Merge reviewed rows above this deny and above
+# the broad device deny in the main policy. First match wins, and each row spends
+# one use, so keep the counts in step with the requests the client really makes.
+#
+# A control row (value=0x........) covers only that control. Opening the device is
+# itself decided, with value=0x00000000, so a device needs the open row as well as
+# its control row; a control row alone leaves the open denied.
+#
+# Device paths are the canonical ObQueryNameString name the driver logs in the
+# event, never a \GLOBAL??\ScsiN: link: ScsiN: resolves to \Device\RaidPortN on
+# storport or to \Device\Scsi\PortN on scsiport. Copy the path from the denial
+# event or from `kfilterctl watch`; {adapter-GUID} and HID#device-instance are
+# placeholders for the same reason.
+#
+# allow|device|\Device\MountPointManager|value=0x00000000|uses=1|risk=mount-point-open
+# allow|device|\Device\MountPointManager|value=0x006D0008|uses=1|risk=volume-ids
+# allow|device|\Device\RaidPort0|value=0x00000000|uses=1|risk=storage-adapter-open
+# allow|device|\Device\RaidPort0|value=0x0004100C|uses=1|risk=storage-adapter-data
+# allow|device|\Device\{adapter-GUID}|value=0x00000000|uses=1|risk=adapter-open
+# allow|device|\Device\{adapter-GUID}|value=0x00170002|uses=1|risk=adapter-mac
+# allow|device|\Device\HID#device-instance|uses=1|risk=hid-device-id
+deny|device|\Device
+
+# Risk-bearing replacements for the two MachineIdLib lines in the main policy.
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\MachineIdLib.dll|rights=read|uses=2|risk=machine-id-library
+allow|file|\Device\HarddiskVolume3\Nexon\Library\maplestorycw\appdata\MachineIdLib.dll|rights=read,execute|uses=1|risk=machine-id-library
+
+# Flag only; kfilter cannot block or track these channels:
+# SMBIOS firmware tables, the machine SID in the process token, and CPUID.

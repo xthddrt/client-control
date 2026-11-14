@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "msc-outside-monitor coverage v1",
+  "type": "object",
+  "required": ["schema_version", "session_uuid", "driver_supported", "driver", "agent"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "session_uuid": {"type": "string"},
+    "driver_supported": {"type": "boolean"},
+    "driver": {
+      "type": "object",
+      "required": ["event_attempted", "event_dropped", "sensor_entered", "sensor_logged", "registration_status"],
+      "properties": {
+        "event_attempted": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+        "event_dropped": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+        "sensor_entered": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+        "sensor_logged": {"type": "array", "items": {"type": "integer", "minimum": 0}},
+        "registration_status": {"type": "array", "items": {"type": "integer"}},
+        "payload_captured": {"type": "array", "items": {"type": "integer", "minimum": 0}}
+      },
+      "additionalProperties": true
+    },
+    "agent": {
+      "type": "object",
+      "required": ["writer_parts", "writer_bytes", "etw_queue_drops"],
+      "properties": {
+        "writer_parts": {"type": "integer", "minimum": 0},
+        "writer_bytes": {"type": "integer", "minimum": 0},
+        "etw_queue_drops": {"type": "integer", "minimum": 0},
+        "etw_providers": {"type": "array"}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

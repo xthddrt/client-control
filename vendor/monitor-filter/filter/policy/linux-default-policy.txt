@@ -1,0 +1,477 @@
+# kfilter default policy for Linux (kfilterd). The client is a Windows program run under
+# Wine. kfilter names each Wine process by its Windows image (MapleStory.exe, not the Wine
+# loader) and decides what the program does even when Wine does it for it: wineserver's
+# file opens, socket connects, memory reads and signals for the program, winedevice's
+# answers to its device requests, and its registry requests, are decided as the program's
+# own and logged with the `brokered` flag (see docs/LINUX.md).
+#
+# Every layer Linux enforces is on, as in the Windows default policy: strict mode
+# (default-deny: nothing without an allow rule), files and their metadata queries, registry,
+# volume identity, network adapters, process creation, process memory, raw disk and network.
+# The Linux-only rule-only layers (peer, thread-peer, system, dns, thread, /anon files and
+# pipes, message) decide only what a rule names: here they are audited, and denied only where
+# runs showed Wine and the client do not need them. Start in audit mode, run
+# a full client session, review `kfilterctl watch`, add allow rules for what the client needs
+# (Wine's own files, the prefix, the endpoints it uses), then switch with `kfilterctl on`.
+# Switched on unreviewed, block mode stops the client. First match wins.
+#
+# Relaxations are counted where a run shows a fixed need (see policy/default-policy.txt):
+#   allow|<target>|<exact path>|rights=...|uses=N[|phase=P][|opens][|image=<program>]
+# and a deny can be limited the same way (`deny ... |uses=1` refuses the first request
+# only). `image=` scopes any rule to one program: `image=grap-core64.aes`.
+#
+# Paths: Linux paths are case-sensitive and start with '/'; registry keys are NT names
+# (\REGISTRY\MACHINE\..., any case); `*` is the only wildcard. kfilter names the opened file
+# (symlinks resolved: /sys/class/net/* is /sys/devices/.../net/*), pseudo files /anon/<name>,
+# and /proc/<pid> by whose process it is: /proc/@self, @family, @wine or @outside.
+# `hide` on a deny makes its refusals look like a missing file (ENOENT).
+#
+# Placeholders: `monfilter.py run` replaces /@HOME@ with the user's home and /@WINEPREFIX@
+# with the Wine prefix (default ~/.wine-nexon) before loading the policy. Loaded unfilled
+# (kfilterctl policy on this file), those rules match nothing: their allows do not apply
+# (more is refused, never less) and the launch root admits nothing.
+
+mode audit
+# The launch entry (`monfilter.py run` starts it under `kfilterctl launch`; --entry replaces
+# this line with its own program): the user's start script, which runs `wine start`.
+root /@HOME@/.local/bin/nexon-launcher
+# The Windows programs to protect: every Nexon program (launcher, its Electron UI, agent and
+# runtime, the NGS service, the game and its anti-cheat parts), matched on their Windows image
+# (any case) wherever they are started: through `kfilterctl launch` or from the Nexon
+# launcher. Their children inherit protection. In block mode with block-process-create, one
+# started outside a launch is admitted only through the launch pass:
+# `kfilterctl allow-launch nexon_client.exe`.
+protect nexon_launcher.exe
+protect nexon_client.exe
+protect nexon_agent.exe
+protect nexon_runtime.exe
+protect NGService.exe
+protect MapleStory.exe
+protect DwarfAxe.exe
+protect CrashReportClient.exe
+protect grap-core64.aes
+protect grap-updater.aes
+protect grap-communicator64.aes
+
+default-deny on
+block-files on
+# stat, access, readlink, xattrs and change watches (the denies below then also hide that a
+# file exists; every allow also allows its metadata, and the directories above it are allowed
+# `query` implicitly).
+block-file-queries on
+block-registry on
+block-volume-serial on
+block-network-adapter on
+block-process-create on
+block-process-memory on
+block-raw-disk on
+# No endpoint addresses have been reviewed: every connection is denied (would-deny
+# in audit mode) until per-address allow rules are added (one host, port, tcp|udp,
+# rights=connect, uses=N, risk=).
+block-network on
+network-default deny
+network-loopback off
+# Off: decisions on requests a Windows program makes with its own `syscall` instruction carry
+# the `direct` flag either way; `on` refuses them all (Wine itself never makes one).
+block-direct-syscall off
+
+# ---- Never relaxed: identity, ahead of every allow ----
+
+# Registry (from policy/default-policy.txt; Wine's user SID is S-1-5-21-0-0-0-<uid>).
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Cryptography|value=MachineGuid
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Control\ComputerName
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Services\Tcpip\Parameters|value=*Hostname
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Services\Tcpip\Parameters|value=*Domain*
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Services\Tcpip\Parameters\Interfaces
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Services\Tcpip6\Parameters\Interfaces
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkList
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Control\Class\{4d36e972-e325-11ce-bfc1-08002be10318}
+deny|registry|\REGISTRY\MACHINE\HARDWARE\DESCRIPTION
+deny|registry|\REGISTRY\MACHINE\HARDWARE\ACPI
+deny|registry|\REGISTRY\MACHINE\HARDWARE\DEVICEMAP
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Enum
+deny|registry|\REGISTRY\MACHINE\SYSTEM\MountedDevices
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Control\IDConfigDB
+deny|registry|\REGISTRY\MACHINE\SYSTEM\*ControlSet*\Control\SystemInformation
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=ProductId
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=DigitalProductId*
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=Install*
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion|value=Registered*
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon|value=DefaultUserName
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon|value=DefaultDomainName
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate|value=SusClientId*
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack
+deny|registry|\REGISTRY\USER\*\Software\Microsoft\Windows\CurrentVersion\Diagnostics\DiagTrack
+deny|registry|\REGISTRY\MACHINE\SOFTWARE\Microsoft\SQMClient
+deny|registry|\REGISTRY\USER\*\Volatile Environment
+deny|registry|\REGISTRY\USER\*\Software\Microsoft\IdentityCRL
+deny|registry|\REGISTRY\USER\*\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders
+deny|registry|\REGISTRY\USER\*\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders
+deny|registry|\REGISTRY\USER\*\Software\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2
+deny|registry|\REGISTRY\USER\*\Software\Valve
+deny|registry|\REGISTRY\USER\*\Software\Blizzard Entertainment
+deny|registry|\REGISTRY\USER\*\Software\Battle.net
+deny|registry|\REGISTRY\USER\*\Software\Epic Games
+deny|registry|\REGISTRY\USER\*\Software\Riot Games
+deny|registry|\REGISTRY\USER\*\Software\Electronic Arts
+deny|registry|\REGISTRY\USER\*\Software\Ubisoft
+deny|registry|\REGISTRY\USER\*\Software\Microsoft\XboxLive
+
+# Machine, host and hardware identity files.
+deny|file|/etc/machine-id
+deny|file|/var/lib/dbus/machine-id
+deny|file|/etc/hostid
+deny|file|/etc/hostname
+deny|file|/etc/machine-info
+deny|file|/etc/ssh
+deny|file|/proc/sys/kernel/hostname
+deny|file|/proc/sys/kernel/domainname
+deny|file|/proc/sys/kernel/random/boot_id
+deny|file|/proc/cmdline
+deny|dir|/sys/devices/virtual/dmi
+deny|file|/sys/devices/virtual/dmi
+deny|file|/sys/firmware/dmi
+deny|file|/sys/firmware/acpi/tables
+deny|file|/sys/devices/*/net/*/address
+deny|file|/sys/block/*/device/serial
+deny|file|/sys/block/*/device/wwid
+deny|file|/sys/devices/*/serial
+deny|file|/sys/devices/*/wwid
+deny|file|/sys/devices/*/uuid
+deny|file|/sys/devices/*/eui
+deny|file|/sys/devices/*/serial_number
+# Monitor EDID (serial, model, make); winex11 falls back without it.
+deny|file|/sys/devices/*/edid|hide
+deny|dir|/dev/disk/by-id
+deny|dir|/dev/disk/by-uuid
+deny|dir|/dev/disk/by-partuuid
+deny|file|/run/udev/data
+deny|dir|/run/udev/data
+deny|file|/var/lib/NetworkManager
+deny|file|/etc/NetworkManager/system-connections
+audit|file|/proc/cpuinfo
+# The kernel, its modules, its build-id and the monitors (BPF LSM, BTF, pinned maps, tracing): not found.
+deny|file|/proc/kallsyms|hide
+deny|file|/proc/modules|hide
+deny|file|/proc/version|hide
+deny|file|/proc/sys/kernel/osrelease|hide
+deny|file|/proc/sys/kernel/version|hide
+deny|dir|/sys/kernel/security|hide
+deny|file|/sys/kernel/security|hide
+deny|dir|/sys/fs/bpf|hide
+deny|dir|/sys/kernel/debug|hide
+deny|file|/sys/module|hide
+deny|dir|/sys/module|hide
+deny|file|/sys/kernel/btf|hide
+deny|dir|/sys/kernel/btf|hide
+deny|file|/sys/kernel/notes|hide
+# Other users' and other programs' processes: not found (Wine then reports their memory
+# counters as 0). The program's own and the family's /proc entries are allowed below.
+deny|file|/proc/@outside|hide
+deny|dir|/proc/@outside|hide
+# The gateway's MAC (ARP table), IPv6 interface ids and Wi-Fi state: open('/proc/net/arp') is
+# /proc/<pid>/net/arp. Wine's GetIpNetTable is then empty and adapters lack IPv6 addresses. These
+# /proc/*/net rules follow the hide above, so another program's tables still read as not found.
+deny|file|/proc/*/net/arp
+deny|file|/proc/*/net/if_inet6
+deny|file|/proc/*/net/wireless
+audit|file|/proc/*/net/route
+# Every socket and address of the host (unix names kfilter's own /run/kfilter.sock), allowed below as
+# the program's own /proc: Wine's TCP and UDP tables and IP statistics are then empty. Not net/dev: the
+# game reads it around each channel change (the block loop's results).
+deny|file|/proc/*/net/tcp
+deny|file|/proc/*/net/tcp6
+deny|file|/proc/*/net/udp
+deny|file|/proc/*/net/udp6
+deny|file|/proc/*/net/unix
+deny|file|/proc/*/net/fib_trie
+deny|file|/proc/*/net/packet
+deny|file|/proc/*/net/netlink
+deny|file|/proc/*/net/snmp
+deny|file|/proc/*/net/snmp6
+# Physical memory, I/O ports and CPU registers (MSRs, CPUID).
+deny|file|/dev/mem
+deny|file|/dev/kmem
+deny|file|/dev/port
+deny|file|/dev/cpu/*/msr
+deny|file|/dev/cpu/*/cpuid
+# The volume serial Wine reports for drive C: (block-volume-serial covers the filesystem's
+# own UUID and label).
+deny|file|/home/*/.wine*/drive_c/.windows-serial
+deny|file|/home/*/.wine*/drive_c/.windows-label
+
+# Windows inventory tools under Wine: the program they run is the PE image Wine loads, so
+# they are refused as file reads (CreateProcess of them fails), whatever the loader is.
+# `*` spans directories: this covers /opt/wine-*/lib/wine and distro Wine under /usr/lib*.
+deny|file|/*/wine/*-windows/route.exe
+deny|file|/*/wine/*-windows/wmic.exe
+deny|file|/*/wine/*-windows/ipconfig.exe
+deny|file|/*/wine/*-windows/netsh.exe
+deny|file|/*/wine/*-windows/systeminfo.exe
+deny|file|/*/wine/*-windows/tasklist.exe
+deny|file|/*/wine/*-windows/getmac.exe
+deny|file|/*/wine/*-windows/arp.exe
+deny|file|/*/wine/*-windows/nbtstat.exe
+deny|file|/*/wine/*-windows/hostname.exe
+deny|file|/*/wine/*-windows/whoami.exe
+deny|file|/*/wine/*-windows/reg.exe
+deny|file|/*/wine/*-windows/regedit.exe
+deny|file|/*/wine/*-windows/winedbg.exe
+deny|file|/*/wine/*-windows/powershell.exe
+# Drivers the game does not use: Bluetooth (winebth reads BlueZ's adapters and devices over D-Bus and
+# registers a pairing agent) and raw USB (wineusb). Audited, not refused: a refused load ends the
+# winedevice.exe they share with winebus (Wine runs the driver anyway; linux_wine_test.sh).
+audit|file|/*/winebth.sys|rights=execute|image=winedevice.exe
+audit|file|/*/wineusb.sys|rights=execute|image=winedevice.exe
+
+# Other programs' data: browsers, launchers, chat clients, credentials (other Wine prefixes: below
+# the prefix's own allows).
+deny|file|/home/*/.mozilla|data-only
+deny|file|/home/*/.config/google-chrome|data-only
+deny|file|/home/*/.config/chromium|data-only
+deny|file|/home/*/.config/BraveSoftware|data-only
+deny|file|/home/*/.config/microsoft-edge|data-only
+deny|file|/home/*/.config/opera|data-only
+deny|file|/home/*/.config/vivaldi|data-only
+deny|file|/home/*/.config/discord|data-only
+deny|file|/home/*/.config/Claude|data-only
+deny|file|/home/*/.config/heroic|data-only
+deny|file|/home/*/.config/gh
+deny|file|/home/*/.thunderbird|data-only
+deny|file|/home/*/snap|data-only
+deny|file|/home/*/.var/app|data-only
+deny|file|/home/*/.steam|data-only
+deny|file|/home/*/.local/share/Steam|data-only
+deny|file|/home/*/.local/share/lutris|data-only
+deny|file|/home/*/.local/share/keyrings
+deny|file|/home/*/Games|data-only
+deny|file|/home/*/.ssh
+deny|file|/home/*/.gnupg
+deny|file|/home/*/.aws
+deny|file|/home/*/.docker
+deny|file|/home/*/.git-credentials
+
+# Wine's NT objects that identify the machine (decided from wineserver open_file_object, as
+# Windows' disk and device filters decide them): raw disks and volumes (disk serials, volume
+# GUIDs), the mount manager (volume GUIDs, serials), NSI (adapters, MACs), HID/USB devices
+# (vendor and product IDs), SCSI and optical drives. `*` spans '\'.
+deny|file|\??\PhysicalDrive*
+deny|file|\Device\Harddisk*
+deny|file|\??\Harddisk*
+deny|file|\??\Volume{*
+deny|file|\Device\MountPointManager
+deny|file|\??\MountPointManager
+deny|file|\??\Nsi
+deny|file|\Device\Nsi
+deny|file|\??\HID#*
+deny|file|\??\USB#*
+deny|file|\??\SCSI*
+deny|file|\??\CdRom*
+
+# Escapes: services that run code or type keys outside the launch (no no_new_privs, not a
+# descendant), credential agents, the microphone. Wine needs none of them.
+deny|file|/dev/uinput
+deny|file|/dev/snd/pcm*c
+deny|pipe|/run/user/*/systemd/private
+deny|pipe|/run/user/*/keyring/*
+deny|pipe|/run/user/*/gcr/*
+deny|pipe|/run/user/*/gnupg/*
+deny|pipe|/home/*/.gnupg/*
+deny|pipe|/tmp/ssh-*
+deny|pipe|/run/user/*/pipewire-0-manager
+deny|pipe|/run/user/*/pk-debconf-socket
+deny|pipe|/run/user/*/snapd-session-agent.socket
+deny|pipe|/run/user/*/claude-*
+deny|pipe|/run/user/*/ccd-*
+deny|pipe|/run/user/*/cc-socks/*
+deny|pipe|/run/user/*/discord-ipc-*
+deny|pipe|/run/user/*/app/*/discord-ipc-*
+deny|pipe|/run/user/*/at-spi/*
+deny|pipe|/run/user/*/wayland-*
+deny|pipe|/var/run/docker.sock
+deny|pipe|/run/docker.sock
+# Sound: these leave the client silent (other clients' pids and binaries, the microphone).
+# deny|pipe|/run/user/*/pulse/native
+# deny|pipe|/run/user/*/pipewire-0
+
+# Name lookups go through the program's own port-53 query (decided as `dns`): the side
+# resolvers are closed (glibc falls back to its own query). WPAD is never looked up.
+deny|pipe|/var/run/nscd/socket|rights=connect
+deny|pipe|/run/nscd/socket|rights=connect
+deny|pipe|/run/systemd/resolve/io.systemd.Resolve|rights=connect
+deny|pipe|/var/run/avahi-daemon/socket|rights=connect
+deny|pipe|/run/avahi-daemon/socket|rights=connect
+deny|dns|wpad
+deny|dns|wpad.*
+
+# System calls no Wine program needs: a secret memory area msmon cannot read, io_uring rings,
+# and turning CPUID faulting off (keeps `monfilter.py run --trap-cpuid` armed; no effect
+# without it).
+deny|system|/system/secretmem
+deny|system|/system/io_uring
+deny|system|/system/arch_prctl/0x1012/1
+# Executable memory files (memfds are allowed read and write below).
+deny|file|/anon/memfd:*|rights=execute
+
+# ---- Observed, never refused: the rule-only layers (no rule there means allowed and unlogged) ----
+
+# One protected program reaching into another (memory writes, remote threads, thread context).
+audit|peer|C:\*|rights=vm-write,vm-operation,create-thread
+audit|thread-peer|C:\*|rights=get-context,set-context,suspend-resume
+# Wine requests that enumerate the system or hide from a debugger.
+audit|system|/system/wine/list_processes
+audit|system|/system/wine/get_system_handles
+audit|system|/system/wine/get_tcp_connections
+audit|system|/system/wine/get_window_text
+audit|system|/system/wine/get_directory_entries
+audit|system|/system/wine/get_thread_context
+audit|system|/system/wine/set_thread_context
+audit|system|/system/wine/set_thread_info
+# Host identity and kernel features (denying uname or sysinfo is safe for Wine; review first).
+audit|system|/system/uname
+audit|system|/system/sysinfo
+audit|system|/system/socket/netlink/*/15
+audit|system|/system/socket/packet
+audit|system|/system/socket/inet/raw
+audit|system|/system/socket/inet6/raw
+audit|system|/system/userfaultfd
+audit|system|/system/keyring
+audit|system|/system/ipc
+# Code written at run time: JIT, unpacked or injected (image/rx, Wine's copies of unaligned PE
+# sections, is left out: noisy). Never deny private for nexon_client.exe (Chromium's V8).
+audit|system|/system/memory/private
+audit|system|/system/memory/shared
+audit|system|/system/memory/image/rwx
+# Calls Wine answers inside the program (a breakpoint in every Wine process for each function
+# named: keep the list short; input polling such as NtUserGetAsyncKeyState is too hot).
+audit|system|/system/win32k/NtUserBuildHwndList
+audit|system|/system/win32k/NtUserFindWindowEx
+audit|system|/system/win32k/NtUserInternalGetWindowText
+audit|system|/system/win32k/NtUserSetWindowsHookEx
+audit|system|/system/win32k/NtGdiBitBlt
+audit|system|/system/win32k/NtGdiGetPixel
+# WMI queries by class (a protected program loading wbemprox.dll stops a few ms until probed).
+audit|system|/system/wmi/*
+# Threads the anti-cheat modules start.
+audit|thread|C:\*|module=grap*
+# Every name looked up, and the first bytes sent on each connection (the TLS server name).
+audit|dns|*
+audit|message|rights=send|index=1
+# Pipes a program outside the family made (a shell's pipe on stdin).
+audit|pipe|/anon/pipe/@outside
+
+# ---- Allowed: the Nexon family's own trees (image= keeps each to its programs) ----
+
+# The game, its anti-cheat (grap) and overlay. The launcher patches it, so no image= here.
+allow|file|/@WINEPREFIX@/drive_c/Nexon/Library/maplestorycw|rights=read,write,execute,delete,rename,set-security|risk=anti-cheat-surface
+allow|dir|/@WINEPREFIX@/drive_c/Nexon/Library/maplestorycw|rights=enumerate,read,execute,write,delete,rename
+# The launcher, its Electron UI (nexon_client), agent and runtime.
+allow|file|/@WINEPREFIX@/drive_c/Program Files (x86)/Nexon/Nexon Launcher|rights=read,write,execute,delete,rename,set-security|image=nexon_*
+allow|dir|/@WINEPREFIX@/drive_c/Program Files (x86)/Nexon/Nexon Launcher|rights=enumerate,read,execute,write,delete,rename|image=nexon_*
+# NGService (Nexon Game Security) in %ProgramData%; the launcher installs and updates it.
+allow|file|/@WINEPREFIX@/drive_c/ProgramData/Nexon/NGS|rights=read,write,execute,delete,rename,set-security|image=NGService.exe|risk=anti-cheat-surface
+allow|file|/@WINEPREFIX@/drive_c/ProgramData/Nexon|rights=read,write,execute,delete,rename,set-security|image=nexon_*
+allow|dir|/@WINEPREFIX@/drive_c/ProgramData/Nexon|rights=enumerate,read,execute,write,delete,rename
+# Per-user state and temp files.
+allow|file|/@WINEPREFIX@/drive_c/users/*/AppData/Local/Nexon|rights=read,write,execute,delete,rename,set-security
+allow|file|/@WINEPREFIX@/drive_c/users/*/AppData/Roaming/Nexon|rights=read,write,execute,delete,rename,set-security
+allow|file|/@WINEPREFIX@/drive_c/users/*/AppData/Local/Temp|rights=read,write,delete,rename
+# Settings in the registry (as on Windows).
+allow|registry|\REGISTRY\USER\*\Software\Nexon|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Nexon|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Wow6432Node\Nexon|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\USER\*\Software\Wizet|rights=read,write,delete,rename,set-security,enumerate
+allow|registry|\REGISTRY\MACHINE\SOFTWARE\Wizet|rights=read,write,delete,rename,set-security,enumerate
+
+# Network: REVIEW REQUIRED. No Nexon endpoint is allowed yet, so every connection is denied
+# (would-deny in audit mode). Take the endpoints from a run's tuning report, then add one
+# counted rule per host, e.g.:
+#   allow|network|ip=<host>/32|port=443|proto=tcp|rights=connect|uses=N|risk=<reason>|image=nexon_client.exe
+
+# ---- Allowed: what Wine itself needs to start ----
+
+# Read and run Wine, the libraries and the prefix's Windows directory; write only the
+# prefix's own state. Narrow these from the tuning report once a run is reviewed.
+allow|file|/opt/wine-stable|rights=read,execute
+allow|file|/usr/lib|rights=read,execute
+allow|file|/usr/share/fonts|rights=read
+allow|file|/usr/share/zoneinfo|rights=read
+allow|file|/etc/fonts|rights=read
+allow|file|/etc/ld.so.cache|rights=read|exact
+allow|file|/etc/localtime|rights=read|exact
+allow|file|/dev/null|rights=read,write|exact
+allow|file|/dev/urandom|rights=read|exact
+# Pseudo files: memfds (Mesa, xshmfence, PulseAudio), private MIT-SHM segments and shared
+# anonymous memory. Their exec and keyed SysV segments are denied above.
+allow|file|/anon/memfd:*|rights=read,write
+allow|file|/anon/SYSV00000000|rights=read,write
+allow|file|/anon/dev/zero|rights=read,write
+deny|file|/anon/SYSV*
+# Its own and the family's /proc entries (maps, stat, status, fd links); Wine's other
+# processes are logged.
+allow|file|/proc/@self|rights=read,query
+allow|dir|/proc/@self|rights=read,enumerate,query
+allow|file|/proc/@family|rights=read,query
+allow|dir|/proc/@family|rights=read,enumerate,query
+audit|file|/proc/@wine
+audit|dir|/proc/@wine
+# The /proc/self link itself (realpath walks) and the names of its own threads.
+allow|file|/proc/self|rights=query|exact
+allow|file|/proc/thread-self|rights=query|exact
+allow|file|/proc/@self/task/*/comm|rights=read,write,query
+allow|file|/@WINEPREFIX@/drive_c/windows|rights=read,execute
+allow|dir|/@WINEPREFIX@/drive_c/windows|rights=enumerate,read,execute
+allow|file|/@WINEPREFIX@/dosdevices|rights=read
+allow|dir|/@WINEPREFIX@/dosdevices|rights=enumerate,read
+# Other Wine prefixes: after the prefix's own allows, which win when the run's prefix is ~/.wine.
+deny|file|/home/*/.local/share/wineprefixes|data-only
+deny|file|/home/*/.wine|data-only
+
+# Wine's NT objects it needs: sockets go through AFD, the console through ConDrv, and Wine's
+# services (plugplay, the service manager, RPC, OLE) talk over named pipes.
+allow|file|\Device\Afd|rights=read,write,open
+# Named sections (shared memory by name) Wine itself opens: the shared user data page, the code
+# page tables and its preloaded system DLLs. Any other name (\Sessions\*\BaseNamedObjects\...:
+# shared memory with, or a probe for, another program) is refused in block mode.
+allow|file|\KernelObjects\__wine_user_shared_data|rights=read,write,execute,delete,set-security,open
+# win32u's session data: every graphical Wine program reads it (refused, no window opens).
+allow|file|\KernelObjects\__wine_session|rights=read,open
+allow|file|\NLS\*|rights=read,open
+allow|file|\KnownDlls*|rights=read,execute,open
+allow|file|\Device\ConDrv*|rights=read,write,open
+allow|file|\??\CONIN$|rights=read,write,open
+allow|file|\??\CONOUT$|rights=read,write,open
+allow|pipe|\??\pipe\wine_plugplay|rights=read,write,create,open
+allow|pipe|\??\pipe\svcctl|rights=read,write,create,open
+allow|pipe|\??\pipe\lrpc\*|rights=read,write,create,open
+allow|pipe|\??\pipe\net\NtControlPipe*|rights=read,write,create,open
+# The Nexon family's own IPC: Chromium (mojo) and Node (uv) inside the launcher, the anti-cheat
+# with the game, the overlay with the game. Other pipes are refused in block mode.
+allow|pipe|\??\pipe\mojo.*|rights=read,write,create,open,set-security
+allow|pipe|\??\pipe\uv\*|rights=read,write,create,open
+allow|pipe|\??\pipe\grap-core*|rights=read,write,create,open
+allow|pipe|\??\pipe\DwarfIPCPipe*|rights=read,write,create,open
+
+# Connecting to the prefix's wineserver (every Wine process does at start).
+# Wine's per-user server directory: the lock file wineserver takes at start.
+allow|file|/tmp/.wine-*|rights=read,write,delete,rename,set-security
+# ... and its directory, which every Wine process stats before it connects (block-file-queries).
+allow|dir|/tmp/.wine-*|rights=read,enumerate,query
+allow|pipe|/tmp/.wine-*/server-*/socket|rights=connect
+# Process creation: Wine's loaders and the ELF interpreters they start, nothing else. The
+# path is the file that is executed (symlinks resolved: /usr/bin/wine is /usr/lib/wine/...).
+allow|process|/opt/wine-stable|rights=create
+allow|process|/opt/wine-staging|rights=create
+allow|process|/opt/wine-devel|rights=create
+allow|process|/usr/lib/wine|rights=create
+allow|process|/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2|rights=create|exact
+allow|process|/usr/lib/i386-linux-gnu/ld-linux.so.2|rights=create|exact
+allow|process|/usr/lib/ld-linux.so.2|rights=create|exact
+# The launch entry script and the interpreter its #! line names (/usr/bin/env bash).
+allow|process|/@HOME@/.local/bin/nexon-launcher|rights=create|exact
+allow|process|/usr/bin/env|rights=create|exact
+allow|process|/usr/bin/bash|rights=create|exact
+# Add process allows above this line: nothing below it is ever reached for an exec.
+deny|process|/*

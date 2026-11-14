@@ -10,6 +10,7 @@ tooling are in the drop. Every claim below is backed by decoded wire captures in
 - **[`foundations/`](foundations/)** — shared cipher primitives, client/memory helpers, and `profile.json`.
 - **[`analysis/`](analysis/)** — reusable decoders, packet capture, and research experiments.
 - **[`tools/`](tools/)** — applicable RNG, VAC/park, combat, GUI, and anti-disconnect tools.
+- **[`vendor/monitor-filter/`](vendor/monitor-filter/)** — internal full-family monitor/filter source; build and run it without another repository checkout. See the [ordered traffic ledger workflow](analysis/README.md#ordered-traffic-ledger).
 - **[`docs/guides/`](docs/guides/)** — current task-oriented guides; **[`docs/research/`](docs/research/)** — findings and project history.
 
 Run Python commands from the repository root with `.venv/bin/python`. Start with each directory's README or the [complete artifact index](docs/ARTIFACT-INDEX.md).
