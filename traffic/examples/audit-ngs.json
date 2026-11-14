@@ -1,0 +1,20 @@
+{
+  "schema": "client-control.traffic-filter/v1",
+  "name": "audit NGS control requests",
+  "default": "allow",
+  "rules": [
+    {
+      "id": "audit-ngs-config",
+      "action": "audit",
+      "description": "Log configuration requests by destination, path and request type. The request body is opaque.",
+      "match": {
+        "protocol": ["ngs_https"],
+        "destination": {
+          "host": "x-config.ngs.nexon.com",
+          "path_prefix": "/v1"
+        },
+        "type": {"name": "ngs_request"}
+      }
+    }
+  ]
+}

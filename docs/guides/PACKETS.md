@@ -274,6 +274,26 @@ The strongest semantic evidence is in the type-0/type-1 records:
 
 Thus the four `0x2a5` messages after the first kill are batched mouse/keyboard input history, not mob-death or drop messages. Their timing is compatible with flushing an input buffer, and none contains the killed mob identifier. This is most consistent with input telemetry/history rather than gameplay-state or drop generation. The exact producer purpose, header fields, coordinate fields, type-2 marker bytes, and type-3 opaque string data are not fully assigned meanings yet.
 
+## Ordered traffic ledger and pre-send policy
+
+`python -m traffic` builds an ordered client→server record from the outgoing
+JSONL, raw pcap/pcapng, monitor-filter session bundles and NGS proxy logs. It
+reassembles split/combined/retransmitted TCP messages, joins plaintext sends to
+wire frames, decodes documented fields, and marks missing evidence explicitly.
+See [`TRAFFIC.md`](TRAFFIC.md) and [`traffic/README.md`](../../traffic/README.md).
+
+The outgoing capture accepts a filter policy:
+
+```bash
+analysis/capture-outgoing.sh 300 --filter-policy traffic/examples/audit-game.json
+```
+
+Every `SendPacket` gets a logged decision. Only an explicit `drop` suppresses
+the packet; destination matching uses the process's current established socket
+and is marked ambiguous when SendPacket has several. `ngs-proxy.py` accepts the
+same policy format for NGS/launcher requests, and `python -m traffic
+kfilter-policy` emits the subset expressible as monitor-filter message rules.
+
 ## What remains unresolved
 
 - Whether the changing value in `0x3f3` is authoritative mob HP, and why its decrements differ from displayed damage.

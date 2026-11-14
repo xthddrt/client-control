@@ -82,7 +82,12 @@ def response(flow: http.HTTPFlow):
     host = flow.request.pretty_host
     if not (host.startswith("x-") and host.endswith(".ngs.nexon.com")):
         return
-    event = {"kind": "response", "request": request_record(flow.request)}
+    event = {
+        "kind": "response",
+        "timestamp": time.time(),
+        "wall_time_ns": time.time_ns(),
+        "request": request_record(flow.request),
+    }
     if flow.response is None:
         event["error"] = "No response."
         emit(event)
@@ -122,7 +127,10 @@ def response(flow: http.HTTPFlow):
 def error(flow: http.HTTPFlow):
     if flow.request.pretty_host.endswith(".ngs.nexon.com"):
         emit({
-            "kind": "error", "request": request_record(flow.request),
+            "kind": "error",
+            "timestamp": time.time(),
+            "wall_time_ns": time.time_ns(),
+            "request": request_record(flow.request),
             "error": str(flow.error),
         })
 

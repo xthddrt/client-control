@@ -17,6 +17,10 @@ import uuid
 
 DIRECTORY = Path(__file__).resolve().parent
 FOUNDATIONS = DIRECTORY.parent / "foundations"
+sys.path.insert(0, str(DIRECTORY.parent))
+from traffic.decode import decode_game
+from traffic.live import active_endpoints, process_info
+from traffic.policy import evaluate, load_policy
 SEIZE = 0x4206
 INTERRUPT = 0x4207
 SETOPTIONS = 0x4200
@@ -260,12 +264,17 @@ def self_test():
     print("PASS: debug control, packet bounds, construction correlation, deep-watch conflicts, and stack reads.")
 
 
-def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None):
+def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None, filter_policy=None):
     if profile is None:
         profile = json.loads((FOUNDATIONS / "profile.json").read_text())
+    policy = load_policy(filter_policy) if filter_policy else None
     reader = character.Reader(pid)
     base, _ = character.find_image(reader, pid, profile)
     image_size = character.number(profile["pe"]["size_of_image"])
+    process = process_info(pid, {
+        "pe_timestamp": profile["pe"]["timestamp"],
+        "module_base": hex(base),
+    })
     fingerprints = (
         (SENDPACKET_RVA, "48894c24084883ec"),
         (COUTPACKET_CTOR_RVA + 0x3A, "899134040000"),
@@ -290,6 +299,7 @@ def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None):
     counts = {
         "events": 0, "sends": 0, "constructors": 0, "linked_sends": 0,
         "field_changes": 0, "notices": 0, "send_errors": 0, "deep_gaps": 0, "dropped": 0,
+        "filter_evaluated": 0, "filter_dropped": 0, "filter_audit": 0, "filter_allowed": 0,
     }
     attached = set()
     stopped = set()
@@ -303,6 +313,7 @@ def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None):
     fatal_error = None
     cleanup_errors = []
     stopping = False
+    endpoint_cache = {"monotonic": 0.0, "value": None}
 
     def event(kind, tid):
         return {
@@ -578,9 +589,54 @@ def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None):
                     "body": body.hex(),
                 })
                 add_context(record, reader, registers, base, image_size)
-                dropped = drop_opcode is not None and opcode == drop_opcode
+                policy_decision = None
+                if policy is not None:
+                    now = time.monotonic()
+                    if now - endpoint_cache["monotonic"] >= 1.0 or endpoint_cache["value"] is None:
+                        endpoint_cache["monotonic"] = now
+                        endpoint_cache["value"] = active_endpoints(pid)
+                    endpoints = endpoint_cache["value"]
+                    destination = endpoints.get("destination")
+                    decoded = decode_game(body, opcode)
+                    view = {
+                        "message_id": construction["construction_id"] if construction is not None else hex(packet),
+                        "process": process,
+                        "transport": {
+                            "protocol": "maplestory_game",
+                            "direction": "client_to_server",
+                            "destination": destination,
+                        },
+                        "message": {
+                            "protocol": "maplestory_game",
+                            "raw_bytes_hex": body.hex(),
+                            "raw_bytes_length": len(body),
+                            "type": {
+                                "opcode": opcode,
+                                "opcode_hex": hex(opcode),
+                                "name": decoded.get("name"),
+                                "confidence": decoded.get("confidence"),
+                            },
+                            "fields": decoded.get("fields", []),
+                            "decode_status": decoded.get("decode_status"),
+                        },
+                    }
+                    policy_decision = evaluate(policy, view)
+                    record["filter_decision"] = policy_decision
+                    record["destination_evidence"] = endpoints
+                    counts["filter_evaluated"] += 1
+                    action = policy_decision["action"]
+                    if action == "drop":
+                        counts["filter_dropped"] += 1
+                    elif action == "audit":
+                        counts["filter_audit"] += 1
+                    else:
+                        counts["filter_allowed"] += 1
+                legacy_drop = drop_opcode is not None and opcode == drop_opcode
+                policy_drop = policy_decision is not None and policy_decision["action"] == "drop"
+                dropped = legacy_drop or policy_drop
                 record["dropped"] = dropped
                 if dropped:
+                    record["drop_reason"] = "filter_policy" if policy_drop else "drop_opcode"
                     return_address = reader.qword(registers.rsp)
                     if not return_address:
                         raise RuntimeError("Cannot drop a packet with no SendPacket return address.")
@@ -593,7 +649,10 @@ def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None):
                     if check.rip != return_address or check.rsp != registers.rsp or check.rax != 1:
                         raise RuntimeError("Packet-drop register update did not read back exactly.")
                     counts["dropped"] += 1
-                    print(f"DROP opcode={opcode:#x} length={len(body)}", flush=True)
+                    print(
+                        f"DROP opcode={opcode:#x} length={len(body)} "
+                        f"reason={record['drop_reason']}", flush=True,
+                    )
                 write(record)
                 counts["sends"] += 1
                 if construction is not None:
@@ -665,6 +724,13 @@ def run(pid, duration, output, deep_opcodes, drop_opcode=None, profile=None):
             "constructor_rva": hex(COUTPACKET_CTOR_RVA),
             "deep_opcodes": [hex(opcode) for opcode in sorted(deep_opcodes)],
             "drop_opcode": hex(drop_opcode) if drop_opcode is not None else None,
+            "filter_policy": policy.summary() if policy is not None else None,
+            "filter_scope": {
+                "process": "live /proc identity",
+                "type": "plaintext opcode and decoded fields",
+                "destination": "current established socket(s); ambiguous when SendPacket has several",
+                "protocol": "maplestory_game only; NGS/launcher use their proxies",
+            } if policy is not None else None,
             "duration_seconds": duration,
             "max_packet_bytes": MAX_PACKET_BYTES,
         })
@@ -783,6 +849,7 @@ def main():
     parser.add_argument("output", type=Path)
     parser.add_argument("--deep-opcode", action="append", default=[], type=lambda value: int(value, 0))
     parser.add_argument("--drop-opcode", type=lambda value: int(value, 0), default=None)
+    parser.add_argument("--filter-policy", type=Path, default=None)
     args = parser.parse_args()
     if not 1 <= args.seconds <= 3600:
         parser.error("Use a capture duration from 1 to 3600 seconds.")
@@ -793,7 +860,7 @@ def main():
         parser.error("Drop opcode must be a 32-bit integer.")
     profile = json.loads((FOUNDATIONS / "profile.json").read_text())
     pid = character.find_pid(profile["process_name"]) if args.pid == "auto" else int(args.pid)
-    run(pid, args.seconds, args.output, deep_opcodes, args.drop_opcode, profile)
+    run(pid, args.seconds, args.output, deep_opcodes, args.drop_opcode, profile, args.filter_policy)
 
 
 if __name__ == "__main__":

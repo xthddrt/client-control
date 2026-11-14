@@ -12,12 +12,13 @@ Runnable decoders, packet and memory observers, capture wrappers, and research e
 
 `ngs-mitm.py` and `launch-ngs-mitm.sh` provide the live GRAP control-plane proxy workflow. See the [replication guide](../docs/research/05-ngsx-control-plane-REPLICATION.md).
 
-`ngs-proxy.py` separately provides raw JSONL communication logging and exact-host/path-prefix blocking without payload decoding:
+`ngs-proxy.py` separately provides raw JSONL communication logging, exact-host/path-prefix blocking, and the optional `ngs_policy` filter without payload decoding:
 
 ```bash
 .venv/bin/mitmdump -s analysis/ngs-proxy.py \
   --set ngs_log=captures/ngs-raw.jsonl \
-  --set ngs_block=example.com:/blocked-prefix
+  --set ngs_block=example.com:/blocked-prefix \
+  --set ngs_policy=traffic/examples/audit-ngs.json
 ```
 
 Raw captures can contain sensitive request and response bodies; keep them in the Git-ignored `captures/` directory.
@@ -26,6 +27,8 @@ Raw captures can contain sensitive request and response bodies; keep them in the
 
 - `protocol-static.py`: static packet constructor and serializer analysis.
 - `capture-packets.sh` and `capture-outgoing.sh`: plaintext packet capture.
+  `capture-outgoing.sh --filter-policy FILE` evaluates every `SendPacket` before
+  transmission and logs every decision; see [`traffic/README.md`](../traffic/README.md).
 - `capture-drops.sh`, `capture-interaction.sh`, `capture-32b.sh`, and `capture-death.sh`: focused interaction captures.
 - `packet-observe.py`, `outgoing-packet-capture.py`, `drop-observe.py`, `focus-observe.py`, and `replay-32b.py`: underlying observation and experiment drivers.
 

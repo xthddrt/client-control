@@ -101,6 +101,7 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 |---|---|
 | `DAMAGE-RNG.md` | Supported RNG toolkit guide |
 | `PACKETS.md` | Current packet boundaries, layouts, capture, and experiments |
+| `TRAFFIC.md` | Building, reading, tracing and filtering the ordered traffic ledger |
 | `INTERACTION.md` | Full interaction/drop-origin capture |
 | `32B.md` | Focused pickup construction and field capture |
 | `DEATH.md` | Mob-death and drop-communication capture |

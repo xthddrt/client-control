@@ -9,21 +9,27 @@ if (( $# )); then
 fi
 DEEP_ARGS=()
 DROP_ARGS=()
+FILTER_ARGS=()
 while (( $# )); do
     if [[ $1 == "--drop-opcode" && $# -ge 2 && $2 =~ ^(0[xX][0-9a-fA-F]+|[0-9]+)$ && ${#DROP_ARGS[@]} -eq 0 ]]; then
         DROP_ARGS=("$1" "$2")
         shift 2
         continue
     fi
+    if [[ $1 == "--filter-policy" && $# -ge 2 && -f "$2" && ${#FILTER_ARGS[@]} -eq 0 ]]; then
+        FILTER_ARGS=("$1" "$2")
+        shift 2
+        continue
+    fi
     if [[ $1 != "--deep-opcode" || $# -lt 2 || ! $2 =~ ^(0[xX][0-9a-fA-F]+|[0-9]+)$ ]]; then
-        echo "Usage: analysis/capture-outgoing.sh [SECONDS] [--deep-opcode HEX ...] [--drop-opcode HEX]" >&2
+        echo "Usage: analysis/capture-outgoing.sh [SECONDS] [--deep-opcode HEX ...] [--drop-opcode HEX] [--filter-policy FILE]" >&2
         exit 2
     fi
     DEEP_ARGS+=("$1" "$2")
     shift 2
 done
 if ! [[ $DURATION =~ ^[0-9]+([.][0-9]+)?$ ]]; then
-    echo "Usage: analysis/capture-outgoing.sh [SECONDS] [--deep-opcode HEX ...] [--drop-opcode HEX]" >&2
+    echo "Usage: analysis/capture-outgoing.sh [SECONDS] [--deep-opcode HEX ...] [--drop-opcode HEX] [--filter-policy FILE]" >&2
     exit 2
 fi
 
@@ -61,6 +67,7 @@ chmod 700 "$ROOT/captures"
     printf 'Capture filter: %s\n' "$FILTER"
     printf 'Deep arguments: %s\n' "${DEEP_ARGS[*]-}"
     printf 'Drop arguments: %s\n' "${DROP_ARGS[*]-}"
+    printf 'Filter arguments: %s\n' "${FILTER_ARGS[*]-}"
 } > "$DRIVER"
 
 TCPDUMP_PID=""
@@ -94,10 +101,13 @@ echo "Raw PCAP: $PCAP"
 if [[ ${#DROP_ARGS[@]} -ne 0 ]]; then
     echo "Filtering only ${DROP_ARGS[1]}; every other outgoing packet passes. Incoming PCAP is unchanged."
 fi
+if [[ ${#FILTER_ARGS[@]} -ne 0 ]]; then
+    echo "Filter policy ${FILTER_ARGS[1]}; every decision is logged, non-drop traffic is unchanged."
+fi
 set +e
 sudo -n env PYTHONDONTWRITEBYTECODE=1 \
     "$ROOT/.venv/bin/python" -u "$ROOT/analysis/outgoing-packet-capture.py" \
-    "$PID" "$DURATION" "$EVENTS" "${DEEP_ARGS[@]}" "${DROP_ARGS[@]}" 2>&1 | tee -a "$DRIVER"
+    "$PID" "$DURATION" "$EVENTS" "${DEEP_ARGS[@]}" "${DROP_ARGS[@]}" "${FILTER_ARGS[@]}" 2>&1 | tee -a "$DRIVER"
 STATUS=${PIPESTATUS[0]}
 set -e
 cleanup
