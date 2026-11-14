@@ -371,8 +371,8 @@ struct mm_tracked {
     __u32 flags;         /* MsMonFlagExplicitTrack / MsMonFlagInheritedTrack, MM_TRACK_* */
     __u32 depth;         /* MM_TRACK_NATIVE: native execs since the last Wine or in-scope image */
 };
-#define MM_TRACK_NATIVE 0x100   /* a native helper (xdg-open, a browser): only mm_sysinfo.more.native calls are recorded,
-                                 * its I/O is kernel aggregates (MM_AGG_NATIVE_IO), its sockets are not tagged (no packets) */
+#define MM_TRACK_NATIVE 0x100   /* a native helper: selected calls plus payload-mode INET I/O are recorded;
+                                 * other I/O is aggregated (MM_AGG_NATIVE_IO) */
 #define MM_TRACK_HANDOFF 0x200  /* forked by winebrowser.exe: the sign-in hand-off, native to handoff_depth (inherited) */
 #define MM_TRACK_LAUNCH 0x400   /* kfilterctl launch's child and its descendants until a Wine loader's exec: in scope at
                                  * every exec (inherited) */

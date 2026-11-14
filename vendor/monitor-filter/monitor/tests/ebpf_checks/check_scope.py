@@ -58,10 +58,10 @@ def check(mode, path, events, mine, pids, coverage, problems):
             "rename of hop.txt": lambda e: e["type"] == "file_set_information" and "rename;to" in e["detail"] and
                 hop in e["text"],
             "sampled write of hop.txt": lambda e: e in sampled and e["type"] == "file_write" and e["text"].endswith(hop),
-            "sampled send with its endpoints": lambda e: e in sampled and "syscall=sendto;" in e["detail"] and
-                endpoints.search(e["detail"]),
-            "sampled receive": lambda e: e in sampled and "syscall=recvfrom;" in e["detail"] and e["text"].startswith("socket:[") and
-                ";inode_type=socket" in e["detail"],
+            "sampled send with its endpoints": lambda e: "syscall=sendto;" in e["detail"] and
+                endpoints.search(e["detail"]) and (e in sampled or e.get("payload", {}).get("kind") == "network_data"),
+            "sampled receive": lambda e: "syscall=recvfrom;" in e["detail"] and e["text"].startswith("socket:[") and
+                (e in sampled and ";inode_type=socket" in e["detail"] or e.get("payload", {}).get("kind") == "network_data"),
             "write summary": lambda e: e["text"] == "system:write" and ";aggregate=kernel;ino=" in e["detail"] and
                 ";inode_type=file;" in e["detail"] and ";attribution=native_helper" in e["detail"],
         }
@@ -69,7 +69,8 @@ def check(mode, path, events, mine, pids, coverage, problems):
             if not any(test(e) for e in own):
                 problems.append("scope: no %s record from the hand-off chain at depth 6" % what)
         if any(e["type"] in ("file_read", "file_write") and e not in sampled and "repeats_tail" not in e["detail"] and
-               not e["detail"].startswith("via=") for e in own):
+               not e["detail"].startswith("via=") and not e.get("payload") and not e.get("text", "").startswith("socket:")
+               for e in own):
             problems.append("scope: a native helper's read or write recorded per call (not sampled)")
         # Every write: sampled records (1 each, with the agent's own repeats) and kernel summaries (repeats_before).
         writes = [e for e in own if re.search(r"(?:^|;)syscall=write;", e["detail"])]

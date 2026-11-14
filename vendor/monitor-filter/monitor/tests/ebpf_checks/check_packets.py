@@ -8,7 +8,8 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 from linux_packets_test import fields, read_pcapng, transport  # noqa: E402
 
 MARKERS = {b"msmon-pkt-ping\n": 6, b"msmon-pkt-pong\n": 6, b"msmon-pkt-udp-probe!": 17,
-           b"msmon-pkt-v6-tcp!": 6, b"msmon-pkt-v6-udp!": 17}
+           b"msmon-pkt-v6-tcp!": 6, b"msmon-pkt-v6-udp!": 17, b"msmon-native-outgoing\n": 6,
+           b"msmon-native-incoming\n": 6}
 
 
 def check(mode, path, events, mine, pids, coverage, problems):
@@ -47,10 +48,12 @@ def check(mode, path, events, mine, pids, coverage, problems):
     for packet in packets:
         packet["protocol"], packet["flags"], packet["payload"] = transport(packet["data"])
         packet["fields"] = fields(packet["comment"])
+    native_directions = {b"msmon-native-outgoing\n": 2, b"msmon-native-incoming\n": 1}
     for marker, protocol in MARKERS.items():
         directions = {p["direction"] for p in packets if p["protocol"] == protocol and p["payload"] == marker}
-        if directions != {1, 2}:
-            problems.append("packets: %r seen in directions %s (want in and out)" % (marker, sorted(directions)))
+        wanted = {native_directions[marker]} if marker in native_directions else {1, 2}
+        if directions != wanted:
+            problems.append("packets: %r seen in directions %s (want %s)" % (marker, sorted(directions), sorted(wanted)))
     if not all(p["data"][0] >> 4 == 6 for p in packets if p["payload"] in (b"msmon-pkt-v6-tcp!", b"msmon-pkt-v6-udp!")):
         problems.append("packets: the ::1 exchange is not captured as IPv6")
     # Wine's shape (probe_packets_wine): the child named wineserver connected, the probe read the
@@ -66,8 +69,9 @@ def check(mode, path, events, mine, pids, coverage, problems):
     # The ia32 probe (parity.sh, run from the extra root) is tracked too and sends its own UDP datagram.
     ia32 = {e["process_id"] for e in events if e["type"] == "process_start" and
             "ia32_probe" in e.get("text", "") + e.get("process_path", "")}
-    if not owners or not owners <= set(pids) | ia32:
-        problems.append("packets: pids %s are not the probe's %s" % (sorted(owners), sorted(pids)))
+    known = {e.get("process_id") for e in events if e.get("type") in ("process_start", "image_load")}
+    if not owners or not owners <= known | ia32:
+        problems.append("packets: pids %s lack process/image evidence in the session" % sorted(owners))
 
     def flags_of(marker):   # (direction, TCP flags) of the packets of the socket that sent marker
         cookies = {p["fields"].get("cookie") for p in packets if p["payload"] == marker and p["direction"] == 2}

@@ -377,6 +377,12 @@ static std::string WithoutTrailingSlash(std::string path)
     return path;
 }
 
+static bool EndsWith(const std::string& value, const char* suffix)
+{
+    const std::string ending(suffix);
+    return value.size() >= ending.size() && value.compare(value.size() - ending.size(), ending.size(), ending) == 0;
+}
+
 bool LinuxInScope(DWORD pid, const std::vector<std::wstring>& roots, const std::wstring& prefix)
 {
     const std::string base = "/proc/" + std::to_string(pid);
@@ -387,7 +393,13 @@ bool LinuxInScope(DWORD pid, const std::vector<std::wstring>& roots, const std::
         std::string range, perms, offset, device, inode, path;
         if (!(fields >> range >> perms >> offset >> device >> inode)) continue;
         std::getline(fields >> std::ws, path);
-        if (path.empty() || path[0] != '/' || perms.size() < 3 || perms[2] != 'x') continue;
+        if (path.empty() || path[0] != '/') continue;
+        /* Wine can leave a PE's header mapping read-only after unpacking. An offset-zero image mapping is
+         * scope evidence even before any section becomes executable; data files such as WZ/Pak are not. */
+        const bool image = perms.size() >= 3 && perms[2] == 'x';
+        const bool header = offset == "00000000" && (EndsWith(path, ".exe") || EndsWith(path, ".dll") ||
+                            EndsWith(path, ".aes") || EndsWith(path, ".sys"));
+        if (!image && !header) continue;
         for (const auto& root : roots) {
             const std::string narrow = WithoutTrailingSlash(LinuxNarrow(root));
             if (!narrow.empty() && path.size() > narrow.size() && path.compare(0, narrow.size(), narrow) == 0 &&

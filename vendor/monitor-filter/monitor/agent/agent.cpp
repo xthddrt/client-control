@@ -967,7 +967,7 @@ static unsigned TrackExisting(DeviceSession& device, const std::vector<std::wstr
 #ifdef _WIN32
             if (!inherited && !IsUnderAnyRoot(scopeRoots, path)) continue;
 #else
-            /* Under Wine the image is the loader: also an executable mapping under a root or the prefix. */
+            /* Under Wine the image is the loader: also an executable or offset-zero PE image mapping under a root. */
             if (!inherited && !IsUnderAnyRoot(scopeRoots, path) &&
                 !LinuxInScope(process.th32ProcessID, scopeRoots, winePrefix)) continue;
 #endif

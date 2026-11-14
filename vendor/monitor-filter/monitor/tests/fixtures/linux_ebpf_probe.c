@@ -277,9 +277,28 @@ static int read_target(int target)
     return 0;
 }
 
+static int native_network(const char* port)
+{
+    int fd = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in server;
+    memset(&server, 0, sizeof(server));
+    server.sin_family = AF_INET;
+    server.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+    server.sin_port = htons((unsigned short)atoi(port));
+    static const char outgoing[] = "msmon-native-outgoing\n";
+    static const char incoming[] = "msmon-native-incoming\n";
+    char response[sizeof(incoming)] = {};
+    if (fd < 0 || connect(fd, (struct sockaddr*)&server, sizeof(server)) != 0 ||
+        write(fd, outgoing, sizeof(outgoing) - 1) != sizeof(outgoing) - 1) return 110;
+    ssize_t got = read(fd, response, sizeof(response) - 1);
+    close(fd);
+    return got == sizeof(incoming) - 1 && memcmp(response, incoming, sizeof(incoming) - 1) == 0 ? 0 : 111;
+}
+
 int main(int argc, char** argv)
 {
     char buffer[64];
+    if (argc >= 3 && strcmp(argv[1], "--native-net") == 0) return native_network(argv[2]);
     if (argc >= 3 && strcmp(argv[1], "--exec") == 0) {
         execvp(argv[2], argv + 2);
         return 127;
@@ -502,12 +521,15 @@ int main(int argc, char** argv)
         memset(longArgument, 'a', 600);
         memcpy(longArgument + 590, "msmon-tail", 10);
         char* const environment[] = {"HOME=/", "WINEDEBUG=-all", NULL};
+        const char* native = getenv("MSMON_NATIVE_NET");
+        const char* port = getenv("MSMON_NATIVE_PORT");
+        if (native && port) execle(native, native, "--native-net", port, longArgument, (char*)NULL, environment);
         execle("/bin/true", "true", longArgument, (char*)NULL, environment);
         _exit(1);
     }
     int pidfd = (int)syscall(SYS_pidfd_open, child, 0);
     if (pidfd >= 0) close(pidfd);
     waitpid(child, &status, 0);
-    /* The native child is untracked: its files must not appear. */
+    /* Native-depth 0 leaves the child untracked; the network fixture otherwise checks its exact loopback bytes. */
     return 0;
 }

@@ -83,7 +83,8 @@ def main():
         parts = [fields(detail) for text, detail in notes if text == "packet_capture_part"]
         totals = [fields(detail) for text, detail in notes if text == "packet_capture"]
         check(notes[0][0] == "packet_capture_active" and fields(notes[0][1])["linktype"] == "101", "the start note")
-        check([part["path"] for part in parts] == ["events.pcapng", "events.pcapng.1"], "two parts, named like the events parts")
+        check([part["path"] for part in parts] == ["events.pcapng", "events.pcapng.1", "events.pcapng.2"],
+              "three parts, named like the events parts")
         packets = []
         for part in parts:
             path = pathlib.Path(temporary) / part["path"]
@@ -93,22 +94,30 @@ def main():
             check(int(part["packets"]) == len(found) and int(part["file_bytes"]) == path.stat().st_size, part["path"] + " counts")
             packets += found
         data = [packet["data"] for packet in packets]
-        check(data == [b"game-out-1", b"held-syn", b"held-synack", b"game-out-2", b"held-4", b"game-in-4", b"late-4",
-                       b"x" * 5000, b"game-out-3"],
-              "held packets come out at attribution, launcher and unattributed ones never: %r" % [d[:12] for d in data])
-        check([packet["direction"] for packet in packets] == [2, 2, 1, 2, 2, 1, 1, 1, 2], "epb_flags directions")
-        check(all(packet["comment"].startswith("pid=%d;" % game) for packet in packets), "every packet names the client pid")
-        check(all(("held=1" in packet["comment"]) == (packet["data"] in (b"held-syn", b"held-synack", b"held-4"))
-                  for packet in packets), "held packets are marked")
+        check(data == [b"game-out-1", b"held-syn", b"held-synack", b"game-out-2", b"launcher-1", b"launcher-2",
+                       b"held-4", b"game-in-4", b"late-4", b"x" * 5000, b"game-out-3", b"a" * (9 << 20),
+                       b"never-attributed", b"b" * (9 << 20)],
+              "held, broker-only, overflow, and final packets are retained: %r" % [d[:12] for d in data])
+        check([packet["direction"] for packet in packets] == [2, 2, 1, 2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2],
+              "epb_flags directions")
+        check(all(packet["comment"].startswith(("pid=%d;" % game, "pid=%d;" % server)) for packet in packets),
+              "every packet names the client or its broker pid")
+        broker_only = {b"launcher-1", b"launcher-2", b"never-attributed", b"a" * (9 << 20), b"b" * (9 << 20)}
+        check(all(("attribution=broker_only" in packet["comment"]) == (packet["data"] in broker_only)
+                  for packet in packets), "broker-only packets are explicitly attributed")
+        held = {b"held-syn", b"held-synack", b"held-4"} | broker_only
+        check(all(("held=1" in packet["comment"]) == (packet["data"] in held) for packet in packets),
+              "held packets are marked")
         check([("wineserver=%d" % server) in packet["comment"] for packet in packets] ==
-              [False, True, True, True, True, True, True, False, False], "the wineserver that used a socket is named")
+              [False, True, True, True, True, True, True, True, True, False, False, True, True, True],
+              "the wineserver that used a socket is named")
         check("pending_skipped=3" in packets[3]["comment"], "packets the kernel skipped while held are counted")
-        cut = packets[7]
+        cut = packets[9]
         check(cut["orig_len"] == 70000 and "gso_segs=48" in cut["comment"], "a cut GSO packet keeps its length")
         check(len(totals) == 1, "one packet_capture totals note")
-        want = {"parts": "2", "packets": "9", "truncated": "1", "gso_packets": "1", "attributed_sockets": "2",
-                "unattributed_sockets": "4", "unattributed_packets": "5", "held_overflow": "1", "pending_skipped": "3",
-                "ring_drops": "7"}
+        want = {"parts": "3", "packets": "14", "truncated": "1", "gso_packets": "1", "attributed_sockets": "6",
+                "unattributed_sockets": "0", "unattributed_packets": "0", "unattributed_bytes": "0",
+                "held_overflow": "1", "pending_skipped": "3", "ring_drops": "7"}
         check("final_read" not in totals[0], "no BPF thread polls here: nothing to wait for")
         check(all(totals[0][key] == value for key, value in want.items()), "totals %r" % totals[0])
     print("linux packets test: PASS")
