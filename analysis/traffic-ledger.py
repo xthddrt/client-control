@@ -21,7 +21,8 @@ import ngs_cipher
 from packet_fields import decode_game_body
 from traffic_capture import parse_capture, reassemble_tcp, timestamp_ns, timestamp_text
 from traffic_policy import Policy
-from traffic_protocols import decode_dns_datagram, decode_http_run, decode_maple_run, decode_tls_run
+from traffic_protocols import (PLAIN_TO_WIRE, decode_dns_datagram, decode_http_run, decode_maple_run,
+                               decode_tls_run)
 
 
 SCHEMA = "client-control.traffic.v1"
@@ -319,6 +320,7 @@ class LedgerBuilder:
         self.client_ips = set(client_ips)
         self.processes = ProcessIndex()
         self.traces = TraceIndex()
+        self.pending_packets = []
 
     def input(self, path, kind):
         path = Path(path)
@@ -474,9 +476,9 @@ class LedgerBuilder:
                 "evidence": [packet["evidence"]],
             }
             self.store.add(record, packet.get("time_ns"))
-        streams = reassemble_tcp(packets)
-        for stream in streams:
-            self.add_stream(stream, source)
+        self.pending_packets.extend(
+            packet for packet in packets if packet.get("transport_protocol") == "tcp"
+        )
         for packet in packets:
             if packet.get("transport_protocol") != "udp" or not packet.get("payload"):
                 continue
@@ -901,6 +903,8 @@ class LedgerBuilder:
                              session=event.get("session_id"), transport={"proxy": "mitmproxy", "flow_id": event.get("flow_id"), "blocked": event.get("blocked")})
 
     def finish(self):
+        for stream in reassemble_tcp(self.pending_packets):
+            self.add_stream(stream, "combined_capture")
         self.store.add({
             "kind": "ledger_session",
             "ledger_session_id": self.store.session_id,
@@ -995,9 +999,12 @@ def self_test():
     frames = []
     current = bytes.fromhex("02000000")
     for plain in (bytes(pickup), b"\x70\x00\x05"):
+        wire_body = bytearray(plain)
+        plaintext_opcode = struct.unpack_from("<H", wire_body)[0]
+        struct.pack_into("<H", wire_body, 0, PLAIN_TO_WIRE.get(plaintext_opcode, plaintext_opcode))
         word0 = wire._hs(current) ^ wire.SEND_MASK
-        encrypted = wire.decrypt_body(current, plain, 0)
-        frames.append(struct.pack("<HH", word0, word0 ^ len(plain)) + encrypted)
+        encrypted = wire.decrypt_body(current, bytes(wire_body), 0)
+        frames.append(struct.pack("<HH", word0, word0 ^ len(wire_body)) + encrypted)
         current = wire.tc.getNewIv(current, wire.TABLE)
     joined = b"".join(frames)
     cut = len(frames[0]) - 3
@@ -1043,12 +1050,53 @@ def self_test():
                            and record.get("decode", {}).get("type") == "0x32b")
         assert base64.b64decode(wire_pickup["raw"]["data"]) == frames[0]
         assert wire_pickup["decode"]["fields"]["drop_object_id"] == 0x143FF
+        assert wire_pickup["decode"]["type"] == "0x32b"
+        assert wire_pickup["decode"]["wire_alias"] == "0xfbd0"
         assert wire_pickup["trace"]["chain"]["constructor"]["construction_id"] == "test-session:1"
         assert wire_pickup["trace"]["correlation"]["method"] == "same_length_and_plaintext_after_wire_opcode"
         assert not any(record.get("kind") == "coverage" and record.get("coverage") == "missing_tcp_bytes" for record in records)
         assert summary["counts"]["message"] == 3
         shown = show_record(output, wire_pickup["record_id"], explain=True)
         assert shown["causal_conclusion"] == "not_established"
+
+        part_one = temporary / "part1.pcapng"
+        part_two = temporary / "part2.pcapng"
+        _pcapng_fixture(part_one, [(1000, joined[:cut])])
+        _pcapng_fixture(part_two, [(1000 + cut, joined[cut:])])
+        split_output = temporary / "split-ledger"
+        split_builder = LedgerBuilder(split_output)
+        split_builder.add_capture(part_one)
+        split_builder.add_capture(part_two)
+        split_summary = split_builder.finish()
+        assert verify_ledger(split_output)["records"] == split_summary["records"]
+        split_records = [json.loads(line) for line in (split_output / "traffic.jsonl").open()]
+        split_pickup = next(record for record in split_records if record.get("kind") == "message"
+                            and record.get("decode", {}).get("type") == "0x32b")
+        assert base64.b64decode(split_pickup["raw"]["data"]) == frames[0]
+        assert split_pickup["decode"]["fields"]["drop_object_id"] == 0x143FF
+        split_files = {item["file"] for item in split_pickup["evidence"]}
+        assert str(part_one) in split_files and str(part_two) in split_files
+        assert split_summary["counts"]["message"] == 2
+        assert not any(record.get("coverage") == "missing_tcp_bytes" for record in split_records)
+
+        bundle = temporary / "rotated"
+        bundle.mkdir()
+        _pcapng_fixture(bundle / "events.pcapng.1", [(1000, joined[:cut])])
+        _pcapng_fixture(bundle / "events.pcapng.2", [(1000 + cut, joined[cut:])])
+        rotated_output = temporary / "rotated-ledger"
+        rotated_builder = LedgerBuilder(rotated_output)
+        rotated_builder.add_msmon(bundle)
+        rotated_summary = rotated_builder.finish()
+        assert verify_ledger(rotated_output)["records"] == rotated_summary["records"]
+        rotated_records = [json.loads(line) for line in (rotated_output / "traffic.jsonl").open()]
+        rotated_pickup = next(record for record in rotated_records if record.get("kind") == "message"
+                              and record.get("decode", {}).get("type") == "0x32b")
+        assert base64.b64decode(rotated_pickup["raw"]["data"]) == frames[0]
+        assert rotated_pickup["decode"]["fields"]["drop_object_id"] == 0x143FF
+        rotated_files = {item["file"] for item in rotated_pickup["evidence"]}
+        assert any(name.endswith("events.pcapng.1") for name in rotated_files)
+        assert any(name.endswith("events.pcapng.2") for name in rotated_files)
+        assert rotated_summary["counts"]["message"] == 2
 
         tls_first = b"\x17\x03\x03" + struct.pack(">H", 9000) + b"a" * 9000
         tls_second = b"\x16\x03\x03\x00\x00"

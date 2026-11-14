@@ -13,6 +13,29 @@ KNOWN_OUTGOING = {
     0x70, 0xDB, 0xE1, 0xE7, 0xF4, 0xF5, 0x13F, 0x1A7, 0x1EF,
     0x233, 0x234, 0x235, 0x265, 0x266, 0x2A5, 0x2EF, 0x2FE, 0x326, 0x32B, 0x407,
 }
+# Wire aliases observed in one earlier session (docs/guides/PACKETS.md:97-111).
+# They are evidence for that session, not universal opcode values.
+WIRE_ALIASES = {
+    0x70: 0x70,
+    0xDA82: 0xDB,
+    0xF6C7: 0xE1,
+    0x8E7C: 0xE7,
+    0xD088: 0x13F,
+    0xAA27: 0x1A7,
+    0xD5FD: 0x1EF,
+    0xF70D: 0x2FE,
+    0xFBD0: 0x32B,
+    0xA817: 0x407,
+}
+PLAIN_TO_WIRE = {plain: wire for wire, plain in WIRE_ALIASES.items()}
+ALIAS_EVIDENCE = "docs/guides/PACKETS.md:97-111"
+
+
+def alias_to_opcode(alias, body_length=None):
+    """Map a decrypted wire opcode alias to its plaintext opcode when evidenced."""
+    if alias == 0xD5FD and body_length is not None and body_length != 14:
+        return None
+    return WIRE_ALIASES.get(alias)
 
 
 def load_wire():
@@ -56,9 +79,10 @@ def _start_layer(wire, iv, body):
         plain = wire.decrypt_body(iv, body, layer)
         if len(plain) >= 2:
             opcode = struct.unpack_from("<H", plain)[0]
+            mapped = alias_to_opcode(opcode, len(plain))
             if opcode < 0x400:
                 candidates.append(layer)
-            if opcode in KNOWN_OUTGOING:
+            if opcode in KNOWN_OUTGOING or (mapped is not None and mapped in KNOWN_OUTGOING):
                 known.append(layer)
     if len(known) == 1:
         return known[0], "known_opcode"
@@ -101,14 +125,18 @@ def decode_maple_run(data, direction):
     layer_known = direction == "server_to_client"
     if direction == "client_to_server":
         for index in range(seed[0], len(frames)):
-            if len(frames[index]["body"]) >= 16:
-                iv = seed[1]
-                for _ in range(index - seed[0]):
-                    iv = wire.tc.getNewIv(iv, wire.TABLE)
-                start_layer, evidence = _start_layer(wire, iv, frames[index]["body"])
-                layer_known = evidence != "ambiguous_legacy_heuristic"
-                result["cipher_evidence"]["start_layer"] = start_layer
-                result["cipher_evidence"]["start_layer_evidence"] = evidence
+            if len(frames[index]["body"]) < 2:
+                continue
+            iv = seed[1]
+            for _ in range(index - seed[0]):
+                iv = wire.tc.getNewIv(iv, wire.TABLE)
+            if (wire._hs(iv) ^ mask) != frames[index]["word0"]:
+                continue
+            start_layer, evidence = _start_layer(wire, iv, frames[index]["body"])
+            layer_known = evidence != "ambiguous_legacy_heuristic"
+            result["cipher_evidence"]["start_layer"] = start_layer
+            result["cipher_evidence"]["start_layer_evidence"] = evidence
+            if layer_known:
                 break
         if not layer_known:
             result["cipher_evidence"]["start_layer"] = None
@@ -123,14 +151,39 @@ def decode_maple_run(data, direction):
             if direction == "server_to_client"
             else wire.decrypt_body(iv, frame["body"], start_layer)
         ) if can_decrypt else None
-        decoded = decode_game_body(plain, direction) if can_decrypt else {
-            "protocol": "maple",
-            "type": None,
-            "name": None,
-            "status": "iv_out_of_sync" if not synced else "cipher_layer_unknown",
-            "fields": {},
-            "unresolved_ranges": [{"offset": 0, "length": len(frame["body"])}],
-        }
+        decoded_body = plain
+        alias = None
+        mapped = None
+        if can_decrypt and direction == "client_to_server" and len(plain) >= 2:
+            alias = struct.unpack_from("<H", plain)[0]
+            mapped = alias_to_opcode(alias, len(plain))
+            if mapped is not None:
+                decoded_body = struct.pack("<H", mapped) + plain[2:]
+        if can_decrypt and direction == "client_to_server" and mapped is None:
+            decoded = {
+                "protocol": "maple",
+                "type": None,
+                "name": None,
+                "status": "unmapped_wire_opcode",
+                "fields": {},
+                "unresolved_ranges": [{"offset": 0, "length": len(plain)}],
+            }
+        else:
+            decoded = decode_game_body(decoded_body, direction) if can_decrypt else {
+                "protocol": "maple",
+                "type": None,
+                "name": None,
+                "status": "iv_out_of_sync" if not synced else "cipher_layer_unknown",
+                "fields": {},
+                "unresolved_ranges": [{"offset": 0, "length": len(frame["body"])}],
+            }
+        if can_decrypt and direction == "client_to_server" and alias is not None:
+            decoded["wire_alias"] = f"0x{alias:04x}"
+            decoded["alias_mapping"] = {
+                "plaintext_opcode": f"0x{mapped:04x}" if mapped is not None else None,
+                "status": "mapped" if mapped is not None else "unmapped_wire_opcode",
+                "evidence": ALIAS_EVIDENCE if mapped is not None else None,
+            }
         decoded["iv"] = iv.hex()
         decoded["iv_synced"] = synced
         decoded["cipher_evidence"] = result["cipher_evidence"]
@@ -326,27 +379,54 @@ def self_test():
     struct.pack_into("<I", body, 15, 99)
     wire = load_wire()
     iv = bytes.fromhex("02000000")
+
+    def seal(plain, current, layer=0):
+        wire_body = bytearray(plain)
+        if len(wire_body) >= 2:
+            plaintext_opcode = struct.unpack_from("<H", wire_body)[0]
+            struct.pack_into("<H", wire_body, 0, PLAIN_TO_WIRE.get(plaintext_opcode, plaintext_opcode))
+        word0 = wire._hs(current) ^ wire.SEND_MASK
+        encrypted = wire.decrypt_body(current, bytes(wire_body), layer)
+        return struct.pack("<HH", word0, word0 ^ len(wire_body)) + encrypted
+
     encoded = []
     current = iv
     for plain in (bytes(body), b"\x70\x00\x05"):
-        word0 = wire._hs(current) ^ wire.SEND_MASK
-        encrypted = wire.decrypt_body(current, plain, 0)
-        encoded.append(struct.pack("<HH", word0, word0 ^ len(plain)) + encrypted)
+        encoded.append(seal(plain, current))
         current = wire.tc.getNewIv(current, wire.TABLE)
     result = decode_maple_run(b"".join(encoded), "client_to_server")
     assert result["recognized"] and len(result["frames"]) == 2
-    assert result["frames"][0]["plaintext"] == bytes(body)
-    assert result["frames"][0]["decode"]["fields"]["drop_object_id"] == 99
+    pickup = result["frames"][0]
+    alias_body = bytearray(body)
+    struct.pack_into("<H", alias_body, 0, PLAIN_TO_WIRE[0x32B])
+    assert pickup["plaintext"] == bytes(alias_body)
+    assert pickup["decode"]["type"] == "0x32b"
+    assert pickup["decode"]["name"] == "pickup_request"
+    assert pickup["decode"]["fields"]["drop_object_id"] == 99
+    assert pickup["decode"]["wire_alias"] == "0xfbd0"
+    assert pickup["decode"]["alias_mapping"]["status"] == "mapped"
+
     short_frames = []
     current = iv
     for plain in (b"\x70\x00\x05", b"\x70\x00\x06"):
-        word0 = wire._hs(current) ^ wire.SEND_MASK
-        encrypted = wire.decrypt_body(current, plain, 0)
-        short_frames.append(struct.pack("<HH", word0, word0 ^ len(plain)) + encrypted)
+        short_frames.append(seal(plain, current))
         current = wire.tc.getNewIv(current, wire.TABLE)
     short_result = decode_maple_run(b"".join(short_frames), "client_to_server")
-    assert short_result["frames"][0]["plaintext"] is None
-    assert short_result["frames"][0]["decode"]["status"] == "cipher_layer_unknown"
+    assert short_result["frames"][0]["plaintext"] is not None
+    assert short_result["frames"][0]["decode"]["type"] == "0x70"
+
+    ambiguous_body = bytearray(36)
+    struct.pack_into("<H", ambiguous_body, 0, 0x400)
+    usable_body = bytearray(11)
+    struct.pack_into("<H", usable_body, 0, 0x70)
+    continued = seal(bytes(ambiguous_body), iv, 0)
+    continued += seal(bytes(usable_body), wire.tc.getNewIv(iv, wire.TABLE), 0)
+    continued_result = decode_maple_run(continued, "client_to_server")
+    assert continued_result["cipher_evidence"]["start_layer_evidence"] == "known_opcode"
+    assert continued_result["frames"][0]["plaintext"] is not None
+    assert continued_result["frames"][0]["decode"]["status"] == "unmapped_wire_opcode"
+    assert continued_result["frames"][1]["decode"]["type"] == "0x70"
+
     tls = b"\x17\x03\x03\x00\x03abc" + b"\x16\x03\x03\x00\x00"
     assert len(decode_tls_run(tls)["frames"]) == 2
     http = b"POST /v2 HTTP/1.1\r\nHost: x-csauth.ngs.nexon.com\r\nContent-Length: 3\r\n\r\nabc"
