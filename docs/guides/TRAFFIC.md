@@ -1,7 +1,9 @@
 # Ordered client→server traffic ledger
 
 The `traffic/` package builds a single ordered record from game pcaps, plaintext
-`SendPacket` captures, monitor-filter session bundles, and NGS proxy logs. It
+`SendPacket` captures, session bundles, NGS proxy logs, and its own standalone
+tcpdump capture. It is self-contained: the session schema/chain verifier it uses
+are vendored in `traffic/vendor/`, so no monitor-filter checkout is needed. It
 reassembles split/combined/retransmitted TCP messages, decrypts the game
 transport where the IV is uniquely recoverable, joins wire frames to in-process
 constructors, decodes only documented fields, and marks every missing piece of
@@ -13,11 +15,15 @@ Full usage, schema, source limits and policy dimensions:
 ## Common commands
 
 ```bash
+# Standalone capture: dumpcap/tcpdump bytes + periodic /proc socket attribution.
+python3 -m traffic capture --seconds 300 --out captures/session
+
 # Build a ledger.
 .venv/bin/python -m traffic ingest \
-  --pcap captures/outgoing-session-*.pcap \
+  --pcap captures/session/capture.pcap \
+  --attribution captures/session/attribution.jsonl \
   --capture captures/outgoing-events-*.jsonl \
-  --monitor ~/monfilter-sessions/<run>/<session> \
+  --session <optional-msmon-compatible-bundle> \
   --ngs captures/ngs-events-*.jsonl \
   --out captures/ledger
 
@@ -35,7 +41,7 @@ Full usage, schema, source limits and policy dimensions:
 .venv/bin/python -m traffic filter captures/ledger \
   --policy traffic/examples/audit-game.json --out captures/ledger-filtered
 
-# Emit the subset monitor-filter's kfilter message layer can enforce.
+# Emit an optional kfilter-compatible policy fragment (no runtime dependency).
 .venv/bin/python -m traffic kfilter-policy \
   --policy traffic/examples/audit-game.json --out captures/kfilter-messages.policy
 ```
@@ -59,6 +65,6 @@ packet. The NGS proxy hook is:
 
 The kernel bridge and its limits (ciphertext at the syscall boundary, dynamic
 hosts and decoded fields not translated) are documented in
-[`traffic/README.md`](../../traffic/README.md). Windows monitor sessions provide
-flow metadata and decisions, not packet payloads, so use the Linux monitor pcapng
+[`traffic/README.md`](../../traffic/README.md). Windows session logs provide flow
+metadata and decisions, not packet payloads, so use the standalone Linux capture
 or a separate packet capture there.

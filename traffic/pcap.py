@@ -3,18 +3,20 @@
 Supported capture sources:
   * classic pcap (microsecond and nanosecond, both byte orders)
   * pcapng (SHB/IDB/EPB/SPB, per-interface timestamp resolution, EPB options)
-  * monitor-filter's LINKTYPE_RAW pcapng parts and its pid/socket comments
+  * msmon-compatible LINKTYPE_RAW pcapng parts and their pid/socket comments
 
 Only parsing is done here. TCP stream reconstruction is in tcp.py.
 """
 
 from __future__ import annotations
 
+import shutil
 import struct
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .util import sha256_file
+from .archive import extract_bundle
+from .util import file_identity, sha256_file
 
 
 PCAP_MAGICS = {
@@ -538,7 +540,7 @@ def discover_capture_files(paths):
             candidates = []
             for pattern in ("*.pcap", "*.pcapng"):
                 candidates.extend(path.glob(pattern))
-            # monitor-filter stores parts as events.pcapng.1, events.pcapng.2, ...
+            # msmon-compatible bundles store parts as events.pcapng.1, events.pcapng.2, ...
             for candidate in path.iterdir():
                 if candidate.is_file() and candidate.name.startswith("events.pcapng"):
                     candidates.append(candidate)
@@ -556,22 +558,41 @@ def discover_capture_files(paths):
     return result
 
 
+def _read_capture(path, inventory):
+    try:
+        with open(path, "rb") as handle:
+            magic = handle.read(4)
+    except OSError as error:
+        inventory.add_note(path, "open_failed", {"error": str(error)})
+        return
+    if magic in PCAP_MAGICS:
+        _read_pcap(path, inventory)
+    elif magic == b"\x0a\x0d\x0d\x0a":
+        _read_pcapng(path, inventory)
+    else:
+        inventory.add_note(path, "unknown_capture_format", {"magic": magic.hex()})
+
+
 def read_packets(paths):
     inventory = CaptureInventory()
-    for path in discover_capture_files(paths):
-        path = Path(path)
-        try:
-            with open(path, "rb") as handle:
-                magic = handle.read(4)
-        except OSError as error:
-            inventory.add_note(path, "open_failed", {"error": str(error)})
+    for value in paths:
+        path = Path(value)
+        if path.is_file() and path.suffix.lower() == ".zip":
+            directory, extracted = extract_bundle(path)
+            try:
+                sub = read_packets(extracted)
+                inventory.packets.extend(sub.packets)
+                inventory.files.extend(sub.files)
+                inventory.notes.extend(sub.notes)
+            finally:
+                shutil.rmtree(directory, ignore_errors=True)
+            inventory.files.append(file_identity(path))
+            inventory.add_note(path, "session_archive_extracted", {
+                "members": [member.name for member in extracted],
+            })
             continue
-        if magic in PCAP_MAGICS:
-            _read_pcap(path, inventory)
-        elif magic == b"\x0a\x0d\x0d\x0a":
-            _read_pcapng(path, inventory)
-        else:
-            inventory.add_note(path, "unknown_capture_format", {"magic": magic.hex()})
+        for capture_path in discover_capture_files([path]):
+            _read_capture(capture_path, inventory)
     inventory.packets.sort(key=lambda packet: (
         packet.time_ns if packet.time_ns is not None else 0,
         packet.source_file,

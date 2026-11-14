@@ -1,12 +1,18 @@
-"""Ingest monitor-filter session bundles: network bytes, flows, TCP events, decisions."""
+"""Ingest msmon-compatible session bundles: network bytes, flows, TCP events, decisions.
+
+The format and its chain verifier are vendored under traffic/vendor; no external
+monitor-filter checkout is needed.
+"""
 
 from __future__ import annotations
 
 import base64
 import re
+import shutil
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from .archive import extract_bundle
 from .util import file_identity, iter_jsonl, parse_time_ns, read_json
 
 
@@ -138,6 +144,7 @@ class MonitorCapture:
     notes: list[dict] = field(default_factory=list)
     session_meta: dict | None = None
     manifest: dict | None = None
+    chain_verification: dict | None = None
     event_count: int = 0
 
     def summary(self):
@@ -153,6 +160,7 @@ class MonitorCapture:
             "processes": len(self.processes),
             "images": len(self.images),
             "session_meta": self.session_meta,
+            "chain_verification": self.chain_verification,
             "notes": self.notes,
         }
 
@@ -407,12 +415,46 @@ def _finish_operations(capture, operations):
             capture.calls.append(call)
 
 
-def load_monitor(paths):
+def _merge_capture(target, source, archive_path=None):
+    target.calls.extend(source.calls)
+    target.flows.extend(source.flows)
+    target.tcp_events.extend(source.tcp_events)
+    target.decisions.extend(source.decisions)
+    target.dns.extend(source.dns)
+    target.tls_plaintext.extend(source.tls_plaintext)
+    target.processes.extend(source.processes)
+    target.images.extend(source.images)
+    target.notes.extend(source.notes)
+    target.event_count += source.event_count
+    target.session_meta = source.session_meta or target.session_meta
+    target.manifest = source.manifest or target.manifest
+    target.chain_verification = source.chain_verification or target.chain_verification
+    for item in source.files:
+        if archive_path:
+            item = dict(item, archive=str(archive_path))
+        target.files.append(item)
+
+
+def load_monitor(paths, verify_chain=False):
     capture = MonitorCapture()
     directories = []
     files = []
     for value in paths:
         path = Path(value)
+        if path.is_file() and path.suffix.lower() == ".zip":
+            directory, extracted = extract_bundle(path)
+            try:
+                sub = load_monitor([directory], verify_chain=verify_chain)
+                _merge_capture(capture, sub, archive_path=path)
+                capture.files.append(file_identity(path))
+                capture.notes.append({
+                    "source": str(path),
+                    "reason": "session_archive_extracted",
+                    "members": [member.name for member in extracted],
+                })
+            finally:
+                shutil.rmtree(directory, ignore_errors=True)
+            continue
         if path.is_dir():
             directories.append(path)
             manifest = path / "manifest.json"
@@ -437,6 +479,12 @@ def load_monitor(paths):
             annotated.append((line_number, record))
         _read_events(path, annotated, capture, operations)
     _finish_operations(capture, operations)
+    if verify_chain and files:
+        from .vendor.verify_msmon_log import verify
+        try:
+            capture.chain_verification = verify(files)
+        except (OSError, ValueError, KeyError) as error:
+            raise ValueError(f"session chain verification failed: {error}") from error
     for collection in (capture.calls, capture.flows, capture.tcp_events, capture.decisions,
                        capture.tls_plaintext):
         collection.sort(key=lambda item: (

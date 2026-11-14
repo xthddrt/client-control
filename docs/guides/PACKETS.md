@@ -277,7 +277,9 @@ Thus the four `0x2a5` messages after the first kill are batched mouse/keyboard i
 ## Ordered traffic ledger and pre-send policy
 
 `python -m traffic` builds an ordered client→server record from the outgoing
-JSONL, raw pcap/pcapng, monitor-filter session bundles and NGS proxy logs. It
+JSONL, raw pcap/pcapng, session bundles and NGS proxy logs. It is self-contained
+(session schema/verifier vendored) and also has its own tcpdump+`/proc` capture.
+It
 reassembles split/combined/retransmitted TCP messages, joins plaintext sends to
 wire frames, decodes documented fields, and marks missing evidence explicitly.
 See [`TRAFFIC.md`](TRAFFIC.md) and [`traffic/README.md`](../../traffic/README.md).
@@ -292,7 +294,7 @@ Every `SendPacket` gets a logged decision. Only an explicit `drop` suppresses
 the packet; destination matching uses the process's current established socket
 and is marked ambiguous when SendPacket has several. `ngs-proxy.py` accepts the
 same policy format for NGS/launcher requests, and `python -m traffic
-kfilter-policy` emits the subset expressible as monitor-filter message rules.
+kfilter-policy` optionally emits a kfilter-compatible policy fragment.
 
 ## What remains unresolved
 

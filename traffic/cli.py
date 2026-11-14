@@ -8,6 +8,7 @@ import sys
 import unittest
 from pathlib import Path
 
+from .capture import capture
 from .explain import explain, format_text, trace
 from .ledger import build, load_records, write_ledger
 from .policy import evaluate, load_policy, policy_to_kfilter
@@ -19,8 +20,11 @@ def _add_inputs(parser):
                         help="pcap/pcapng file or directory; repeatable")
     parser.add_argument("--capture", action="append", default=[], metavar="PATH",
                         help="client-control send/constructor JSONL file or directory; repeatable")
-    parser.add_argument("--monitor", action="append", default=[], metavar="PATH",
-                        help="monitor-filter session bundle, events.jsonl, or directory; repeatable")
+    parser.add_argument("--session", "--monitor", action="append", default=[], dest="monitor",
+                        metavar="PATH",
+                        help="msmon-compatible session bundle, events.jsonl, or directory; repeatable")
+    parser.add_argument("--attribution", action="append", default=[], metavar="PATH",
+                        help="attribution.jsonl from `python -m traffic capture`; repeatable")
     parser.add_argument("--ngs", action="append", default=[], metavar="PATH",
                         help="ngs-mitm.py / ngs-proxy.py JSONL or .mitm file; repeatable")
 
@@ -31,12 +35,14 @@ def _cmd_ingest(args):
         plaintext_paths=args.capture,
         monitor_paths=args.monitor,
         ngs_paths=args.ngs,
+        attribution_paths=args.attribution,
         policy_path=args.policy,
         client_endpoint=tuple(args.client_endpoint.rsplit(":", 1)) if args.client_endpoint else None,
         include_chunks=not args.no_chunks,
         join_window_ns=int(args.join_window * 1_000_000_000),
         label=args.label,
         profile_path=args.profile,
+        verify_session=args.verify_session,
     )
     out = write_ledger(ledger, args.out)
     print(f"WROTE {out}")
@@ -222,6 +228,19 @@ def _cmd_kfilter(args):
     return 0
 
 
+def _cmd_capture(args):
+    result = capture(
+        seconds=args.seconds,
+        out_dir=args.out,
+        interface=args.interface,
+        pcap_filter=args.pcap_filter,
+        poll_interval=args.poll,
+        pids=args.pid or None,
+    )
+    print(json.dumps(result, indent=2, sort_keys=True))
+    return 0
+
+
 def _cmd_selftest(args):
     start = Path(__file__).resolve().parent
     suite = unittest.defaultTestLoader.discover(str(start / "tests"), pattern="test_*.py")
@@ -249,6 +268,8 @@ def build_parser():
     ingest.add_argument("--label", help="operator label stored in the session record")
     ingest.add_argument("--profile", metavar="FILE", help="override foundations/profile.json")
     ingest.add_argument("--print-messages", action="store_true")
+    ingest.add_argument("--verify-session", action="store_true",
+                        help="verify the vendored msmon event-log hash chain before using it")
     ingest.set_defaults(func=_cmd_ingest)
 
     show = sub.add_parser("show", help="list messages from a ledger")
@@ -287,6 +308,19 @@ def build_parser():
     kfilter.add_argument("--policy", required=True)
     kfilter.add_argument("--out")
     kfilter.set_defaults(func=_cmd_kfilter)
+
+    capture_parser = sub.add_parser(
+        "capture", help="capture packets with dumpcap/tcpdump and attribute sockets via /proc"
+    )
+    capture_parser.add_argument("--seconds", required=True, type=float)
+    capture_parser.add_argument("--out", required=True, metavar="DIR")
+    capture_parser.add_argument("--interface", default="any")
+    capture_parser.add_argument("--pcap-filter", default="tcp or udp")
+    capture_parser.add_argument("--poll", type=float, default=0.5,
+                                help="seconds between /proc attribution snapshots")
+    capture_parser.add_argument("--pid", action="append", type=int, default=[],
+                                help="limit attribution to this PID; repeatable")
+    capture_parser.set_defaults(func=_cmd_capture)
 
     selftest = sub.add_parser("selftest", help="run the offline unit tests")
     selftest.set_defaults(func=_cmd_selftest)

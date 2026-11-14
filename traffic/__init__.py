@@ -1,7 +1,7 @@
 """Ordered client->server traffic ledger for MapleStory, its launcher, NGS and helpers.
 
 The package is deliberately offline-first: every byte comes from a named source file
-(pcap/pcapng, client-control JSONL, monitor events, or an NGS proxy log) and every
+(pcap/pcapng, client-control JSONL, session events, attribution, or an NGS proxy log) and every
 missing value is represented as missing evidence rather than a guess.
 """
 

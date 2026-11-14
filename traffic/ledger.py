@@ -19,6 +19,7 @@ from .decode import (
     decode_ngs_response,
     tls_client_hello_sni,
 )
+from .attribution import load_attribution, match_flow
 from .game import decrypt_frames, join_frames, parse_frames
 from .monitor import load_monitor
 from .ngs import load_ngs
@@ -169,7 +170,7 @@ def _source_sessions(plaintext, monitor):
     return sessions
 
 
-def _flow_process(flow, monitor, plaintext, process_index):
+def _flow_process(flow, monitor, plaintext, process_index, attribution=None):
     if flow.process and flow.process.get("pid"):
         pid = flow.process.get("pid")
         known = process_index.get(pid, {})
@@ -180,6 +181,9 @@ def _flow_process(flow, monitor, plaintext, process_index):
             attribution="pcapng_socket_owner",
             candidates=flow.process.get("candidates"),
         )
+    attributed, _ = match_flow(attribution, flow)
+    if attributed is not None and attributed.get("pid") is not None:
+        return attributed
     # Match a monitor network call or flow event by remote endpoint and time.
     candidates = []
     start = flow.c2s.first_time_ns if flow.c2s else None
@@ -209,7 +213,7 @@ def _flow_process(flow, monitor, plaintext, process_index):
     # consistent with the capture; the caller decides that, not this function.
     return _process_record(
         attribution="missing",
-        missing_reason="no pcapng socket owner and no monitor network call matched this flow",
+        missing_reason="no pcapng socket owner, attribution sidecar, or monitor call matched this flow",
     )
 
 
@@ -1395,7 +1399,8 @@ def _annotate_missing(record):
 
 def build(pcap_paths=None, plaintext_paths=None, monitor_paths=None, ngs_paths=None,
           policy_path=None, client_endpoint=None, include_chunks=True,
-          join_window_ns=DEFAULT_JOIN_WINDOW_NS, label=None, profile_path=None):
+          join_window_ns=DEFAULT_JOIN_WINDOW_NS, label=None, profile_path=None,
+          verify_session=False, attribution_paths=None):
     pcap_paths = pcap_paths or []
     plaintext_paths = plaintext_paths or []
     monitor_paths = monitor_paths or []
@@ -1404,7 +1409,8 @@ def build(pcap_paths=None, plaintext_paths=None, monitor_paths=None, ngs_paths=N
     ledger_session_id = uuid.uuid4().hex
     packets = read_packets(pcap_paths)
     plaintext = load_plaintext(plaintext_paths)
-    monitor = load_monitor(monitor_paths)
+    monitor = load_monitor(monitor_paths, verify_chain=verify_session)
+    attribution = load_attribution(attribution_paths or [])
     ngs = load_ngs(ngs_paths)
     profile = None
     if profile_path:
@@ -1421,6 +1427,7 @@ def build(pcap_paths=None, plaintext_paths=None, monitor_paths=None, ngs_paths=N
     all_notes = []
     all_notes.extend(packets.notes)
     all_notes.extend(monitor.notes)
+    all_notes.extend(attribution.notes)
     all_notes.extend(ngs.notes)
     all_notes.extend(plaintext.notes)
 
@@ -1433,7 +1440,7 @@ def build(pcap_paths=None, plaintext_paths=None, monitor_paths=None, ngs_paths=N
     tls_by_host = {}
 
     for flow in flows:
-        process = _flow_process(flow, monitor, plaintext, process_index)
+        process = _flow_process(flow, monitor, plaintext, process_index, attribution)
         flow_record = _flow_record(flow, process, ledger_session_id, build_info, source_sessions)
         records.append(flow_record)
         c2s = flow.c2s
@@ -1721,6 +1728,7 @@ def build(pcap_paths=None, plaintext_paths=None, monitor_paths=None, ngs_paths=N
             "pcap": packets.files,
             "plaintext": plaintext.files,
             "monitor": monitor.files,
+            "attribution": attribution.files,
             "ngs": ngs.files,
         },
         "capture_notes": all_notes,
@@ -1770,13 +1778,16 @@ def build(pcap_paths=None, plaintext_paths=None, monitor_paths=None, ngs_paths=N
             "pcap_files": packets.files,
             "plaintext_files": plaintext.files,
             "monitor_files": monitor.files,
+            "attribution_files": attribution.files,
             "ngs_files": ngs.files,
         },
         "source_summaries": {
             "plaintext": plaintext.summary(),
             "monitor": monitor.summary(),
+            "attribution": attribution.summary(),
             "ngs": ngs.summary(),
         },
+        "session_chain_verification": monitor.chain_verification,
         "capture_notes": all_notes,
         "limitations": LIMITATIONS,
         "policy": policy.summary() if policy else None,

@@ -1,14 +1,18 @@
 # Ordered client→server traffic ledger
 
 `traffic/` builds one ordered record of every captured client→server byte from
-MapleStory, its launcher, NGS and helpers. It joins:
+MapleStory, its launcher, NGS and helpers. It is self-contained: no checkout of
+another repository is required. It joins:
 
-- raw packets (`pcap` / `pcapng`, including monitor-filter's `events.pcapng`);
+- raw packets (`pcap` / `pcapng`), including msmon-compatible session pcapng;
 - in-process plaintext `SendPacket` records (the schema-v1 outgoing logger and
   older `packet-observe`/`drop-observe`/`focus-observe` JSONL);
-- monitor-filter session events (`network_data` syscall bytes, flow lifecycle,
-  `etw_tcp`, `kfilter_decision`, DNS);
-- NGS proxy logs (`ngs-mitm.py`, `ngs-proxy.py`, `.mitm`).
+- session events (`network_data` syscall bytes, flow lifecycle, `etw_tcp`,
+  `kfilter_decision`, DNS) with the format reader and chain verifier vendored in
+  `traffic/vendor/`;
+- NGS proxy logs (`ngs-mitm.py`, `ngs-proxy.py`, `.mitm`);
+- its own `traffic capture` output: dumpcap/tcpdump pcap plus a `/proc`
+  attribution sidecar.
 
 It then reconstructs TCP streams, splits and combines application messages,
 decrypts the game transport where the IV chain is uniquely recoverable, decodes
@@ -22,14 +26,19 @@ so. It is never given a guessed name or a fabricated byte.
 ## Quick start
 
 ```bash
-# 1. Capture the game plaintext and pcap, optionally with a live policy.
+# 1a. Standalone capture: tcpdump bytes + /proc process attribution.
+python3 -m traffic capture --seconds 300 --out captures/session-20261113
+
+# 1b. Optional: plaintext SendPacket evidence and a live policy for the game.
 analysis/capture-outgoing.sh 300 --deep-opcode 0x32b
 
+# 1c. Optional: an existing msmon-compatible session directory/file, or NGS log.
 # 2. Build one ledger from whatever sources you have.
 .venv/bin/python -m traffic ingest \
-  --pcap captures/outgoing-session-20261113-120000.pcap \
+  --pcap captures/session-20261113/capture.pcap \
+  --attribution captures/session-20261113/attribution.jsonl \
   --capture captures/outgoing-events-20261113-120000.jsonl \
-  --monitor ~/monfilter-sessions/<run>/<session> \
+  --session <optional-session-bundle> \
   --ngs captures/ngs-events-20261113-120000.jsonl \
   --out captures/ledger-20261113
 
@@ -72,7 +81,7 @@ Record types:
 - `flow` — a TCP/UDP flow summary, with client/server inference and socket
   attribution.
 - `flow_event` — monitor connect/accept/close/reset/retransmit evidence.
-- `filter_decision` — a monitor `kfilter_decision` or NGS proxy decision.
+- `filter_decision` — an ingested `kfilter_decision` or NGS proxy decision.
 - `notice` — parser/capture limitation, never a silent drop.
 
 ### Message fields
@@ -251,12 +260,12 @@ timestamps so proxy events can be ordered.
 
 ### Kernel bridge
 
-`python -m traffic kfilter-policy --policy FILE` emits the subset of a policy
-that monitor-filter's Linux kfilter message rules can enforce. kfilter sees
-ciphertext at the syscall boundary, so decoded opcodes/fields and dynamic hosts
-are emitted as explicit "not translated" comments. The supported subset is
-process image, IP/port/protocol, size, and an explicit raw byte match, with
-`message-default allow|deny`.
+`python -m traffic kfilter-policy --policy FILE` emits a kfilter-compatible
+message-policy fragment. It is only an export: client-control does not run or
+require kfilter. kfilter sees ciphertext at the syscall boundary, so decoded
+opcodes/fields and dynamic hosts are emitted as explicit "not translated"
+comments. The supported subset is process image, IP/port/protocol, size, and an
+explicit raw byte match, with `message-default allow|deny`.
 
 ## Source-specific limits
 
@@ -264,16 +273,16 @@ process image, IP/port/protocol, size, and an explicit raw byte match, with
   client direction from SYN, capture direction, private address or service port,
   but Process is `missing` unless a matching monitor call or plaintext send
   supplies it. Use `--client-endpoint IP:PORT` when inference is ambiguous.
-- **pcapng** process/socket fields come from monitor-filter's EPB comments. They
+- **msmon-compatible pcapng** process/socket fields come from EPB comments. They
   name the socket owner, not necessarily the process that sent a specific
   packet.
 - **monitor `network_data`** is a syscall send stream: exact bytes and PID, but
   no TCP sequence numbers or retransmissions. It is used as a fallback only for
   sockets the pcap did not cover; pcap remains the primary reconstruction.
-- **Windows monitor** currently records WFP/ETW flow metadata and kfilter
+- **Windows session logs** currently contain WFP/ETW flow metadata and kfilter
   decisions, not packet payloads. A Windows-only session therefore yields flow
   and decision records without reconstructable bytes until a packet source is
-  added. Linux monitor sessions provide `events.pcapng` and syscall bytes.
+  added. Linux session logs provide `events.pcapng` and syscall bytes.
 - **NGS request bodies** are not decryptable here. Only exact bytes, method,
   host, path, headers and the decoded server response are recorded.
 - **TLS** application data is opaque unless a proxy or TLS plaintext source
@@ -282,6 +291,19 @@ process image, IP/port/protocol, size, and an explicit raw byte match, with
   Deep serializer steps exist only for opcodes passed to `--deep-opcode`.
 - Captures can have gaps. See `capture_gap`, `capture_notes`,
   `summary.capture_notes`, and monitor's own coverage/drop counters.
+
+## Standalone capture vs. session import
+
+`python -m traffic capture` needs only Linux, `tcpdump`, `/proc`, and permission
+to read the socket table. It writes `capture.pcap`, `attribution.jsonl` and
+`capture.json`. Process attribution is a periodic snapshot; a short-lived socket
+or a Wine broker-owned fd can be missing or ambiguous, and the ledger marks it
+that way.
+
+`--session` (also accepted as `--monitor`) imports an already-produced
+msmon-compatible bundle. The event schema and chain verifier are vendored in
+`traffic/vendor/`, so no monitor-filter checkout, Python path, daemon or driver
+is needed. Use `--verify-session` to verify the hash chain before ingesting.
 
 ## Tests
 
@@ -298,7 +320,8 @@ The offline suite in `traffic/tests/` covers:
   refusal;
 - kfilter translation warnings;
 - DNS/UDP records;
-- `explain` evidence-vs-causality wording.
+- `explain` evidence-vs-causality wording;
+- standalone attribution matching and the vendored chain verifier.
 
-`python -m traffic selftest` runs them without root, a game client or network
-access.
+`python -m traffic selftest` runs them without root, a game client, network
+access or another repository.

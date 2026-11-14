@@ -5,6 +5,7 @@ import json
 import struct
 import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 from traffic.decode import PLAIN_TO_WIRE, decode_game, tls_client_hello_sni
@@ -498,6 +499,85 @@ class TlsNgsTest(unittest.TestCase):
             self.assertEqual(destination["port"], 443)
             self.assertEqual(destination["observed_flow_endpoint"]["ip"], server[0])
             self.assertEqual(ngs[0]["response_evidence"]["decoded"]["emergency_stop"], 1)
+
+
+class StandaloneAttributionTest(unittest.TestCase):
+    def test_attribution_sidecar_supplies_process_without_monitor_filter(self):
+        with tempfile.TemporaryDirectory() as raw:
+            tmp = Path(raw)
+            pcap, plaintext, *_ = _game_pcap(tmp)
+            sidecar = tmp / "attribution.jsonl"
+            sidecar.write_text(json.dumps({
+                "kind": "attribution", "protocol": "tcp",
+                "local": list(CLIENT), "remote": list(SERVER),
+                "pid": 4242, "name": "MapleStory.exe",
+                "path": "/game/MapleStory.exe", "socket_inode": 99,
+                "first_seen_ns": BASE_NS, "last_seen_ns": BASE_NS + 10_000_000_000,
+                "observations": 10,
+            }) + "\n")
+            ledger = build(
+                pcap_paths=[pcap], plaintext_paths=[plaintext],
+                attribution_paths=[sidecar],
+            )
+            messages = [record for record in ledger.records if record.get("record_type") == "message"]
+            self.assertEqual(len(messages), 2)
+            self.assertEqual(messages[0]["process"]["pid"], 4242)
+            self.assertEqual(messages[0]["process"]["name"], "MapleStory.exe")
+            self.assertEqual(messages[0]["process"]["attribution"], "tcpdump_proc_attribution")
+
+    def test_vendored_chain_verifier_accepts_and_rejects(self):
+        from traffic.vendor.verify_msmon_log import verify
+        with tempfile.TemporaryDirectory() as raw:
+            tmp = Path(raw)
+            previous = "0" * 64
+            lines = []
+            for index in (1, 2):
+                record = {
+                    "protocol": 4, "source": "driver", "sequence": index,
+                    "type": "network_data", "record_index": index,
+                }
+                body = json.dumps(record, separators=(",", ":"))[:-1]
+                chain = __import__("hashlib").sha256(
+                    (previous + body + "}").encode()
+                ).hexdigest()
+                record["chain"] = chain
+                lines.append(json.dumps(record, separators=(",", ":")))
+                previous = chain
+            path = tmp / "events.jsonl"
+            path.write_text("\n".join(lines) + "\n")
+            result = verify([path])
+            self.assertEqual(result["lines"], 2)
+            path.write_text(path.read_text().replace('"sequence":2', '"sequence":3'))
+            with self.assertRaises(ValueError):
+                verify([path])
+
+
+class ArchiveTest(unittest.TestCase):
+    def test_zipped_pcap_and_session_need_no_external_repo(self):
+        with tempfile.TemporaryDirectory() as raw:
+            tmp = Path(raw)
+            pcap, plaintext, *_ = _game_pcap(tmp)
+            pcap_zip = tmp / "capture.zip"
+            with zipfile.ZipFile(pcap_zip, "w") as archive:
+                archive.write(pcap, "capture.pcap")
+            ledger = build(pcap_paths=[pcap_zip])
+            messages = [record for record in ledger.records if record.get("record_type") == "message"]
+            self.assertEqual(len(messages), 2)
+
+            events = tmp / "events.jsonl"
+            events.write_text(json.dumps({
+                "type": "kfilter_decision", "timestamp": "2023-11-14T22:13:22.100Z",
+                "process_id": 4242, "thread_id": 4242, "value1": 10001,
+                "text": "send tcp 203.0.113.5:8585 socket:[99] #1 len=14",
+                "detail": "action=deny;layer=message;target=network;rule_id=10001;bytes=14",
+            }) + "\n")
+            session_zip = tmp / "session.zip"
+            with zipfile.ZipFile(session_zip, "w") as archive:
+                archive.write(events, "events.jsonl")
+            ledger = build(monitor_paths=[session_zip])
+            decisions = [record for record in ledger.records if record.get("record_type") == "filter_decision"]
+            self.assertEqual(len(decisions), 1)
+            self.assertEqual(decisions[0]["decision"]["action"], "deny")
 
 
 class PolicyTest(unittest.TestCase):

@@ -10,7 +10,7 @@ tooling are in the drop. Every claim below is backed by decoded wire captures in
 - **[`foundations/`](foundations/)** — shared cipher primitives, client/memory helpers, and `profile.json`.
 - **[`analysis/`](analysis/)** — reusable decoders, packet capture, and research experiments.
 - **[`tools/`](tools/)** — applicable RNG, VAC/park, combat, GUI, and anti-disconnect tools.
-- **[`traffic/`](traffic/)** — ordered client→server byte ledger: TCP reassembly, transport decode, constructor/stack provenance, evidence-first crash reports, and pre-send filtering.
+- **[`traffic/`](traffic/)** — self-contained ordered client→server byte ledger and standalone tcpdump+`/proc` capture: TCP reassembly, transport decode, constructor/stack provenance, evidence-first crash reports, and pre-send filtering.
 - **[`docs/guides/`](docs/guides/)** — current task-oriented guides; **[`docs/research/`](docs/research/)** — findings and project history.
 
 Run Python commands from the repository root with `.venv/bin/python`. Start with each directory's README or the [complete artifact index](docs/ARTIFACT-INDEX.md).
