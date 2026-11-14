@@ -60,7 +60,7 @@ static __always_inline struct mm_sock* tag_sk(struct sock* sk, struct socket* so
 {
     __u32 tgid = bpf_get_current_pid_tgid() >> 32;
     struct mm_tracked* tracking = bpf_map_lookup_elem(&tracked, &tgid);
-    if (!sk || !tracking || (tracking->flags & MM_TRACK_NATIVE)) return 0;   /* a native helper's (a browser's): not captured */
+    if (!sk || !tracking) return 0;
     __u16 family = sk->__sk_common.skc_family;
     if (family != AF_INET && family != AF_INET6) return 0;
     struct mm_sock* s = bpf_sk_storage_get(&mm_socks, sk, 0, BPF_SK_STORAGE_GET_F_CREATE);

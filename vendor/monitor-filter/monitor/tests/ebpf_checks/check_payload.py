@@ -10,6 +10,8 @@ WIDE = bytes(index % 241 for index in range(60000))
 QUERY = bytes([0x4d, 0x53, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 11]) + b"msmon-probe" + bytes([7]) + b"example" + bytes([0, 0, 1, 0, 1])
 # (what, bytes, record type, syscall, detail fragment)
 WANTED = [
+    ("native-helper TCP write", b"msmon-native-outgoing\n", "file_write", "write", ""),
+    ("native-helper TCP read", b"msmon-native-incoming\n", "file_read", "read", ""),
     ("TCP send", b"msmon-payload-ping-0123456789", "file_write", "sendto", ";endpoints=127.0.0.1:"),
     ("TCP recv", b"msmon-payload-ping-0123456789", "file_read", "recvfrom", ";endpoints=127.0.0.1:"),
     ("TCP writev", b"msmon-payload-pong", "file_write", "writev", ""),

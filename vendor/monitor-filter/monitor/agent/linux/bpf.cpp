@@ -2280,8 +2280,8 @@ int BpfOpen(std::wstring& detail, const std::vector<std::wstring>& roots, bool p
         gBpf.byNumber[call.nr] = &call;
         const uint32_t key = static_cast<uint32_t>(call.nr);
         /* What a native helper (MM_TRACK_NATIVE: xdg-open, a browser) still records: what it starts, whom it talks to and
-         * acts on, what it asks of the system, the files it opens and the names it changes; its reads, writes, sends and
-         * receives are kernel aggregates (sysagg.h MM_AGG_NATIVE_IO), its other file calls counted only. */
+         * acts on, what it asks of the system, the files it opens and the names it changes; non-network I/O is aggregated
+         * (sysagg.h MM_AGG_NATIVE_IO), while payload-mode INET/INET6 I/O uses full payload records. */
         mm_sysinfo info = call.info;
         switch (call.op) {
         case Op::Exec: case Op::Fork: case Op::Connect: case Op::Accept: case Op::Bind: case Op::Listen: case Op::Socket:
@@ -2291,7 +2291,7 @@ int BpfOpen(std::wstring& detail, const std::vector<std::wstring>& roots, bool p
             info.more.native = 1;
             break;
         default:
-            info.more.native = call.nr == SYS_memfd_create;
+            info.more.native = call.nr == SYS_memfd_create || (payloads && call.info.data);
             break;
         }
         bpf_map_update_elem(bpf_map__fd(bpf_object__find_map_by_name(gBpf.object, "sysinfo")), &key, &info, BPF_ANY);

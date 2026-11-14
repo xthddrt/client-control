@@ -43,7 +43,8 @@ scope when its image is under a root, when it execs a Wine loader (wine, a prelo
 its current directory under a root (checked in the kernel at the exec: Wine starts a Windows program in
 its current directory, so the client and its launcher are recorded from Wine's start-up on, `process_start`
 `scope=wine_exec_cwd:<directory>`), when it has an executable file mapping under a
-root (checked in the kernel at `mmap`, `scope=exec_mapping:<file>`, and in `/proc/<pid>/maps`), when it is the
+root (checked in the kernel at `mmap`, `scope=exec_mapping:<file>`, and in `/proc/<pid>/maps`), or an offset-zero
+PE image mapping (`.exe`, `.dll`, `.aes`, `.sys`), including Wine's read-only header mappings after unpacking, when it is the
 wineserver of the client's prefix (its `WINEPREFIX`, default `$HOME/.wine`), when it is `kfilterctl launch`'s child
 (checked in the kernel at its first exec: the child joins its session cgroup `kfilter/launch-<launcher pid>` before it
 execs, so the launch wrapper, `nexon-launcher` and its `xdpyinfo`, `grep` and `/usr/bin/wine`, is recorded from its
@@ -66,9 +67,9 @@ renameat2, link, linkat, symlink, symlinkat, mkdir, mkdirat, mknod, mknodat). It
 (read, write, pread64, pwrite64, readv, writev, preadv, pwritev, preadv2, pwritev2, sendto, recvfrom, sendmsg, recvmsg,
 sendmmsg, recvmmsg; both ABIs but the ia32 `socketcall` multiplexer's) are kernel aggregates per (process, call, the
 fd's inode) with their bytes and failures, the first of each key a second a record (see [Kernel
-aggregates](#kernel-aggregates)): a browser's ~24 processes put no ring record on each call. Its other file calls
-(stat, getdents, close, chmod, truncate, ioctl, fsync, file mmaps, ...) are counted only. Its sockets are not tagged
-and its bytes never read, so no payload or packet of a browser is captured. `--native-depth N` (default 3) is how many native execs
+aggregates](#kernel-aggregates)), except INET/INET6 socket I/O in payload mode: those calls use the normal full
+payload records and their sockets are tagged for packet capture, so a browser's network traffic is included. Its other file calls
+(stat, getdents, close, chmod, truncate, ioctl, fsync, file mmaps, ...) are counted only. `--native-depth N` (default 3) is how many native execs
 in a row stay tracked; the next one (and `--native-depth 0` at the first) leaves scope: the exec is
 recorded, then a `process_exit` with value1 1 and `untracked;native_exec`, and neither it nor its
 children are followed; kfilter's later decisions for it do not bring it back. A process kfilter decides for that the
@@ -208,8 +209,9 @@ wait for their second. The maps are not preallocated: kernel memory follows the 
 | timestamp | the last call |
 | detail | `repeats_tail;syscall=<call>;aggregate=kernel[;<key name>=<key>];repeats_before=<calls>;repeat_bytes=<bytes>;repeat_span_us=<first to last>;errors=<failed calls>[;repeat_offsets=<lowest>-<highest end>]` (no `repeat_tids`: the kernel keeps no threads) |
 
-A native helper's reads, writes, sends and receives (above) are aggregated at their exit, where the bytes are known
-(`native_io`, a global function), per (process, call, the fd's inode and its type): summaries `system:<call>` (type
+A native helper's non-network reads, writes, sends and receives (above) are aggregated at their exit, where the bytes are known
+(`native_io`, a global function), per (process, call, the fd's inode and its type); payload-mode INET/INET6 calls instead use full
+payload records. Non-network summaries are `system:<call>` (type
 `file_query_information`) with `ino=<inode>;inode_type=<socket|pipe|file|dir|char|anon_inode>` (a socket's or pipe's
 inode number can equal a file's; inodes of one type on two filesystems with one number still share a key),
 `repeat_bytes` the bytes moved (none for sendmmsg and recvmmsg, whose result is messages) and `errors` the failed calls
@@ -726,10 +728,10 @@ retransmissions, RST and FIN included) of a socket a tracked process used is kep
   launcher's too. A socket is the game's once a tracked process other than wineserver sends or
   receives on it (the tag's `owner`). Until then the kernel captures at most 256 KiB of it
   (the rest is counted, `pending_skipped`) and the agent holds those packets (16 MiB in all; past
-  it the socket held longest is dropped, counted in `held_overflow`, so a new socket's handshake is
-  always kept): they are written, marked `held=1`, when the owner appears, and dropped, counted as
-  `unattributed_*`, when its maker (wineserver; without one, the owner) closes it or the session
-  ends; another process's close of its own per-call fd ends nothing. A close takes effect only after
+  it the socket held longest is flushed, counted in `held_overflow`, so a new socket's handshake is
+  always kept): they are written, marked `held=1`, when the owner appears. If no owner appears, a known
+  wineserver is retained as the process with `attribution=broker_only`; only packets with no tracked process
+  are dropped and counted as `unattributed_*`. Another process's close of its own per-call fd ends nothing. A close takes effect only after
   the `pkts` ring was read to its end, so a socket's last packets (a FIN that attributes it) are
   never outrun by its close event. A packet that raced the owner's first send/recv on another CPU
   (still `owner` 0) is written with the owner already known for its cookie.

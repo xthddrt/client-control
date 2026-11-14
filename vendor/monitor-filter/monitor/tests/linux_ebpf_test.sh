@@ -31,7 +31,35 @@ run_session() {   # $1 = name, rest = agent flags
     # Loading and verifying the BPF programs takes a few seconds; the agent prints
     # "Registered" once its sensors are live.
     for _ in $(seq 1 60); do grep -q Registered "$work/$name/agent.log" && break; sleep 0.5; done
+    native_server=
+    if [ "$name" = ebpf ]; then
+        cp "$scope/probe" "$work/native-net-probe"
+        python3 - "$work" <<'PY' &
+import socket, sys
+from pathlib import Path
+root = Path(sys.argv[1])
+server = socket.socket()
+server.bind(("127.0.0.1", 0))
+server.listen(1)
+server.settimeout(15)
+(root / "native-port").write_text(str(server.getsockname()[1]))
+connection, _ = server.accept()
+data = connection.recv(23)
+if data != b"msmon-native-outgoing\n":
+    raise SystemExit("native server got %r" % data)
+connection.sendall(b"msmon-native-incoming\n")
+connection.close()
+server.close()
+PY
+        native_server=$!
+        for _ in $(seq 1 20); do [ -f "$work/native-port" ] && break; sleep 0.1; done
+        export MSMON_NATIVE_NET="$work/native-net-probe" MSMON_NATIVE_PORT=$(cat "$work/native-port")
+    fi
     MSMON_AGENT_PID=$agent "$scope/probe" "$scope/files" || { echo "FAIL $name: probe exited $?"; fail=1; }
+    if [ -n "$native_server" ]; then
+        wait "$native_server" || { echo "FAIL $name: native loopback server"; fail=1; }
+        unset MSMON_NATIVE_NET MSMON_NATIVE_PORT
+    fi
     for upgrade in $upgrades; do "${upgrade}_session"; done
     sleep 2
     touch "$work/$name/stop"
@@ -180,14 +208,15 @@ if mode in ("ebpf", "nopayloads"):
             problems.append("the child that exec'd /bin/true was not untracked")
         elif any(e["process_id"] in native and e["type"].startswith("file_") for e in mine):
             problems.append("records from /bin/true after it left scope")
-    else:   # a native helper: still tracked, its opens recorded, its reads only sampled from kernel aggregates
+    else:   # a native helper: opens recorded; local I/O sampled, payload-mode network I/O recorded in full
         native = {e["process_id"] for e in mine if e["type"] == "process_start" and ";attribution=native_helper;native_depth=1" in e["detail"]}
         if not native:
             problems.append("the child that exec'd /bin/true is not a native helper")
         elif not any(e["process_id"] in native and e["type"] == "file_create" for e in mine):
             problems.append("no open record of the native helper /bin/true (its loader's libc)")
         elif any(e["process_id"] in native and e["type"] in ("file_read", "file_write") and ";native_io=sampled;" not in e["detail"]
-                 and "repeats_tail" not in e["detail"] for e in mine):
+                 and "repeats_tail" not in e["detail"] and not e.get("payload")
+                 and not e.get("text", "").startswith("socket:") for e in mine):
             problems.append("a read or write of the native helper /bin/true recorded per call")
     losses = [e for e in events if e["type"] == "coverage" and e["text"] == "ebpf_losses"]
     if not losses or "pending_overwrite=" not in losses[-1]["detail"]:

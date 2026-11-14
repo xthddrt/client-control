@@ -59,11 +59,14 @@ python3 analysis/traffic-ledger.py build captures/traffic-ledger \
   --trace captures/outgoing-events-YYYYMMDD-HHMMSS.jsonl \
   --ngs captures/ngs-events-YYYYMMDD-HHMMSS.jsonl
 python3 analysis/traffic-ledger.py verify captures/traffic-ledger
+python3 analysis/traffic-ledger.py capture-check captures/traffic-ledger
 python3 analysis/traffic-ledger.py show captures/traffic-ledger r42 --explain
 python3 analysis/traffic-ledger.py self-test
 ```
 
 The output directory is newly created mode `0700`; files are mode `0600`. `traffic.jsonl` retains exact captured bytes as Base64 plus SHA-256 and source references. `summary.json` separately reports observed-byte completeness and decode completeness. Neither is a claim that the sensors saw all traffic.
+
+`capture-check` verifies raw-byte hashes and fails on known missing ranges, incomplete payloads, source-reported loss, unknown direction, or missing process identity. A pass covers all observed outgoing raw bytes without a known gap; it is not a claim of absolute coverage against an uninstrumented path, and it does not require successful decryption.
 
 - pcap/pcapng input retains raw frames, pcapng process/socket comments, TCP splits, combined sends, retransmissions, conflicting overlaps, and missing ranges. MapleStory, TLS, HTTP/1, UDP, and DNS envelopes are framed conservatively; gaps stop framing rather than trigger a guessed resynchronization.
 - msmon input verifies its hash chain, rebuilds 8 KiB payload chunks, joins complete socket operations, and breaks protocol streams at `payload_unavailable`. Its own sequence gaps and kfilter decisions remain evidence records.

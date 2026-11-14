@@ -702,9 +702,10 @@ struct {
     __type(value, __u32);
 } native_io_threads SEC(".maps");
 
-/* A native helper's (xdg-open, a browser) read, write, send or receive (MM_AGG_NATIVE_IO), at its exit: one call in agg
+/* A native helper's non-network read, write, send or receive (MM_AGG_NATIVE_IO), at its exit: one call in agg
  * per (process, call, the fd's inode and its type) with its bytes (none for sendmmsg/recvmmsg, whose result is messages) or its
- * failure, so a browser's busy sockets, pipes and eventfds put no ring record on each call. The first of a key since the
+ * failure, so a browser's busy local sockets, pipes and eventfds put no ring record on each call. INET/INET6 calls in payload
+ * mode use the normal full-payload record path instead. The first of a key since the
  * agent's last drain is a record of its own (MM_F_NATIVE_IO: the fd's inode, mode and socket, a sendto/sendmsg/recvfrom/
  * recvmsg endpoint, never its bytes) and is counted in counts, as a call agg refused is. No path walk: one costs about
  * 200,000 verified instructions, past mm_sys_enter's limit; the agent names the inode from the helper's open record.
@@ -800,8 +801,17 @@ __noinline int sys_agg(long id, long ret, __u32 how)
     }
     if (mode == MM_AGG_NATIVE_IO) {
         if (!native) return 0;
+        struct pt_regs* regs = (struct pt_regs*)bpf_task_pt_regs(task);
+        struct file* file = fd_file(task, compat ? (int)(__u32)regs->bx : (int)regs->di);
+        struct socket* sock = file && (BPF_CORE_READ(file, f_inode, i_mode) & S_IFMT) == S_IFSOCK ?
+                              BPF_CORE_READ(file, private_data) : 0;
+        struct sock* sk = sock ? BPF_CORE_READ(sock, sk) : 0;
+        __u16 family = sk ? BPF_CORE_READ(sk, __sk_common.skc_family) : 0;
+        struct mm_config* config = cfg();
+        /* Payload mode needs the normal record path for every native-helper INET call, not a sampled aggregate. */
+        if (config && (config->flags & MM_CFG_PAYLOAD) && (family == AF_INET || family == AF_INET6)) return 0;
         if (exit) return native_io(id, ret);
-        bpf_task_storage_get(&native_io_threads, task, 0, BPF_LOCAL_STORAGE_GET_F_CREATE);   /* its exit is looked at */
+        bpf_task_storage_get(&native_io_threads, task, 0, BPF_LOCAL_STORAGE_GET_F_CREATE);
         return 1;
     }
     struct pt_regs* regs = (struct pt_regs*)bpf_task_pt_regs(task);
@@ -1373,8 +1383,8 @@ int BPF_PROG(mm_exec, struct task_struct* task, pid_t old_pid, struct linux_binp
     }
     if (p && tid != s->tid) bpf_map_delete_elem(&pending, &tid);   /* a thread's exec: its sys_exit comes as the leader */
     /* A native program (xdg-open, a browser) is not the client, but kfilter keeps deciding for it: it stays tracked as
-     * a native helper (MM_TRACK_NATIVE: the calls mm_sysinfo.more.native marks, its I/O aggregated, sockets not
-     * captured) for native_depth native execs in a row (handoff_depth in the sign-in hand-off); deeper, it and its
+     * a native helper (MM_TRACK_NATIVE: selected calls plus full payload-mode INET I/O; other I/O aggregated)
+     * for native_depth native execs in a row (handoff_depth in the sign-in hand-off); deeper, it and its
      * children leave tracking (the agent forgets it on this record). The launch wrapper's programs are in scope until a
      * Wine loader's exec, which ends the wrapper. args[0]: its native depth (0: a Wine or in-scope image), args[1]: 1
      * when it leaves tracking here. */

@@ -157,7 +157,7 @@ int mm_up_call32(struct pt_regs* ctx)
     return 0;
 }
 
-/* A tracked process that is not a native helper (whose bytes are never captured, as for its sockets). */
+/* Native helpers do not use Wine's schannel; their own TLS stacks remain ciphertext at the socket/packet layers. */
 static __always_inline int up_tls_wanted(void)
 {
     __u32 tgid = bpf_get_current_pid_tgid() >> 32;

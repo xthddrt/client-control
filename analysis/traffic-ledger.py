@@ -167,6 +167,7 @@ class ProcessIndex:
     def __init__(self):
         self.starts = defaultdict(list)
         self.exits = defaultdict(list)
+        self.images = defaultdict(list)
         self.build = {}
 
     def event(self, record):
@@ -177,23 +178,33 @@ class ProcessIndex:
             self.starts[pid].append(record)
         elif record.get("type") == "process_exit":
             self.exits[pid].append(record)
+        elif record.get("type") == "image_load" and record.get("text", "").lower().endswith(".exe"):
+            self.images[pid].append(record["text"])
 
     def lookup(self, pid, time_ns=None, fallback_name=None):
-        candidates = self.starts.get(pid, [])
         selected = None
-        for record in candidates:
+        for record in self.starts.get(pid, []):
             start = timestamp_ns(record.get("timestamp"))
             if time_ns is None or start is None or start <= time_ns:
                 selected = record
-        if selected is None and fallback_name is None:
-            return {"pid": pid, "name": None, "evidence": "process_start_not_found"}
+        images = self.images.get(pid, [])
+        image = images[0] if images else None
+        if selected is None and fallback_name is None and image is None:
+            return {"pid": pid, "name": None, "evidence": "process_evidence_not_found"}
         result = {
             "pid": pid,
-            "name": fallback_name or (selected or {}).get("process_path") or (selected or {}).get("text"),
-            "path": (selected or {}).get("process_path") or (selected or {}).get("text"),
+            "name": image.rsplit("/", 1)[-1].rsplit("\\", 1)[-1] if image else
+                    fallback_name or (selected or {}).get("process_path") or (selected or {}).get("text"),
+            "path": image or (selected or {}).get("process_path") or (selected or {}).get("text"),
             "start_time": (selected or {}).get("process_start_time"),
-            "evidence": "msmon_process_start" if selected else "capture_comment_only",
+            "evidence": "msmon_image_load" if image else "msmon_process_start" if selected else "capture_comment_only",
         }
+        if len(set(images)) > 1:
+            result["image_candidates"] = list(dict.fromkeys(images))
+        selected_path = (selected or {}).get("process_path") or (selected or {}).get("text") or ""
+        selected_name = selected_path.rsplit("/", 1)[-1].rsplit("\\", 1)[-1]
+        if not image and selected_name and not selected_name.lower().startswith("wine"):
+            result["name"] = selected_name
         if selected is not None and time_ns is not None:
             started = timestamp_ns(selected.get("timestamp"))
             for exit_record in self.exits.get(pid, []):
@@ -915,6 +926,75 @@ class LedgerBuilder:
         return self.store.finish()
 
 
+def check_capture(path):
+    """Validate observed outgoing raw capture; never claim coverage outside the sensors' evidence."""
+    path = Path(path)
+    if path.is_dir():
+        path = path / "traffic.jsonl"
+    counts = Counter()
+    raw_hashes = 0
+
+    def check_raw(raw):
+        nonlocal raw_hashes
+        if not isinstance(raw, dict) or not raw.get("present") or "data" not in raw:
+            return
+        data = base64.b64decode(raw["data"], validate=True)
+        if len(data) != raw.get("bytes") or hashlib.sha256(data).hexdigest() != raw.get("sha256"):
+            counts["raw_hash_mismatches"] += 1
+        raw_hashes += 1
+        if raw.get("complete") is False:
+            counts["incomplete_raw_values"] += 1
+
+    for line in path.open(encoding="utf-8"):
+        if not line.strip():
+            continue
+        record = json.loads(line)
+        kind = record.get("kind")
+        direction = record.get("direction")
+        if direction == "client_to_server":
+            if kind == "packet":
+                counts["outgoing_packets"] += 1
+                payload = record.get("transport_payload") or {}
+                counts["outgoing_packet_payload_bytes"] += payload.get("bytes", 0)
+            elif kind == "socket_operation":
+                counts["outgoing_socket_operations"] += 1
+                raw = record.get("raw") or {}
+                counts["outgoing_socket_payload_bytes"] += raw.get("bytes", 0)
+            elif kind == "message":
+                counts["outgoing_messages"] += 1
+        if kind in ("packet", "socket_operation", "message") and direction == "unknown":
+            counts["unknown_direction_records"] += 1
+        if kind == "message":
+            process = record.get("process") or {}
+            if process.get("pid") is None and not process.get("name"):
+                counts["messages_without_process"] += 1
+        if kind == "coverage":
+            if record.get("coverage") in ("missing_tcp_bytes", "conflicting_tcp_overlap", "socket_stream_break"):
+                counts["capture_gap_records"] += 1
+            if record.get("loss_evidence"):
+                counts["source_loss_records"] += 1
+        check_raw(record.get("raw"))
+        check_raw(record.get("transport_payload"))
+        if record.get("raw", {}).get("chunks"):
+            for chunk in record["raw"]["chunks"]:
+                check_raw(chunk)
+    if counts["outgoing_packets"] + counts["outgoing_socket_operations"] == 0:
+        counts["no_raw_outgoing_source"] += 1
+    problems = {key: value for key, value in sorted(counts.items()) if key in {
+        "raw_hash_mismatches", "incomplete_raw_values", "unknown_direction_records", "messages_without_process",
+        "capture_gap_records", "source_loss_records", "no_raw_outgoing_source",
+    }}
+    return {
+        "status": "fail" if problems else "pass",
+        "scope": "all_observed_outgoing_raw_bytes",
+        "absolute_completeness_proven": False,
+        "counts": dict(sorted(counts.items())),
+        "raw_hashes_verified": raw_hashes,
+        "problems": problems,
+        "note": "Pass means no known gap or integrity failure in the supplied evidence; it is not proof against an unobserved sensor path.",
+    }
+
+
 def verify_ledger(path):
     path = Path(path)
     if path.is_dir():
@@ -993,6 +1073,13 @@ def self_test():
     import tempfile
 
     wire = load_wire()
+    process_index = ProcessIndex()
+    process_index.event({"type": "process_start", "process_id": 1,
+                         "process_path": "/opt/wine-stable/lib/wine/x86_64-unix/wine-preloader"})
+    process_index.event({"type": "image_load", "process_id": 1, "text": "/client/MapleStory.exe"})
+    assert process_index.lookup(1)["name"] == "MapleStory.exe"
+    process_index.event({"type": "process_start", "process_id": 2, "process_path": "/opt/chrome/CrUtilityMain"})
+    assert process_index.lookup(2, fallback_name="CrUtilityMai")["name"] == "CrUtilityMain"
     pickup = bytearray(36)
     struct.pack_into("<H", pickup, 0, 0x32B)
     struct.pack_into("<I", pickup, 15, 0x143FF)
@@ -1058,6 +1145,8 @@ def self_test():
         assert summary["counts"]["message"] == 3
         shown = show_record(output, wire_pickup["record_id"], explain=True)
         assert shown["causal_conclusion"] == "not_established"
+        capture_result = check_capture(output)
+        assert capture_result["status"] == "pass", capture_result
 
         part_one = temporary / "part1.pcapng"
         part_two = temporary / "part2.pcapng"
@@ -1140,6 +1229,7 @@ def self_test():
         assert len(tls_messages) == 2 and base64.b64decode(tls_messages[0]["raw"]["data"]) == tls_first
         assert second_summary["counts"]["socket_operation"] == 3
         assert any(record.get("coverage") == "socket_stream_break" for record in second_records)
+        assert check_capture(second_output)["status"] == "fail"
 
         gapped = [json.loads(line) for line in events]
         for record in gapped:
@@ -1178,6 +1268,8 @@ def main(argv=None):
     build.add_argument("--client-ip", action="append", default=[], help="Direction hint for captures without pcapng flags")
     for command in (commands.add_parser("verify", help="Verify a ledger hash chain"),):
         command.add_argument("ledger", type=Path)
+    capture_check = commands.add_parser("capture-check", help="Fail on known raw-capture gaps or integrity problems")
+    capture_check.add_argument("ledger", type=Path)
     show = commands.add_parser("show", help="Print one complete message/evidence chain")
     show.add_argument("ledger", type=Path)
     show.add_argument("record", help="record_id or record_index")
@@ -1190,6 +1282,10 @@ def main(argv=None):
     if args.command == "verify":
         print(json.dumps(verify_ledger(args.ledger), indent=2))
         return 0
+    if args.command == "capture-check":
+        result = check_capture(args.ledger)
+        print(json.dumps(result, indent=2))
+        return 1 if result["status"] == "fail" else 0
     if args.command == "show":
         print(json.dumps(show_record(args.ledger, args.record, args.explain), indent=2))
         return 0

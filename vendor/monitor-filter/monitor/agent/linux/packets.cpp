@@ -4,8 +4,8 @@
  * then .1, .2, ... at the events' part size), one LINKTYPE_RAW interface stamped in FILETIME units.
  * A socket only wineserver has used so far may be the Nexon launcher's (wineserver creates and
  * connects every Wine socket): its packets are held until a tracked non-wineserver process uses it
- * (owner in the kernel tag), and dropped, counted, when its maker (wineserver) closes it or the session
- * ends unattributed. Another process's close ends nothing (socket_join.h: Wine clients close per-call fds).
+ * (owner in the kernel tag). If no owner appears, the packets are retained with `attribution=broker_only`
+ * when wineserver is known; only packets with no tracked process are dropped and counted. Another process's close ends nothing.
  * Each closed part becomes a packet_capture_part note that agent.cpp chains into the log; the part is
  * hashed on its own thread so the BPF thread never stalls on it.
  * PacketsAdd and PacketsPolled run on the BPF thread, PacketsTakeNotes on the main thread: one mutex
@@ -165,6 +165,7 @@ void Write(const mm_pkt& h, uint64_t time, const unsigned char* data, DWORD owne
     std::string comment = "pid=" + std::to_string(owner) + ";process=" + Name(owner) + ";socket=socket:[" +
                           std::to_string(h.ino) + "];cookie=" + std::to_string(h.cookie);
     if (h.server) comment += ";wineserver=" + std::to_string(h.server);
+    if (!h.owner && h.server == owner) comment += ";attribution=broker_only";
     if (held) comment += ";held=1";
     if (h.gso_segs > 1) comment += ";gso_segs=" + std::to_string(h.gso_segs);
     if (skipped) comment += ";pending_skipped=" + std::to_string(skipped);
@@ -215,12 +216,21 @@ void Flush(std::unordered_map<uint64_t, std::vector<Held>>::iterator entry, DWOR
 void Drop(std::unordered_map<uint64_t, std::vector<Held>>::iterator entry)
 {
     State& s = gPackets;
+    bool brokered = false;
     for (const Held& packet : entry->second) {
         s.heldBytes -= packet.data.size();
+        if (packet.header.server) {
+            /* No game owner appeared, but the tracked wineserver is real process evidence: retain the bytes. */
+            Write(packet.header, packet.time, reinterpret_cast<const unsigned char*>(packet.data.data()),
+                  packet.header.server, true, 0);
+            brokered = true;
+            continue;
+        }
         s.unattributedPackets++;
         s.unattributedBytes += packet.header.len;
     }
-    s.unattributed++;
+    if (brokered) s.attributed++;
+    else s.unattributed++;
     s.held.erase(entry);
 }
 
