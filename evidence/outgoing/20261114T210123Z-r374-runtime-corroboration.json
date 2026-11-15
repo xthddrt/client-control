@@ -1,0 +1,1910 @@
+{
+  "historical_operation": "r374",
+  "incoming_message_ids_within_one_second": [],
+  "messages_within_one_second_same_connection": [
+    {
+      "chain": "17e2f8f798734e31046e1f02b0fcce90bfcb8c29bd3bb38130b40405251ff021",
+      "decode": {
+        "alias_mapping": {
+          "evidence": null,
+          "plaintext_opcode": null,
+          "status": "unmapped_wire_opcode"
+        },
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "fields": {},
+        "iv": "123559ce",
+        "iv_synced": true,
+        "name": null,
+        "protocol": "maple",
+        "status": "unmapped_wire_opcode",
+        "type": null,
+        "unresolved_ranges": [
+          {
+            "length": 2,
+            "offset": 0
+          }
+        ],
+        "wire_alias": "0x4731"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1536,
+          "file": "captures/outgoing-session-20261114-160817.pcap"
+        }
+      ],
+      "game_build": null,
+      "input_order": 31105,
+      "kind": "message",
+      "ledger_session_id": "85d1e7f6123647c6b02ee22c17073698",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 31105,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 2,
+        "complete": true,
+        "data": "MUc=",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "663400d73362c7f1b7a12f8311ba7816ca4dd98063e01de8779ae053bc456052",
+        "total_bytes": 2
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "process_evidence_not_found",
+        "name": null,
+        "pid": null
+      },
+      "raw": {
+        "bytes": 6,
+        "complete": true,
+        "data": "hs6EziWV",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "cbdce62a37345094da4aaa206f86be6ff5a6ecf9b1170c32e61bc4bb3511f8ba",
+        "total_bytes": 6
+      },
+      "record_id": "r31105",
+      "record_index": 1857,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": null,
+        "destination": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "inode": null,
+        "local": {
+          "address": "172.16.1.203",
+          "port": 46044
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 46044
+        }
+      },
+      "time_end_ns": 1794694110955396000,
+      "time_end_utc": "2026-11-14T22:08:30.955396000Z",
+      "time_ns": 1794694110955396000,
+      "time_utc": "2026-11-14T22:08:30.955396000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "direction_evidence": "operator_client_ip",
+        "retransmitted_bytes_in_stream": 38,
+        "stream_offset": 250
+      }
+    },
+    {
+      "chain": "d61965ff8b8c927959d4be9160f615bff4ecf08de207b6dfafd9d8c7631341b8",
+      "decode": {
+        "alias_mapping": {
+          "evidence": null,
+          "plaintext_opcode": null,
+          "status": "unmapped_wire_opcode"
+        },
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "fields": {},
+        "iv": "bef0fa9a",
+        "iv_synced": true,
+        "name": null,
+        "protocol": "maple",
+        "status": "unmapped_wire_opcode",
+        "type": null,
+        "unresolved_ranges": [
+          {
+            "length": 3,
+            "offset": 0
+          }
+        ],
+        "wire_alias": "0xbd78"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1538,
+          "file": "captures/outgoing-session-20261114-160817.pcap"
+        }
+      ],
+      "game_build": null,
+      "input_order": 31106,
+      "kind": "message",
+      "ledger_session_id": "85d1e7f6123647c6b02ee22c17073698",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 31106,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 3,
+        "complete": true,
+        "data": "eL0B",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "d332d3de0a74a120f5640fc295f50e71473a2414f4d23e81ef1b4e5be51f9bad",
+        "total_bytes": 3
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "process_evidence_not_found",
+        "name": null,
+        "pid": null
+      },
+      "raw": {
+        "bytes": 7,
+        "complete": true,
+        "data": "JZommmpRjQ==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "38b57928b237fee54ff206fa95aa15e01cf9f03c454ffcb0a177e5e98dfd02a9",
+        "total_bytes": 7
+      },
+      "record_id": "r31106",
+      "record_index": 1861,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": null,
+        "destination": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "inode": null,
+        "local": {
+          "address": "172.16.1.203",
+          "port": 46044
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 46044
+        }
+      },
+      "time_end_ns": 1794694111019087000,
+      "time_end_utc": "2026-11-14T22:08:31.019087000Z",
+      "time_ns": 1794694111019087000,
+      "time_utc": "2026-11-14T22:08:31.019087000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "direction_evidence": "operator_client_ip",
+        "retransmitted_bytes_in_stream": 38,
+        "stream_offset": 256
+      }
+    },
+    {
+      "chain": "17457f5eef49fb2b680c353b9794980c8e25a29aa093b62a738be9b6ae36700b",
+      "decode": {
+        "alias_mapping": {
+          "evidence": null,
+          "plaintext_opcode": null,
+          "status": "unmapped_wire_opcode"
+        },
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "fields": {},
+        "iv": "0effa648",
+        "iv_synced": true,
+        "name": null,
+        "protocol": "maple",
+        "status": "unmapped_wire_opcode",
+        "type": null,
+        "unresolved_ranges": [
+          {
+            "length": 14,
+            "offset": 0
+          }
+        ],
+        "wire_alias": "0xdf35"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1538,
+          "file": "captures/outgoing-session-20261114-160817.pcap"
+        }
+      ],
+      "game_build": null,
+      "input_order": 31107,
+      "kind": "message",
+      "ledger_session_id": "85d1e7f6123647c6b02ee22c17073698",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 31107,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 14,
+        "complete": true,
+        "data": "Nd8IAAAABAAEAAQAAAA=",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "f525051f079f79a459b393c7ffdcdb4748b5216d6553edebb892f91eed7e84e5",
+        "total_bytes": 14
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "process_evidence_not_found",
+        "name": null,
+        "pid": null
+      },
+      "raw": {
+        "bytes": 18,
+        "complete": true,
+        "data": "eUh3SBQ7H20rGCwJab9RqlyO",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "22a281962945ea6bc434f0bcd4b82c525a5744872b2410b1689c031f4423f198",
+        "total_bytes": 18
+      },
+      "record_id": "r31107",
+      "record_index": 1862,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": null,
+        "destination": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "inode": null,
+        "local": {
+          "address": "172.16.1.203",
+          "port": 46044
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 46044
+        }
+      },
+      "time_end_ns": 1794694111019087000,
+      "time_end_utc": "2026-11-14T22:08:31.019087000Z",
+      "time_ns": 1794694111019087000,
+      "time_utc": "2026-11-14T22:08:31.019087000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "direction_evidence": "operator_client_ip",
+        "retransmitted_bytes_in_stream": 38,
+        "stream_offset": 263
+      }
+    },
+    {
+      "chain": "b24e7e1035dc8503f2cd3090299256868261916b384c6c24cf47c29fd4c880dc",
+      "decode": {
+        "alias_mapping": {
+          "evidence": null,
+          "plaintext_opcode": null,
+          "status": "unmapped_wire_opcode"
+        },
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "fields": {},
+        "iv": "790f722f",
+        "iv_synced": true,
+        "name": null,
+        "protocol": "maple",
+        "status": "unmapped_wire_opcode",
+        "type": null,
+        "unresolved_ranges": [
+          {
+            "length": 3,
+            "offset": 0
+          }
+        ],
+        "wire_alias": "0xd09d"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1538,
+          "file": "captures/outgoing-session-20261114-160817.pcap"
+        }
+      ],
+      "game_build": null,
+      "input_order": 31108,
+      "kind": "message",
+      "ledger_session_id": "85d1e7f6123647c6b02ee22c17073698",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 31108,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 3,
+        "complete": true,
+        "data": "ndAB",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "e98981dddaca5ff3816c67c74afeef09b562dc83c7696c39e1b115c9e536613a",
+        "total_bytes": 3
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "process_evidence_not_found",
+        "name": null,
+        "pid": null
+      },
+      "raw": {
+        "bytes": 7,
+        "complete": true,
+        "data": "rS+uL0FHFA==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "55687ea85e37f5ebf4db894a63b3cad85dab2cff02578554509a6921abc188a8",
+        "total_bytes": 7
+      },
+      "record_id": "r31108",
+      "record_index": 1863,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": null,
+        "destination": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "inode": null,
+        "local": {
+          "address": "172.16.1.203",
+          "port": 46044
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 46044
+        }
+      },
+      "time_end_ns": 1794694111019087000,
+      "time_end_utc": "2026-11-14T22:08:31.019087000Z",
+      "time_ns": 1794694111019087000,
+      "time_utc": "2026-11-14T22:08:31.019087000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "direction_evidence": "operator_client_ip",
+        "retransmitted_bytes_in_stream": 38,
+        "stream_offset": 281
+      }
+    },
+    {
+      "chain": "78ea7152b58957c56c72008fd6a4385e8d313789f757e0b13275a3421cc29941",
+      "decode": {
+        "alias_mapping": {
+          "evidence": null,
+          "plaintext_opcode": null,
+          "status": "unmapped_wire_opcode"
+        },
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "fields": {},
+        "iv": "66b44c22",
+        "iv_synced": true,
+        "name": null,
+        "protocol": "maple",
+        "status": "unmapped_wire_opcode",
+        "type": null,
+        "unresolved_ranges": [
+          {
+            "length": 122,
+            "offset": 0
+          }
+        ],
+        "wire_alias": "0x4c1b"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1547,
+          "file": "captures/outgoing-session-20261114-160817.pcap"
+        }
+      ],
+      "game_build": null,
+      "input_order": 31109,
+      "kind": "message",
+      "ledger_session_id": "85d1e7f6123647c6b02ee22c17073698",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 31109,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 122,
+        "complete": true,
+        "data": "G0wZtTf4WWBXrgkAAAAAAAUECf8AAAAABQAABQQK/wAAPAAAAAAAAAD//wYeAAAKAQAFBBH/AAC0AAAAAAAAAP//BjwAAAAFBBT/AAAAAAAAAAAAAP//Bg8AAAAFBBT/AAAAACMAAAAAAP//BJUBABEAAAAAAAAAAAA=",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "70846bd2fda92cd3cd46bc3087d4d96a03131ac69e29e2880b813515346f7516",
+        "total_bytes": 122
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "process_evidence_not_found",
+        "name": null,
+        "pid": null
+      },
+      "raw": {
+        "bytes": 126,
+        "complete": true,
+        "data": "kyLpItwhgMBxyCl1Bd78IXoipM1yOCnWXs7N5ZdifanYA2THEwc46f+FP2l7ttiY/XU+tJt9X7ReCtFpBAFgKL/MNYJTM4/x5NZ9Ecmfyq1u51n7/RJCnZwatGB6w7c6KJfY3TMSHjWYr3XNyrchBqFwKWvaE4ih41pOkgJj",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "d94ea4d6c4f3cefdd597606f42cb852b7983e7f348fc1399bd97b2a89ca6b051",
+        "total_bytes": 126
+      },
+      "record_id": "r31109",
+      "record_index": 1880,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": null,
+        "destination": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "inode": null,
+        "local": {
+          "address": "172.16.1.203",
+          "port": 46044
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 46044
+        }
+      },
+      "time_end_ns": 1794694111469038000,
+      "time_end_utc": "2026-11-14T22:08:31.469038000Z",
+      "time_ns": 1794694111469038000,
+      "time_utc": "2026-11-14T22:08:31.469038000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "direction_evidence": "operator_client_ip",
+        "retransmitted_bytes_in_stream": 38,
+        "stream_offset": 288
+      }
+    },
+    {
+      "chain": "0d51f17c17f073b0d87fc918815e188d1a9416b003612bfd57b59d4a01b808c5",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "1a3c0285",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 9,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1565,
+          "file": "captures/outgoing-session-20261114-160817.pcap"
+        }
+      ],
+      "game_build": null,
+      "input_order": 31110,
+      "kind": "message",
+      "ledger_session_id": "85d1e7f6123647c6b02ee22c17073698",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 31110,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 11,
+        "complete": true,
+        "data": "cAAFFFiuCZcUAAA=",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "79a89497ef02b38b808853878e5938a392e0ff434de74717f3186185218fc7d9",
+        "total_bytes": 11
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "process_evidence_not_found",
+        "name": null,
+        "pid": null
+      },
+      "raw": {
+        "bytes": 15,
+        "complete": true,
+        "data": "3YXWha6D0NLjC0JdvSsG",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "e29e7b0f72fe3520a1385d9a1d8651b9d794e689d9ed0d8b697d0e40d8ffbd61",
+        "total_bytes": 15
+      },
+      "record_id": "r31110",
+      "record_index": 1906,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": null,
+        "destination": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "inode": null,
+        "local": {
+          "address": "172.16.1.203",
+          "port": 46044
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 46044
+        }
+      },
+      "time_end_ns": 1794694111635183000,
+      "time_end_utc": "2026-11-14T22:08:31.635183000Z",
+      "time_ns": 1794694111635183000,
+      "time_utc": "2026-11-14T22:08:31.635183000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "direction_evidence": "operator_client_ip",
+        "retransmitted_bytes_in_stream": 38,
+        "stream_offset": 414
+      }
+    },
+    {
+      "chain": "d59ad57656ebdff3bf9a70a6f34d20b3b1cbeb0269ab5f67ad452818ebf23a60",
+      "decode": {
+        "alias_mapping": {
+          "evidence": null,
+          "plaintext_opcode": null,
+          "status": "unmapped_wire_opcode"
+        },
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "fields": {},
+        "iv": "2c51cbf9",
+        "iv_synced": true,
+        "name": null,
+        "protocol": "maple",
+        "status": "unmapped_wire_opcode",
+        "type": null,
+        "unresolved_ranges": [
+          {
+            "length": 149,
+            "offset": 0
+          }
+        ],
+        "wire_alias": "0x009c"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1581,
+          "file": "captures/outgoing-session-20261114-160817.pcap"
+        }
+      ],
+      "game_build": null,
+      "input_order": 31111,
+      "kind": "message",
+      "ledger_session_id": "85d1e7f6123647c6b02ee22c17073698",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 31111,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 149,
+        "complete": true,
+        "data": "nABkAAAAFc1bB92LAAAAAAAAAAAAQP7/Fc1bBwAAAAAAAAAAAAAAAAAAAAC5eTeeAAAAABXNWwcAAAAAAAAAABXNWweoKfE445lQhwt0LUXdwqZMQKrEdwAAAAAAAAAAFc1bB+IHKr3mByq9ZBrCLhXNWwcBZjBMAAAAAADsDyMAAAAAAHD9q/YOAAAADgAAAAAAAAA=",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "9de8bcf24bc6e7104fa6bf808e89f8aa9221f56ea6df6b42f9161798e154c27a",
+        "total_bytes": 149
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "process_evidence_not_found",
+        "name": null,
+        "pid": null
+      },
+      "raw": {
+        "bytes": 153,
+        "complete": true,
+        "data": "FPmB+YmJWvk8/KP4fp5lTF4Y1xKaaIN+T165G6E74bt2CfSaILytg/tErjG/pDTYxca+DeW9iJypUvwbIVH8ZZorcHrMWVRFJpyysZQROeKnd6Q1W5q4iXu2IJgDpb6WBp4ffMhvk19MSxhrQoQFhyfqhsOL4ehwP65bnT9sOTFERdMb40qocpS41G9MQau0x/M+igkCTr2t",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "dbb687ba6c9051b6f18dacb9014b81eb03819c7995b22d3539cf055c7f1a2eeb",
+        "total_bytes": 153
+      },
+      "record_id": "r31111",
+      "record_index": 1928,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": null,
+        "destination": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "inode": null,
+        "local": {
+          "address": "172.16.1.203",
+          "port": 46044
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 46044
+        }
+      },
+      "time_end_ns": 1794694111803838000,
+      "time_end_utc": "2026-11-14T22:08:31.803838000Z",
+      "time_ns": 1794694111803838000,
+      "time_utc": "2026-11-14T22:08:31.803838000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "direction_evidence": "operator_client_ip",
+        "retransmitted_bytes_in_stream": 38,
+        "stream_offset": 429
+      }
+    },
+    {
+      "chain": "57daa1b8024a39f2cc40299995393955b4424fd187fc71d2281d79b754ef791b",
+      "decode": {
+        "alias_mapping": {
+          "evidence": null,
+          "plaintext_opcode": null,
+          "status": "unmapped_wire_opcode"
+        },
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "fields": {},
+        "iv": "3efb8ba2",
+        "iv_synced": true,
+        "name": null,
+        "protocol": "maple",
+        "status": "unmapped_wire_opcode",
+        "type": null,
+        "unresolved_ranges": [
+          {
+            "length": 22,
+            "offset": 0
+          }
+        ],
+        "wire_alias": "0xc3b9"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 2087,
+          "file": "captures/outgoing-session-20261114-160817.pcap"
+        }
+      ],
+      "game_build": null,
+      "input_order": 31112,
+      "kind": "message",
+      "ledger_session_id": "85d1e7f6123647c6b02ee22c17073698",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 31112,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 22,
+        "complete": true,
+        "data": "ucMAAAAAAQAAAM3MEAABAAAAGOzCRg==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "438c0a4f672916dde32cceed80d9217b8a2bae79ce7519d731ba29833ada60f1",
+        "total_bytes": 22
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "process_evidence_not_found",
+        "name": null,
+        "pid": null
+      },
+      "raw": {
+        "bytes": 26,
+        "complete": true,
+        "data": "VKJCoqK8fihqkWyravgoNVNqCgKP/FlQuSE=",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "5ae6117e05d8336ab6b3270fa88f726d9f0583684c50c1aab1bbd1ad4c9adaec",
+        "total_bytes": 26
+      },
+      "record_id": "r31112",
+      "record_index": 2491,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": null,
+        "destination": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "inode": null,
+        "local": {
+          "address": "172.16.1.203",
+          "port": 46044
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.79.24",
+          "port": 8550
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 46044
+        }
+      },
+      "time_end_ns": 1794694112371532000,
+      "time_end_utc": "2026-11-14T22:08:32.371532000Z",
+      "time_ns": 1794694112371532000,
+      "time_utc": "2026-11-14T22:08:32.371532000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 0,
+          "seed_iv": "758f1d5f",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "known_opcode"
+        },
+        "direction_evidence": "operator_client_ip",
+        "retransmitted_bytes_in_stream": 38,
+        "stream_offset": 582
+      }
+    }
+  ],
+  "note": "A later equivalent 0x70 construction/send and packet observation corroborate the static path; they do not recover historical r374 runtime state.",
+  "packet_ledger_source": {
+    "path": "captures/r374-first-runtime-pcap-ledger/traffic.jsonl",
+    "sha256": "2b7717b668a262a959fd719cf26550812112334af6a0644ea6768120c7909b95"
+  },
+  "packet_target": {
+    "chain": "0d51f17c17f073b0d87fc918815e188d1a9416b003612bfd57b59d4a01b808c5",
+    "decode": {
+      "alias_mapping": {
+        "evidence": "docs/guides/PACKETS.md:97-111",
+        "plaintext_opcode": "0x0070",
+        "status": "mapped"
+      },
+      "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+      "cipher_evidence": {
+        "algorithm": "AES-256-OFB",
+        "seed_frame": 0,
+        "seed_iv": "758f1d5f",
+        "seed_source": "two_consecutive_headers_unique",
+        "start_layer": 0,
+        "start_layer_evidence": "known_opcode"
+      },
+      "field_details": {
+        "opcode": {
+          "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+          "offset": 0,
+          "raw_hex": "7000",
+          "signed": false,
+          "size": 2
+        }
+      },
+      "fields": {
+        "opcode": 112
+      },
+      "iv": "1a3c0285",
+      "iv_synced": true,
+      "name": null,
+      "name_status": "unknown",
+      "protocol": "maple",
+      "status": "unknown",
+      "type": "0x70",
+      "unresolved_ranges": [
+        {
+          "length": 9,
+          "offset": 2
+        }
+      ],
+      "wire_alias": "0x0070"
+    },
+    "direction": "client_to_server",
+    "evidence": [
+      {
+        "capture_index": 1565,
+        "file": "captures/outgoing-session-20261114-160817.pcap"
+      }
+    ],
+    "game_build": null,
+    "input_order": 31110,
+    "kind": "message",
+    "ledger_session_id": "85d1e7f6123647c6b02ee22c17073698",
+    "ordering": {
+      "basis": "source_timestamp_then_input_order",
+      "input_order": 31110,
+      "tie_break_is_causal": false
+    },
+    "plaintext": {
+      "bytes": 11,
+      "complete": true,
+      "data": "cAAFFFiuCZcUAAA=",
+      "encoding": "base64",
+      "present": true,
+      "scope": "application_plaintext",
+      "sha256": "79a89497ef02b38b808853878e5938a392e0ff434de74717f3186185218fc7d9",
+      "total_bytes": 11
+    },
+    "policy_evaluation": {
+      "action": "allow",
+      "applied": false,
+      "effective_action": "allow",
+      "forward": true,
+      "matched": false,
+      "mode": "enforce",
+      "original_traffic_unchanged": true,
+      "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+      "reason": "default",
+      "rule_id": null,
+      "rule_index": null,
+      "stage": "offline_observation"
+    },
+    "process": {
+      "evidence": "process_evidence_not_found",
+      "name": null,
+      "pid": null
+    },
+    "raw": {
+      "bytes": 15,
+      "complete": true,
+      "data": "3YXWha6D0NLjC0JdvSsG",
+      "encoding": "base64",
+      "present": true,
+      "scope": "reconstructed_tcp_message",
+      "sha256": "e29e7b0f72fe3520a1385d9a1d8651b9d794e689d9ed0d8b697d0e40d8ffbd61",
+      "total_bytes": 15
+    },
+    "record_id": "r31110",
+    "record_index": 1906,
+    "schema": "client-control.traffic.v1",
+    "session": null,
+    "socket": {
+      "cookie": null,
+      "destination": {
+        "address": "44.234.79.24",
+        "port": 8550
+      },
+      "inode": null,
+      "local": {
+        "address": "172.16.1.203",
+        "port": 46044
+      },
+      "protocol": "tcp",
+      "remote": {
+        "address": "44.234.79.24",
+        "port": 8550
+      },
+      "source": {
+        "address": "172.16.1.203",
+        "port": 46044
+      }
+    },
+    "time_end_ns": 1794694111635183000,
+    "time_end_utc": "2026-11-14T22:08:31.635183000Z",
+    "time_ns": 1794694111635183000,
+    "time_utc": "2026-11-14T22:08:31.635183000Z",
+    "trace": null,
+    "transport": {
+      "cipher_evidence": {
+        "algorithm": "AES-256-OFB",
+        "seed_frame": 0,
+        "seed_iv": "758f1d5f",
+        "seed_source": "two_consecutive_headers_unique",
+        "start_layer": 0,
+        "start_layer_evidence": "known_opcode"
+      },
+      "direction_evidence": "operator_client_ip",
+      "retransmitted_bytes_in_stream": 38,
+      "stream_offset": 414
+    }
+  },
+  "same_operation": false,
+  "schema": "client-control.operation-runtime-corroboration.v1",
+  "trace_events": [
+    {
+      "constructor_rva": "0x7614b0",
+      "deep_opcodes": [
+        "0x70"
+      ],
+      "destination_evidence": "unavailable_at_SendPacket",
+      "drop_opcode": null,
+      "duration_seconds": 150.0,
+      "event_index": 0,
+      "game_build": {
+        "code_fingerprints_verified": true,
+        "machine": "0x8664",
+        "observed_date": "2026-10-25",
+        "process_name": "MapleStory.exe",
+        "size_of_image": "0x5F2E000",
+        "timestamp": "0x6AEB667B"
+      },
+      "kind": "session_start",
+      "max_packet_bytes": 16777216,
+      "module_base": "0x140000000",
+      "monotonic_ns": 162559582146854,
+      "pe_timestamp": "0x6AEB667B",
+      "pid": 1227560,
+      "policy": {
+        "document": {
+          "default": "allow",
+          "mode": "enforce",
+          "rules": [],
+          "version": 1
+        },
+        "sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "source": null
+      },
+      "schema_version": 1,
+      "sendpacket_rva": "0x1661780",
+      "session_id": "a37730be8ac3470b9cd5bb3793f8334a",
+      "tid": 1227560,
+      "wall_time_ns": 1794694099669277038
+    },
+    {
+      "caller": {
+        "address": "0x140d049a2",
+        "rva": "0xd049a2"
+      },
+      "construction_id": "a37730be8ac3470b9cd5bb3793f8334a:427",
+      "deep_gap": false,
+      "event_index": 447,
+      "kind": "constructor",
+      "monotonic_ns": 162571547395770,
+      "opcode": "0x70",
+      "packet": 1106400,
+      "packet_va": "0x10e1e0",
+      "pid": 1227560,
+      "registers": {
+        "cs": "0x33",
+        "ds": "0x2b",
+        "eflags": "0x10206",
+        "es": "0x2b",
+        "fs": "0x0",
+        "fs_base": "0x79ba79678740",
+        "gs": "0x0",
+        "gs_base": "0x7ffc0000",
+        "orig_rax": "0xffffffffffffffff",
+        "r10": "0x0",
+        "r11": "0x202",
+        "r12": "0x401",
+        "r13": "0x142d4db00",
+        "r14": "0x0",
+        "r15": "0x6ffffdb61e10",
+        "r8": "0x7",
+        "r9": "0x0",
+        "rax": "0xf23f7ce82d0a",
+        "rbp": "0x1",
+        "rbx": "0x1",
+        "rcx": "0x10e1e0",
+        "rdi": "0x1f634108",
+        "rdx": "0x70",
+        "rip": "0x1407614b0",
+        "rsi": "0x60078",
+        "rsp": "0x10e1a8",
+        "ss": "0x2b"
+      },
+      "return_stack": [
+        {
+          "address": "0x140d049a2",
+          "rva": "0xd049a2"
+        },
+        {
+          "address": "0x0",
+          "rva": null
+        },
+        {
+          "address": "0x0",
+          "rva": null
+        },
+        {
+          "address": "0x4b915e80",
+          "rva": null
+        },
+        {
+          "address": "0xbf9400",
+          "rva": null
+        },
+        {
+          "address": "0x0",
+          "rva": null
+        },
+        {
+          "address": "0x6ffff5bec807",
+          "rva": null
+        },
+        {
+          "address": "0x0",
+          "rva": null
+        }
+      ],
+      "schema_version": 1,
+      "session_id": "a37730be8ac3470b9cd5bb3793f8334a",
+      "tid": 1227560,
+      "wall_time_ns": 1794694111634525786
+    },
+    {
+      "body": "",
+      "caller": {
+        "address": "0x0",
+        "rva": null
+      },
+      "construction_id": "a37730be8ac3470b9cd5bb3793f8334a:427",
+      "event_index": 448,
+      "floating_registers": "7f0200000000000000000000000000000000000000000000a51f0000ffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000838300000770d57541ffbe91faf78d0c7490e66dffff000000000000000000004f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f10a5b009830200006e010000ff7f000020000000a0050000840300000000000000a503d3fe00000000010000a50396fe00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "kind": "field_change",
+      "length": 0,
+      "monotonic_ns": 162571547535444,
+      "opcode": "0x70",
+      "packet_va": "0x10e1e0",
+      "pid": 1227560,
+      "previous_length": null,
+      "registers": {
+        "cs": "0x33",
+        "ds": "0x2b",
+        "eflags": "0x246",
+        "es": "0x2b",
+        "fs": "0x0",
+        "fs_base": "0x79ba79678740",
+        "gs": "0x0",
+        "gs_base": "0x7ffc0000",
+        "orig_rax": "0xffffffffffffffff",
+        "r10": "0x0",
+        "r11": "0x202",
+        "r12": "0x401",
+        "r13": "0x142d4db00",
+        "r14": "0x0",
+        "r15": "0x6ffffdb61e10",
+        "r8": "0x7",
+        "r9": "0x0",
+        "rax": "0xf23f7ce82d0a",
+        "rbp": "0x1",
+        "rbx": "0x10e1e0",
+        "rcx": "0x10e1e0",
+        "rdi": "0x0",
+        "rdx": "0x70",
+        "rip": "0x1407614f8",
+        "rsi": "0x60078",
+        "rsp": "0x10e180",
+        "ss": "0x2b"
+      },
+      "return_stack": [
+        {
+          "address": "0x0",
+          "rva": null
+        },
+        {
+          "address": "0x10e1a0",
+          "rva": null
+        },
+        {
+          "address": "0x555569505ae0",
+          "rva": null
+        },
+        {
+          "address": "0x0",
+          "rva": null
+        },
+        {
+          "address": "0x1f634108",
+          "rva": null
+        },
+        {
+          "address": "0x140d049a2",
+          "rva": "0xd049a2"
+        },
+        {
+          "address": "0x10e1e0",
+          "rva": null
+        },
+        {
+          "address": "0x1",
+          "rva": null
+        }
+      ],
+      "rip_after_write": "0x1407614f8",
+      "rva_after_write": "0x7614f8",
+      "schema_version": 1,
+      "session_id": "a37730be8ac3470b9cd5bb3793f8334a",
+      "tid": 1227560,
+      "wall_time_ns": 1794694111634666340
+    },
+    {
+      "body": "7000",
+      "caller": {
+        "address": "0x10e1e0",
+        "rva": null
+      },
+      "construction_id": "a37730be8ac3470b9cd5bb3793f8334a:427",
+      "event_index": 449,
+      "floating_registers": "7f0200000000000000000000000000000000000000000000a51f0000ffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000838300000770d57541ffbe91faf78d0c7490e66dffff000000000000000000004f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f10a5b009830200006e010000ff7f000020000000a0050000840300000000000000a503d3fe00000000010000a50396fe00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "kind": "field_change",
+      "length": 2,
+      "monotonic_ns": 162571547629040,
+      "opcode": "0x70",
+      "packet_va": "0x10e1e0",
+      "pid": 1227560,
+      "previous_length": 0,
+      "registers": {
+        "cs": "0x33",
+        "ds": "0x2b",
+        "eflags": "0x202",
+        "es": "0x2b",
+        "fs": "0x0",
+        "fs_base": "0x79ba79678740",
+        "gs": "0x0",
+        "gs_base": "0x7ffc0000",
+        "orig_rax": "0xffffffffffffffff",
+        "r10": "0x2",
+        "r11": "0x0",
+        "r12": "0x401",
+        "r13": "0x142d4db00",
+        "r14": "0x0",
+        "r15": "0x6ffffdb61e10",
+        "r8": "0x10e1ea",
+        "r9": "0x0",
+        "rax": "0x1",
+        "rbp": "0x1",
+        "rbx": "0x10e1e0",
+        "rcx": "0x10e1e8",
+        "rdi": "0x0",
+        "rdx": "0x0",
+        "rip": "0x14076191b",
+        "rsi": "0x70",
+        "rsp": "0x10e150",
+        "ss": "0x2b"
+      },
+      "return_stack": [
+        {
+          "address": "0x10e1e0",
+          "rva": null
+        },
+        {
+          "address": "0x1",
+          "rva": null
+        },
+        {
+          "address": "0x70",
+          "rva": null
+        },
+        {
+          "address": "0x70",
+          "rva": null
+        },
+        {
+          "address": "0x0",
+          "rva": null
+        },
+        {
+          "address": "0x140761505",
+          "rva": "0x761505"
+        },
+        {
+          "address": "0x10e1e0",
+          "rva": null
+        },
+        {
+          "address": "0x60078",
+          "rva": null
+        }
+      ],
+      "rip_after_write": "0x14076191b",
+      "rva_after_write": "0x76191b",
+      "schema_version": 1,
+      "session_id": "a37730be8ac3470b9cd5bb3793f8334a",
+      "tid": 1227560,
+      "wall_time_ns": 1794694111634759945
+    },
+    {
+      "body": "700005",
+      "caller": {
+        "address": "0x10e1e0",
+        "rva": null
+      },
+      "construction_id": "a37730be8ac3470b9cd5bb3793f8334a:427",
+      "event_index": 450,
+      "floating_registers": "7f0200000000000000000000000000000000000000000000a51f0000ffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000838300000770d57541ffbe91faf78d0c7490e66dffff000000000000000000004f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f10a5b009830200006e010000ff7f000020000000a0050000840300000000000000a503d3fe00000000010000a50396fe00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "kind": "field_change",
+      "length": 3,
+      "monotonic_ns": 162571547677851,
+      "opcode": "0x70",
+      "packet_va": "0x10e1e0",
+      "pid": 1227560,
+      "previous_length": 2,
+      "registers": {
+        "cs": "0x33",
+        "ds": "0x2b",
+        "eflags": "0x207",
+        "es": "0x2b",
+        "fs": "0x0",
+        "fs_base": "0x79ba79678740",
+        "gs": "0x0",
+        "gs_base": "0x7ffc0000",
+        "orig_rax": "0xffffffffffffffff",
+        "r10": "0x2",
+        "r11": "0x0",
+        "r12": "0x401",
+        "r13": "0x142d4db00",
+        "r14": "0x0",
+        "r15": "0x6ffffdb61e10",
+        "r8": "0x10e1ea",
+        "r9": "0x0",
+        "rax": "0x2",
+        "rbp": "0x1",
+        "rbx": "0x10e1e0",
+        "rcx": "0x2",
+        "rdi": "0x5",
+        "rdx": "0x3",
+        "rip": "0x140761816",
+        "rsi": "0x60078",
+        "rsp": "0x10e180",
+        "ss": "0x2b"
+      },
+      "return_stack": [
+        {
+          "address": "0x10e1e0",
+          "rva": null
+        },
+        {
+          "address": "0x60078",
+          "rva": null
+        },
+        {
+          "address": "0x555569505ae0",
+          "rva": null
+        },
+        {
+          "address": "0x0",
+          "rva": null
+        },
+        {
+          "address": "0x1f634108",
+          "rva": null
+        },
+        {
+          "address": "0x140d049af",
+          "rva": "0xd049af"
+        },
+        {
+          "address": "0x1",
+          "rva": null
+        },
+        {
+          "address": "0x1",
+          "rva": null
+        }
+      ],
+      "rip_after_write": "0x140761816",
+      "rva_after_write": "0x761816",
+      "schema_version": 1,
+      "session_id": "a37730be8ac3470b9cd5bb3793f8334a",
+      "tid": 1227560,
+      "wall_time_ns": 1794694111634808799
+    },
+    {
+      "body": "7000051458ae09",
+      "caller": {
+        "address": "0x10e1e0",
+        "rva": null
+      },
+      "construction_id": "a37730be8ac3470b9cd5bb3793f8334a:427",
+      "event_index": 451,
+      "floating_registers": "7f0200000000000000000000000000000000000000000000a51f0000ffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000838300000770d57541ffbe91faf78d0c7490e66dffff000000000000000000004f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f10a5b009830200006e010000ff7f000020000000a0050000840300000000000000a503d3fe00000000010000a50396fe00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "kind": "field_change",
+      "length": 7,
+      "monotonic_ns": 162571547722861,
+      "opcode": "0x70",
+      "packet_va": "0x10e1e0",
+      "pid": 1227560,
+      "previous_length": 3,
+      "registers": {
+        "cs": "0x33",
+        "ds": "0x2b",
+        "eflags": "0x202",
+        "es": "0x2b",
+        "fs": "0x0",
+        "fs_base": "0x79ba79678740",
+        "gs": "0x0",
+        "gs_base": "0x7ffc0000",
+        "orig_rax": "0xffffffffffffffff",
+        "r10": "0x4",
+        "r11": "0x9",
+        "r12": "0x401",
+        "r13": "0x142d4db00",
+        "r14": "0x0",
+        "r15": "0x6ffffdb61e10",
+        "r8": "0x10e1f1",
+        "r9": "0x0",
+        "rax": "0x6",
+        "rbp": "0x1",
+        "rbx": "0x10e1e0",
+        "rcx": "0x10e1e8",
+        "rdi": "0x1f634108",
+        "rdx": "0x3",
+        "rip": "0x1407619a9",
+        "rsi": "0x9ae5814",
+        "rsp": "0x10e180",
+        "ss": "0x2b"
+      },
+      "return_stack": [
+        {
+          "address": "0x10e1e0",
+          "rva": null
+        },
+        {
+          "address": "0x1",
+          "rva": null
+        },
+        {
+          "address": "0x555509ae5814",
+          "rva": null
+        },
+        {
+          "address": "0x9ae5814",
+          "rva": null
+        },
+        {
+          "address": "0x1f634108",
+          "rva": null
+        },
+        {
+          "address": "0x140d049c0",
+          "rva": "0xd049c0"
+        },
+        {
+          "address": "0x1",
+          "rva": null
+        },
+        {
+          "address": "0x60078",
+          "rva": null
+        }
+      ],
+      "rip_after_write": "0x1407619a9",
+      "rva_after_write": "0x7619a9",
+      "schema_version": 1,
+      "session_id": "a37730be8ac3470b9cd5bb3793f8334a",
+      "tid": 1227560,
+      "wall_time_ns": 1794694111634853825
+    },
+    {
+      "body": "7000051458ae0997140000",
+      "caller": {
+        "address": "0x10e1e0",
+        "rva": null
+      },
+      "construction_id": "a37730be8ac3470b9cd5bb3793f8334a:427",
+      "event_index": 452,
+      "floating_registers": "7f0200000000000000000000000000000000000000000000a51f0000ffff00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000838300000770d57541ffbe91faf78d0c7490e66dffff000000000000000000004f4f4f4f4f4f4f4f4f4f4f4f4f4f4f4f10a5b009830200006e010000ff7f000020000000a0050000840300000000000000a503d3fe00000000010000a50396fe00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+      "kind": "field_change",
+      "length": 11,
+      "monotonic_ns": 162571547768783,
+      "opcode": "0x70",
+      "packet_va": "0x10e1e0",
+      "pid": 1227560,
+      "previous_length": 7,
+      "registers": {
+        "cs": "0x33",
+        "ds": "0x2b",
+        "eflags": "0x202",
+        "es": "0x2b",
+        "fs": "0x0",
+        "fs_base": "0x79ba79678740",
+        "gs": "0x0",
+        "gs_base": "0x7ffc0000",
+        "orig_rax": "0xffffffffffffffff",
+        "r10": "0x4",
+        "r11": "0x0",
+        "r12": "0x401",
+        "r13": "0x142d4db00",
+        "r14": "0x0",
+        "r15": "0x6ffffdb61e10",
+        "r8": "0x10e1f5",
+        "r9": "0x0",
+        "rax": "0xa",
+        "rbp": "0x1",
+        "rbx": "0x10e1e0",
+        "rcx": "0x10e1e8",
+        "rdi": "0x1f634108",
+        "rdx": "0x7",
+        "rip": "0x1407619a9",
+        "rsi": "0x1497",
+        "rsp": "0x10e180",
+        "ss": "0x2b"
+      },
+      "return_stack": [
+        {
+          "address": "0x10e1e0",
+          "rva": null
+        },
+        {
+          "address": "0x1",
+          "rva": null
+        },
+        {
+          "address": "0x555500001497",
+          "rva": null
+        },
+        {
+          "address": "0x1497",
+          "rva": null
+        },
+        {
+          "address": "0x1f634108",
+          "rva": null
+        },
+        {
+          "address": "0x140d049e9",
+          "rva": "0xd049e9"
+        },
+        {
+          "address": "0x1",
+          "rva": null
+        },
+        {
+          "address": "0x60078",
+          "rva": null
+        }
+      ],
+      "rip_after_write": "0x1407619a9",
+      "rva_after_write": "0x7619a9",
+      "schema_version": 1,
+      "session_id": "a37730be8ac3470b9cd5bb3793f8334a",
+      "tid": 1227560,
+      "wall_time_ns": 1794694111634899756
+    },
+    {
+      "body": "7000051458ae0997140000",
+      "body_va": "0x10e1e8",
+      "caller": {
+        "address": "0x140d049f3",
+        "rva": "0xd049f3"
+      },
+      "construction_id": "a37730be8ac3470b9cd5bb3793f8334a:427",
+      "constructor_missing": false,
+      "decode": {
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 9,
+            "offset": 2
+          }
+        ]
+      },
+      "destination_evidence": "unavailable_at_SendPacket",
+      "direction": "client_to_server",
+      "dropped": false,
+      "event_index": 453,
+      "filter_decision": {
+        "action": "allow",
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null
+      },
+      "kind": "send",
+      "length": 11,
+      "monotonic_ns": 162571547808610,
+      "opcode": "0x70",
+      "packet_va": "0x10e1e0",
+      "pid": 1227560,
+      "registers": {
+        "cs": "0x33",
+        "ds": "0x2b",
+        "eflags": "0x10206",
+        "es": "0x2b",
+        "fs": "0x0",
+        "fs_base": "0x79ba79678740",
+        "gs": "0x0",
+        "gs_base": "0x7ffc0000",
+        "orig_rax": "0xffffffffffffffff",
+        "r10": "0x4",
+        "r11": "0x0",
+        "r12": "0x401",
+        "r13": "0x142d4db00",
+        "r14": "0x0",
+        "r15": "0x6ffffdb61e10",
+        "r8": "0x10e1f5",
+        "r9": "0x0",
+        "rax": "0xa",
+        "rbp": "0x1",
+        "rbx": "0x1",
+        "rcx": "0x10e1e0",
+        "rdi": "0x1f634108",
+        "rdx": "0x7",
+        "rip": "0x141661780",
+        "rsi": "0x60078",
+        "rsp": "0x10e1a8",
+        "ss": "0x2b"
+      },
+      "return_stack": [
+        {
+          "address": "0x140d049f3",
+          "rva": "0xd049f3"
+        },
+        {
+          "address": "0x1",
+          "rva": null
+        },
+        {
+          "address": "0x60078",
+          "rva": null
+        },
+        {
+          "address": "0x4b915e80",
+          "rva": null
+        },
+        {
+          "address": "0xbf9400",
+          "rva": null
+        },
+        {
+          "address": "0x1866ccf8",
+          "rva": null
+        },
+        {
+          "address": "0x6ffff5bec807",
+          "rva": null
+        },
+        {
+          "address": "0x0",
+          "rva": null
+        }
+      ],
+      "schema_version": 1,
+      "session_id": "a37730be8ac3470b9cd5bb3793f8334a",
+      "tid": 1227560,
+      "wall_time_ns": 1794694111634939560
+    }
+  ],
+  "trace_health": {
+    "cleanup_errors": [],
+    "cleanup_success": true,
+    "counts": {
+      "constructors": 5084,
+      "deep_gaps": 0,
+      "dropped": 0,
+      "events": 5231,
+      "field_changes": 5,
+      "linked_sends": 136,
+      "notices": 5,
+      "send_errors": 0,
+      "sends": 136
+    },
+    "deep_complete": true,
+    "fatal_error": null,
+    "send_complete": true
+  },
+  "trace_source": {
+    "construction_id": "a37730be8ac3470b9cd5bb3793f8334a:427",
+    "path": "captures/outgoing-events-20261114-160817.jsonl",
+    "session_id": "a37730be8ac3470b9cd5bb3793f8334a",
+    "sha256": "8efa5a001265faf3e79faba6b7d01a336a9a2d50a852ea9bc3000eb754dd65cf"
+  }
+}

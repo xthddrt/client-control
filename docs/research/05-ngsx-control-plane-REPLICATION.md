@@ -43,6 +43,16 @@ point the launcher's env at a proxy and hand it our CA.
    `connection_strategy=lazy` matters: it defers upstream TLS until the client
    speaks, which avoids SNI/handshake issues with the pinned-ish NGS hosts.
 
+   To disable only `0x0F013` instead of applying the generic response neutralizer,
+   close MapleStory and the launcher, then use:
+   ```bash
+   NGS_SCREENSHOT_FILTER=1 NGS_NEUTRALIZE=false analysis/launch-ngs-mitm.sh
+   ```
+   The scoped rewrite and exact logging are verified locally; actual suppression by
+   the live client still requires a proxied launch. The client-to-server request
+   cipher remains unresolved, so request-size changes alone do not prove screenshots.
+   See [the configuration and filter audit](outgoing/20261115-grap-screenshot-filter.md).
+
 4. **Launch ONLY the launcher through the proxy** (bare — no speedhack wrapper).
    The wrapper sets the critical environment:
    ```bash

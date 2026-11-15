@@ -1,0 +1,41 @@
+{
+  "field_offset": "0x60",
+  "global_address": "0x143bf38c8",
+  "historical_operation": "r374",
+  "object_pointer": "0x10fa40",
+  "pid": 1227560,
+  "same_operation": false,
+  "samples": [
+    {
+      "monotonic_ns": 163517524789582,
+      "raw": "8c86bc09",
+      "tick_ms": 163350156,
+      "wall_time_ns": 1794695057611919777
+    },
+    {
+      "monotonic_ns": 163517624894550,
+      "raw": "e686bc09",
+      "tick_ms": 163350246,
+      "wall_time_ns": 1794695057712023951
+    },
+    {
+      "monotonic_ns": 163517724973998,
+      "raw": "4087bc09",
+      "tick_ms": 163350336,
+      "wall_time_ns": 1794695057812103879
+    },
+    {
+      "monotonic_ns": 163517825020934,
+      "raw": "b887bc09",
+      "tick_ms": 163350456,
+      "wall_time_ns": 1794695057912150581
+    },
+    {
+      "monotonic_ns": 163517925095373,
+      "raw": "1288bc09",
+      "tick_ms": 163350546,
+      "wall_time_ns": 1794695058012224844
+    }
+  ],
+  "schema": "client-control.runtime-timer-samples.v1"
+}

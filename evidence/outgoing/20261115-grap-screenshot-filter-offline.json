@@ -1,0 +1,105 @@
+{
+  "schema": "client-control.grap-screenshot-filter-offline.v1",
+  "scope": "local_loopback_only_no_Nexon_connection_or_credentials",
+  "request_body": "request-body",
+  "original_decoded_response": {
+    "subfeature": {
+      "0x0F013": 1,
+      "0x06010": 1
+    },
+    "signature": {
+      "0x0F013": [
+        {
+          "id": 14345,
+          "l": 1,
+          "s": {
+            "capture_limit": "100",
+            "width": "1280",
+            "quality": "50",
+            "capture_cool_time": "6"
+          }
+        }
+      ],
+      "0x06010": [
+        {
+          "id": 123,
+          "l": 1,
+          "s": {
+            "rule": "unchanged"
+          }
+        }
+      ]
+    },
+    "unrelated": {
+      "preserve": [
+        1,
+        "exact-value"
+      ]
+    }
+  },
+  "original_wire_base64": "S2lvaUtpb3FLaW9vMVVlbGNTRG9HanB2blFqWmg3cmVyNUlxSFh0Z28rZnlMUGl0UTNnQkQxRWRPWDQ2MStHWEU2MnhSaHFSNFQrdlh5ekxudkdxaDhibVVqRGtWcFdKZmhya0F0TTZUZjhrMWZwWUtROGo0UGdHSmJaVXcxbk9NQnU3ZVVIL0FURXd5cVpya3BjQlE1R3l1VWtHUkdSQ1R6Vit6NXRTc2VjU3dQQ0F0RnlMS3NXQmhaMVh6TG5lVGZZU053Y2RIcmN5Y0w1TytYWDJTbm9ob1JoSXVlc3o1MmhDWXhpRWlKdXRiMEt0ZWxQVkxvMXFDRWtOS3lvcQ==",
+  "filtered_decoded_response": {
+    "subfeature": {
+      "0x0F013": 0,
+      "0x06010": 1
+    },
+    "signature": {
+      "0x0F013": [
+        {
+          "id": 14345,
+          "l": 0,
+          "s": {
+            "capture_limit": "100",
+            "width": "1280",
+            "quality": "50",
+            "capture_cool_time": "6"
+          }
+        }
+      ],
+      "0x06010": [
+        {
+          "id": 123,
+          "l": 1,
+          "s": {
+            "rule": "unchanged"
+          }
+        }
+      ]
+    },
+    "unrelated": {
+      "preserve": [
+        1,
+        "exact-value"
+      ]
+    }
+  },
+  "received_wire_base64": "QUFBaUtpb3FLaW9vMVUra2NTQ3BHanB2M1JqMUEyWldlNWlxUkdodStMSkFDaFN3clo5aTNQUnVBRDdRSFUwU3ZWRmRtdFRVdXZaVENhdkhxakgwdXN6cXVvNlJhS0RxUWdwS2Z4WFhjZDhrZ0tGb3V6MFBLMWZ1UmhndWRiajJRQjhBTFNZQ0NEcFNnK1FubzVoQjZJM05jSk5kVnI0ajVhYXlUZmNRSCt3QWdncXV6RTNnYzdMUGJUZlgvRE9GdWNjTkc5cUR2WGRnNy90VUdIaFpQUk1Rb2J0OHNCOVFYNmJqcHlGZGM1UGNPTEE2RkVuWjh1UWlLeW9x",
+  "decision": {
+    "action": "modify",
+    "changes": {
+      "signature": [
+        {
+          "after": 0,
+          "before": 1,
+          "id": 14345,
+          "index": 0
+        }
+      ],
+      "subfeature": {
+        "after": 0,
+        "before": 1
+      }
+    },
+    "forward": true,
+    "matched": true
+  },
+  "mitmproxy_version": "Mitmproxy: 12.3.1",
+  "verified": [
+    "real_mitmdump_addon_load",
+    "real_http_request_response",
+    "original_and_rewritten_exact_bytes",
+    "only_0x0F013_enable_flags_changed",
+    "parameters_and_unrelated_features_preserved"
+  ],
+  "live_client_effect_verified": false
+}

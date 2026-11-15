@@ -96,6 +96,7 @@
     "detail": {"type": "string"},
     "component": {"type": "string"},
     "modules": {"type": "array", "items": {"type": "string"}},
+    "stack_addresses": {"type": "array", "items": {"type": "string", "pattern": "^0x[0-9a-f]+$"}},
     "stack_frames": {"type": "integer", "minimum": 1},
     "stack_unresolved": {"type": "integer", "minimum": 0},
     "payload_unavailable": {"type": "boolean"},

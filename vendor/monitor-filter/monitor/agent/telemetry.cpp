@@ -661,7 +661,12 @@ std::string TelemetryJson(const TelemetryEvent& event)
     }
     json << "]";
     if (!event.stackAddresses.empty()) {
-        json << ",\"stack_frames\":" << event.stackAddresses.size()
+        json << ",\"stack_addresses\":[";
+        for (size_t index = 0; index < event.stackAddresses.size(); index++) {
+            if (index != 0) json << ',';
+            json << "\"0x" << std::hex << event.stackAddresses[index] << "\"";
+        }
+        json << "],\"stack_frames\":" << std::dec << event.stackAddresses.size()
              << ",\"stack_unresolved\":" << event.stackUnresolved;
     }
     json << "}";

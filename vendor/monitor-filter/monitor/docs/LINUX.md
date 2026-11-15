@@ -441,7 +441,8 @@ record is a full 2080-byte event; others stay 1536 bytes. The agent (`pe.cpp`, `
 up to 16 PE frames placed before the unix frames: rip (inside the `NtXxx` stub of `ntdll.dll`), then the
 return addresses unwound with the x64 `.pdata`/`.xdata` of the mapped PE images (each file parsed once from
 disk), then, where unwinding stops, the words of the rest of the copied stack that point into PE code
-sections. `detail` gets `pe_frames=N` and, for scan finds, `pe_scanned=M`. `modules` (resolved in stack
+sections. `detail` gets `pe_frames=N` and, for scan finds, `pe_scanned=M`. `stack_addresses` retains every exact
+address, including unresolved and scan-only entries. `modules` (resolved in stack
 order, deduplicated, at most 8) therefore reads Windows side first, then unix side, e.g. `ntdll.dll`,
 `kernelbase.dll`, the game's module, `ntdll.so`, `libc.so.6`; `tools/analysis/common.py` `caller_module`
 skips Wine's own, the prefix's `windows` and the system's modules. This applies to every record built from
@@ -865,7 +866,7 @@ Without the kernel sensors (`--no-ebpf`, no root, or an agent built without clan
 |---|---|---|
 | `linux.fanotify` (40/44) | fanotify mount marks: `FAN_ACCESS`, `FAN_MODIFY`, `FAN_CLOSE_WRITE`; filesystem marks with `FAN_REPORT_DFID_NAME`: `FAN_CREATE`, `FAN_DELETE`, `FAN_MOVE` | `file_read`, `file_write`, `file_close`, `file_create`, `file_set_information` (value0 13 = unlink, 10 = rename; detail `unlink`, `rename;from`, `rename;to`) |
 | `linux.proc_connector` (41/45) | netlink process-events connector | `process_start` (fork from a tracked process = inherited; exec of an image under a root = explicit; a tracked exec is logged again with value1 = 1), `process_exit` |
-| `linux.maps_poll` (42/46) | `/proc/<pid>/maps` on track, on an executable file mmap/mprotect, and every 2 s (also with the kernel sensors) | `image_load` per executable file mapping (value0 base, value1 span) the kernel sensors did not already write (fallback: native PE images whose sections Wine reads into anonymous memory, mappings made at exec) |
+| `linux.maps_poll` (42/46) | `/proc/<pid>/maps` on track, on an executable file mmap/mprotect, and every 2 s (also with the kernel sensors) | `image_load` per PE load and per native offset-zero load (value0 base, value1 image size/span) the kernel sensors did not already write; another offset-zero mapping starts another native load (fallback: native PE images whose sections Wine reads into anonymous memory, mappings made at exec) |
 | `linux.net_poll` (43/47) | `/proc/net/{tcp,tcp6,udp,udp6}` every 1 s, owners via `/proc/<pid>/fd` | `network_connect`, `network_accept`, `network_flow_close` (value0 socket inode) |
 
 Process identity is PID plus start time (from `/proc/<pid>/stat`, in FILETIME units).

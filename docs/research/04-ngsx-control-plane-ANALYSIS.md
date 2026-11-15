@@ -325,10 +325,11 @@ Persisted: `data/module-crc-expected-2026-10-29.json`.
     "capture_limit":"100","width":"1280",
     "capture_cool_time":"6","quality":"50"}}]
 ```
-Screenshot exfil is **ENABLED** (`l:1`): up to **100** captures/session, **1280px**
-wide, JPEG **quality 50**, **6s cooldown** between captures. This is the mechanism
-behind the periodic ~+500-byte request-body bumps seen during play (ANALYSIS §7
-note / PM-76). The images ride the client→server request cipher.
+Screenshot configuration is **ENABLED** (`l:1`): limit **100**, **1280px** wide,
+JPEG **quality 50**, **6s cooldown** between captures. This establishes capability,
+not an actual capture or upload. The original association with periodic ~+500-byte
+request-body bumps was not supported by decrypted image fields or a capture-to-send
+link; see the [current audit](outgoing/20261115-grap-screenshot-filter.md).
 
 ### 0x0F020
 A second id→hash map (~many entries, each `{id, s:{hash:0x...}, l:1}`) — a
@@ -339,34 +340,32 @@ Persisted decoded blobs: `data/decoded-x-init-2026-10-29.json`,
 
 ---
 
-## 9. Screenshot-exfil wire path mapped (2026-10-29, gd-screenshot-exfil)
+## 9. Screenshot-upload hypothesis and wire observations (2026-10-29, gd-screenshot-exfil)
 
-Config says exfil is enabled (§8, 0x0F013). Wire-side confirmation from the live
-dump (79 x-csauth/v2 request bodies over ~80 min):
+The config enables capture capability (§8, 0x0F013). The historical live dump also
+contained 79 x-csauth/v2 request bodies over ~80 min:
 
-- **One exfil channel only.** ALL client→server GRAP data rides
-  `x-csauth.ngs.nexon.com/v2` request bodies. There is **no dedicated screenshot
-  upload endpoint** (max request body anywhere = 30260 B, all on /v2).
+- All observed client→server GRAP data used `x-csauth.ngs.nexon.com/v2` request
+  bodies; no separate upload endpoint was observed (maximum body 30260 B).
 - **Baseline attestation ≈ 10080 B** (±24 B jitter) at the 64s cadence.
-- **Login/startup burst 22:14–22:19:** +18.7–20.2 KB over the baseline — the
-  initial full module attestation + first screenshot batch — decaying to baseline
-  by 22:20:56.
-- **Steady-state screenshot uploads = periodic bumps** of **+~500 B** (22:44–22:49
-  cluster, 23:01) and **+~828 B** (23:13:11, 23:24:55) at irregular multi-minute
-  gaps (NOT the 6 s `capture_cool_time`, which is only the minimum capture
-  spacing; uploads are batched/occasional and small because quality 50 @ 1280px is
-  chunked across beats).
-- **Cross-check vs. the detection-trip (§7):** the +828 B bumps at 23:13:11 and
-  23:24:55 occurred *inside* the AHK/Themida window — and identical +500/+828 B
-  bumps also occur with no injected process present. This **confirms request-size
-  bumps are screenshot uploads, not a detection signal**, and independently
-  reinforces the §7 no-detection result.
-- **Contents unreadable:** the images travel inside the device-bound REQUEST
-  cipher (still unbroken — see FINDINGS open target #2). We have fully mapped the
-  *channel, cadence, size envelope, and trigger config*, but not the plaintext.
+- **Login/startup burst 22:14–22:19:** +18.7–20.2 KB over the baseline, decaying
+  to baseline by 22:20:56. The original interpretation as initial attestation plus
+  a screenshot batch was not proven from payload fields.
+- **Periodic size bumps** of **+~500 B** (22:44–22:49 cluster, 23:01) and
+  **+~828 B** (23:13:11, 23:24:55) occurred at irregular multi-minute gaps. They
+  were not the 6 s minimum capture spacing. The original interpretation that these
+  were image chunks was a hypothesis, not a decoded result.
+- **Cross-check vs. the detection-trip (§7):** the +828 B bumps occurred inside the
+  AHK/Themida window, and similar bumps occurred without an injected process. This
+  does not establish that the extra bytes were screenshots or that size alone can
+  distinguish image data from other reports.
+- **Contents unreadable:** the client→server request cipher remains unbroken.
+  Channel, cadence, and size envelope are observations; image identity is unknown.
 
-**Net:** screenshot exfil is characterized end-to-end except for payload
-decryption, which is gated on the request-cipher / VM-devirt track (plan.md).
+**Current correction:** there was no completed capture-to-upload decode. The
+configuration and wire-size observations should not be called end-to-end screenshot
+exfiltration without a producing capture/serialization chain or plaintext evidence.
+See the [live configuration and scoped-filter audit](outgoing/20261115-grap-screenshot-filter.md).
 
 ---
 

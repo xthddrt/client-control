@@ -69,7 +69,7 @@ Meanings are limited to what static code and live correlation support. A constru
 | `0xdb` | Starts with `Encode1`, `Encode4`, `Encode4`, `Encode1`, followed by nested movement data. | Movement/synchronization, confirmed by constructor and bodies. |
 | `0x2fe` | High-frequency movement/state records. Constructor `0x1d43ab1`; first fields include a 32-bit value from `r12+0x3a0`, a 16-bit value, flags, then movement blocks. | Movement/state stream, confirmed. |
 | `0xe7` | 160-byte report in current captures. One constructor is `0x296e39f`, followed by send at `0x296e3bf`. | Periodic game-state report; exact report name unresolved. |
-| `0x70` | Observed 11-byte subtype-5 form: byte `5`, a 32-bit tick-like value, and a 32-bit context value. Other subtypes exist. | Timestamp/context message family; not enough evidence for one universal name. |
+| `0x70` | The 11-byte subtype-5 form is byte `5`, a 32-bit millisecond tick, and a 32-bit main-loop update count. The count increments once per update-loop iteration and resets after the report. Other subtypes exist. | Update-rate/performance report, supported by runtime constructor/send tracing and a counter write watch. Exact scheduling trigger remains unresolved. |
 | `0x13f` | Constructor `0x2dd93d9`; starts with one byte, followed by fixed-width values from a tree-like structure. Observed length 27. | Structured state report; exact event unresolved. |
 | `0x1a7` | Variable-length batch/report. Two construction paths at `0x2dd7b82` and `0x2dd81c0`; observed lengths 22 and 30. | Batched metric/event records; exact record names unresolved. |
 | `0x1ef` | A family of structurally different reports, not one uniform 160-byte packet. One 14-byte path at `0x2edc693` contains constant `0x65` and two context values; another capture contained 174 bytes. | Must be labeled per call site, not globally called telemetry. |
@@ -79,6 +79,9 @@ Meanings are limited to what static code and live correlation support. A constru
 | `0x265` | One 74-byte observation, with scalar/vector data. Constructor `0x2d0f748`; send caller `0x142d0f8fd`. | Unresolved rare state/field message. |
 | `0x266` | One 22-byte observation immediately after `0x265`. Constructor `0x2d0fa6e`; send caller `0x142d0fad8`. | Unresolved rare state/field message. |
 | `0x2ef` | 14 bytes; observed body after opcode is three 32-bit values `2`, `33`, `185`. Sent at roughly ten-second intervals. | Periodic status report; exact meaning unresolved. |
+| `0x181` | Six-byte form has `u32 field_0x02`; ten-byte form beginning with `2` adds `u32 field_0x06`. One runtime-linked sender reads that second value from a protected integer's raw seed at object `+0x124c`. | Byte structure decoded; object selection, field meanings, alternate producer, and protocol purpose remain unresolved. See [r48422](../research/outgoing/20261114T225004-r48422.md). |
+
+The `0x70` subtype-13 form is a length-prefixed ASCII identifier plus a one-byte flag; its ultimate identifier source remains unknown. See the [runtime-linked subtype-13 case](../research/outgoing/20261114T164932-r48645.md). Subtype 1 is only partially understood and uses an alternate VM/socket path; see [its evidence and limits](../research/outgoing/20261114T210123Z-r600.md). Other subtypes remain unknown.
 
 ### Melee serializer path
 
@@ -138,6 +141,8 @@ Only that opcode is redirected to return `TRUE` from `SendPacket` without transm
 Use one filter at a time and treat the result as phase-specific: a packet that can be dropped during combat may be required at login, a portal, or a later heartbeat. `send_complete` reports observer health, not that dropping was safe for gameplay. A previous four-minute test dropped two `0x1ef` messages without a disconnect, but that does not prove every `0x1ef` form is nonessential.
 
 For an ordered JSON policy instead of one opcode, use `--policy FILE`. Rules can select process, protocol (`maple`), message type, direction, and a decoded field; `audit` mode logs `would_drop` without suppressing. Every send records `decode` and `filter_decision`, including default allows. For example, a rule with `"type":"0x32b"` and `"field":{"name":"drop_object_id","equals":"0x143ff"}` selects only that observed pickup. Unknown fields and unavailable destinations do not match. Destination is not known at `SendPacket`; use the NGS/HTTP proxy or socket-layer filter for destination rules. See `analysis/README.md` for the full policy and ledger workflow.
+
+`analysis/policies/drop-update-rate-report.json` selects only `0x70` subtype 5. One short live experiment dropped one update-rate report while allowing 232 other traced sends and preserving other `0x70` subtype-1 wire traffic; this does not prove long-term safety. See [the filtering evidence](../research/outgoing/20261114T210123Z-r374-filter.md).
 
 This logger covers the MapleStory game process, not every launcher/NGS protocol. Use the NGS proxy for HTTPS control traffic. The pcap uses endpoints discovered at startup, so a later reconnect to a different endpoint needs another capture. `capture-packets.sh` remains the simpler full-duplex plaintext observer; do not run two ptrace observers concurrently.
 

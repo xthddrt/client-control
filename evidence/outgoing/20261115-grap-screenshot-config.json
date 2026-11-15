@@ -1,0 +1,26 @@
+{
+  "schema": "client-control.grap-screenshot-config.v1",
+  "status": "found",
+  "pid": 1392465,
+  "wall_time_ns": 1794758145938297933,
+  "module_base": "0x400000",
+  "pe_timestamp": "0x6a9984cf",
+  "image_sha256": "2c24777e1b7e7e81e0ca4a4d5e1fc6acd68ef6abcd3e2ee3a339554fbc3b8ec3",
+  "excerpt_address": "0x9c3172c",
+  "mapping": null,
+  "excerpt_hex": "010046810200000013f000000100000009380000000000000400000011000000636170747572655f636f6f6c5f74696d6501000000360d000000636170747572655f6c696d697403000000313030070000007175616c6974790200000035300500000077696474680400000031323830",
+  "feature_id_0x3809_present": true,
+  "decoded": {
+    "capture_cool_time": 6,
+    "capture_limit": 100,
+    "quality": 50,
+    "width": 1280
+  },
+  "proof_limits": "Configuration and field encoding only; no capture, image, upload, or server receipt is proven.",
+  "scan": {
+    "scope": "readable mappings up to 128 MiB; not a complete memory scan",
+    "bytes_scanned": 162762752,
+    "skipped_or_unreadable_mappings": 67,
+    "screen_or_image_contents_read": false
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "comparison": {
+    "fixed_machine_or_install_identifier": false,
+    "identifier_changed_across_process_restart": true,
+    "previous_identifier": "2d8289ae-04ce-3764-b14b-2d2e64a32bed",
+    "previous_process_pid": 1227560,
+    "previous_uuid_version": 3,
+    "restart_identifier": "c76d7736-b70f-3359-81ac-639c55bac458",
+    "restart_pid": 1278603,
+    "restart_uuid_version": 3,
+    "server_supplied_or_locally_generated": "unresolved_no_preceding_incoming_copy_observed"
+  },
+  "decryption_candidates": [
+    {
+      "layer": 0,
+      "plaintext_hex": "70 00 0d 24 00 63 37 36 64 37 37 33 36 2d 62 37 30 66 2d 33 33 35 39 2d 38 31 61 63 2d 36 33 39 63 35 35 62 61 63 34 35 38 00"
+    },
+    {
+      "layer": 1,
+      "plaintext_hex": "7d d5 48 be a2 de 45 64 18 21 92 0d cf f3 31 a7 a0 18 15 1a b4 b5 b4 a2 7b 84 39 1c 2b 79 8c 3d ce e4 2f 9f 02 2d a9 f2 83 99"
+    }
+  ],
+  "following_frame_prefix_hex": "f4 09 e0 09",
+  "following_operation_record": "r54971",
+  "header": {
+    "declared_body_bytes": 42,
+    "next_word0": "0x9f4",
+    "word0": "0xcca9",
+    "word1": "0xcc83"
+  },
+  "iv_recovery": {
+    "header_synced": true,
+    "iv": "bdd176cc",
+    "method": "unique seed_iv from two consecutive operation headers"
+  },
+  "operation_record": "r54970",
+  "pid": 1278603,
+  "plaintext_hex": "70 00 0d 24 00 63 37 36 64 37 37 33 36 2d 62 37 30 66 2d 33 33 35 39 2d 38 31 61 63 2d 36 33 39 63 35 35 62 61 63 34 35 38 00",
+  "plaintext_sha256": "ca64cd4aa93002bd6e63c1dd5b6e19ebed8de1039210822b4d1c4573c01dd7f4",
+  "protocol_meaning": "unresolved; identifier structure and process-local report path proven, ultimate identifier role not established",
+  "raw_frame_hex": "a9 cc 83 cc eb 2e 12 49 91 de d4 db 30 45 ad 97 64 ba 0f ca a6 9d 77 c4 00 35 a8 92 10 55 5e f9 86 7f 0d 54 65 b0 57 bc d5 e3 28 05 53 d1",
+  "report_object": {
+    "address": "0x143bfa0a0",
+    "enabled_0x1a": 1,
+    "flag_0x18": 0,
+    "raw_hex": "605e474301000000685e474301000000705e4743010000000001010000000000b8d3c05500000000000000000000000000000000000000000000000000000000",
+    "string_ascii": "c76d7736-b70f-3359-81ac-639c55bac458",
+    "string_pointer": "0x55c0d3b8"
+  },
+  "report_watch": {
+    "address": "0x140d1fea0",
+    "duration_seconds": 600.0,
+    "error": null,
+    "events": [
+      {
+        "code_at_entry": "48894c24084881ec88040000488b05",
+        "mode": "execute",
+        "monotonic_ns": 170590229628627,
+        "registers": {
+          "r10": "0x0",
+          "r11": "0x202",
+          "r12": "0x401",
+          "r13": "0x142d4db00",
+          "r14": "0x0",
+          "r15": "0x6ffffdb61e10",
+          "r8": "0x7",
+          "r9": "0x0",
+          "rax": "0xc",
+          "rbp": "0x1",
+          "rbx": "0x1",
+          "rcx": "0x143bfa0a0",
+          "rdi": "0x1f70d808",
+          "rdx": "0x10e7a0",
+          "rsi": "0x3015a",
+          "rsp": "0x10e618"
+        },
+        "rip": "0x140d1fea0",
+        "rva": "0xd1fea0",
+        "stack": "139da444010000000c000000000000000c000000000000000c00000000000000460200000000000090f4ce40010000008c0ca64401000000c891691800000000",
+        "wall_time_ns": 1794702130316758992,
+        "watched_address": "0x140d1fea0"
+      }
+    ],
+    "mode": "execute",
+    "module_base": "0x140000000",
+    "pe_timestamp": "0x6AEB667B",
+    "pid": 1278603,
+    "schema": "client-control.debug-watch.v1"
+  },
+  "schema": "client-operation-identifier-restart-evidence.v1",
+  "selected_layer": 0,
+  "selected_layer_evidence": "decoded subtype-13 ASCII identifier exactly equals the current global report-object string",
+  "source_integrity": {
+    "captures/r48645-restart-target-ledger/traffic.jsonl": "8a1f824d2c959ab3b61823c273da2d243a9e1745a5edcb322d27c3d348ca4160",
+    "evidence/outgoing/20261114T181540-identifier-report-watch.json": "35e061e7442dfe23886ec005bb20a7bb88e62648caf1e35e2ec5628507fcad73"
+  }
+}

@@ -4,6 +4,7 @@ import struct
 
 
 OUTGOING_NAMES = {
+    0x70: "update_rate_report",
     0xDB: "movement_synchronization",
     0xE1: "melee_attack",
     0x2A5: "input_event_batch",
@@ -15,6 +16,7 @@ INCOMING_NAMES = {
     0x472: "drop_remove",
     0x8B: "pickup_credit",
 }
+CONFIRMED_NAMES = set(OUTGOING_NAMES.values()) | set(INCOMING_NAMES.values()) | {"identifier_report"}
 FIELD_EVIDENCE = "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B"
 
 
@@ -134,7 +136,46 @@ def decode_game_body(body, direction="client_to_server"):
     name = names.get(opcode)
     status = "unknown" if name is None else "partial"
 
-    if opcode == 0xE1:
+    if opcode == 0x70:
+        if len(body) == 11 and body[2] == 5:
+            _put(fields, details, body, "subtype", 2, 1)
+            _put(fields, details, body, "tick_ms", 3, 4)
+            _put(fields, details, body, "update_count", 7, 4)
+            status = "decoded"
+        elif len(body) >= 3 and body[2] == 13:
+            name = "identifier_report"
+            _put(fields, details, body, "subtype", 2, 1)
+            if len(body) >= 5:
+                length = _integer(body, 3, 2)
+                _put(fields, details, body, "identifier_length", 3, 2)
+                end = 5 + length
+                if end <= len(body):
+                    raw = body[5:end]
+                    fields["identifier_hex"] = raw.hex()
+                    details["identifier"] = {"offset": 5, "size": length, "raw_hex": raw.hex(),
+                                             "signed": False, "evidence": FIELD_EVIDENCE}
+                    try:
+                        fields["identifier"] = raw.decode("ascii")
+                    except UnicodeDecodeError:
+                        status = "partial"
+                    if _put(fields, details, body, "flag", end, 1) and end + 1 == len(body) and "identifier" in fields:
+                        status = "decoded"
+                    else:
+                        status = "partial"
+                else:
+                    status = "partial"
+            else:
+                status = "partial"
+        else:
+            name = None
+            status = "unknown"
+    elif opcode == 0x181:
+        if _put(fields, details, body, "field_0x02", 2, 4):
+            if len(body) == 6:
+                status = "decoded"
+            elif fields["field_0x02"] == 2:
+                status = "decoded" if _put(fields, details, body, "field_0x06", 6, 4) and len(body) == 10 else "partial"
+    elif opcode == 0xE1:
         _put(fields, details, body, "field_0x20", 0x20, 4)
         _put(fields, details, body, "target_identifier", 0x7D, 4)
         _put(fields, details, body, "critical", 0x87, 1)
@@ -181,7 +222,7 @@ def decode_game_body(body, direction="client_to_server"):
         "protocol": "maple",
         "type": f"0x{opcode:x}",
         "name": name,
-        "name_status": "confirmed" if name in OUTGOING_NAMES.values() or name in INCOMING_NAMES.values() else "candidate" if name else "unknown",
+        "name_status": "confirmed" if name in CONFIRMED_NAMES else "candidate" if name else "unknown",
         "status": status,
         "fields": fields,
         "field_details": details,
@@ -202,6 +243,28 @@ def self_test():
     unknown = decode_game_body(b"\xff\xff\x01")
     assert unknown["type"] == "0xffff" and unknown["name"] is None
     assert unknown["unresolved_ranges"][-1] == {"offset": 2, "length": 1}
+    report = decode_game_body(bytes.fromhex("70 00 05 82 53 72 09 90 0f 00 00"))
+    assert report["name"] == "update_rate_report" and report["status"] == "decoded"
+    assert report["fields"]["tick_ms"] == 158487426 and report["fields"]["update_count"] == 3984
+    assert not report["unresolved_ranges"]
+    other_report = decode_game_body(bytes.fromhex("70 00 01 00"))
+    assert other_report["name"] is None and other_report["status"] == "unknown"
+    identifier = b"2d8289ae-04ce-3764-b14b-2d2e64a32bed"
+    identifier_report = decode_game_body(struct.pack("<HBH", 0x70, 13, len(identifier)) + identifier + b"\x00")
+    assert identifier_report["name"] == "identifier_report" and identifier_report["status"] == "decoded"
+    assert identifier_report["fields"]["identifier"] == identifier.decode() and identifier_report["fields"]["flag"] == 0
+    assert not identifier_report["unresolved_ranges"]
+    assert decode_game_body(struct.pack("<HBH", 0x70, 13, len(identifier)) + identifier)["status"] == "partial"
+    message = decode_game_body(bytes.fromhex("81 01 02 00 00 00 99 55 00 00"))
+    assert message["name"] is None and message["status"] == "decoded"
+    assert message["fields"]["field_0x02"] == 2 and message["fields"]["field_0x06"] == 0x5599
+    assert not message["unresolved_ranges"]
+    short_message = decode_game_body(bytes.fromhex("81 01 03 00 00 00"))
+    assert short_message["fields"] == {"opcode": 0x181, "field_0x02": 3}
+    assert short_message["status"] == "decoded" and not short_message["unresolved_ranges"]
+    assert decode_game_body(bytes.fromhex("81 01 02 00 00 00 99 55"))["status"] == "partial"
+    assert decode_game_body(bytes.fromhex("81 01 02 00 00 00 99 55 00 00 00"))["status"] == "partial"
+    assert decode_game_body(bytes.fromhex("81 01 03 00 00 00 00"))["unresolved_ranges"] == [{"offset": 6, "length": 1}]
     batch = bytearray(21)
     struct.pack_into("<H", batch, 0, 0x2A5)
     struct.pack_into("<H", batch, 19, 1)

@@ -10,8 +10,9 @@
 
 /*
  * image_load from /proc/<pid>/maps (pe.cpp MappedImages): one record per load of a PE image (value0 = the
- * mapping of its header, value1 = SizeOfImage) and per other executable file (value0 = lowest address of its
- * mappings, value1 = span to the highest). Polled on track, on an executable mmap/mprotect and every two
+ * mapping of its header, value1 = SizeOfImage) and per other executable load (value0 = its offset-zero mapping,
+ * value1 = span through its subsequent mappings; another offset-zero mapping starts another load). Polled on track,
+ * on an executable mmap/mprotect and every two
  * seconds, so a library loaded and unloaded between polls is missed. An image a poll listed executable that a later
  * poll no longer lists at all is unloaded: a file_section record image_unload;source=maps_poll (value0 its base, value1
  * its size), and its next load is logged again. A WMI module's load is also an etw_wmi

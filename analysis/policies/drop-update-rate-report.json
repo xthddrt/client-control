@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "mode": "enforce",
+  "default": "allow",
+  "rules": [
+    {
+      "id": "drop-update-rate-report",
+      "action": "drop",
+      "process": "MapleStory.exe",
+      "protocol": "maple",
+      "type": "0x70",
+      "field": {
+        "name": "subtype",
+        "equals": 5
+      },
+      "reason": "Suppress only the 11-byte 0x70 subtype-5 update-rate report during the scoped live experiment."
+    }
+  ]
+}
