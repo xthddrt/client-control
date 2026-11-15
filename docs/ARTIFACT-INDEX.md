@@ -24,7 +24,8 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 | `observe-position-reset.py` | Shared character resolver, registers, checked ptrace, bounded wait |
 | `mob_profile.py` | Strict mob-offset parsing and validation |
 | `memory-watch.py` | Writable-memory snapshots and before/after diffs |
-| `profile.json` | Single build-specific profile used by all callers |
+| `profile.json` | MapleStory build-specific profile used by default callers |
+| `grap-core-profile.json` | GRAP PE/import identity and `BitBlt` import slot for bounded watches |
 | `packet_fields.py` | Evidence-labelled build-scoped packet types and bounded field decoders |
 | `traffic_capture.py` | pcap/pcapng parsing and loss-aware TCP reassembly |
 | `traffic_protocols.py` | MapleStory/TLS/HTTP/DNS framing with unknown and incomplete evidence markers |
@@ -38,18 +39,22 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 | Path | What |
 |---|---|
 | `wire-session-decrypt.py` | Passive full-duplex pcap decryptor |
-| `traffic-ledger.py` | Ordered chained traffic record joining packets, msmon payloads, construction traces, NGS events, and policy evidence |
+| `traffic-ledger.py` | Ordered chained traffic record joining packets, msmon payloads, construction traces, NGS events, policy evidence, and reproducible per-operation exports |
 | `decode-flows.py` | Decode captured control-plane flows |
 | `decode-heartbeats.py` | Decode `x-csauth` heartbeats |
-| `ngs-mitm.py` | NGS request logger and live response decoder/neutralizer |
+| `ngs-mitm.py` | NGS request logger, response decoder/neutralizer, and scoped screenshot-config filter |
 | `ngs-proxy.py` | Raw communication logger with exact-host/path-prefix blocking |
-| `launch-ngs-mitm.sh` | Persistent proxy and proxied Nexon launcher |
+| `launch-ngs-mitm.sh` | Persistent proxy and proxied Nexon launcher with independent screenshot-filter control |
+| `verify-ngs-screenshot-filter.py` | Reproducible real-local-proxy verification of the scoped config rewrite; never contacts Nexon |
+| `grap-screenshot-config.py` | Bounded live GRAP configuration reader with exact excerpt evidence and no image collection |
 
 ### Packet, interaction, and experimental research
 
 | Path | What |
 |---|---|
 | `protocol-static.py` | Static outgoing constructor, encoder, and SendPacket extractor |
+| `debug-watch.py` | Read-only hardware execution/write watch with selectable build profile, register, stack, and restoration evidence |
+| `watch-grap-screenshots.sh` | Bounded per-thread GRAP `BitBlt` watch; does not itself prove screenshot capture |
 | `packet-observe.py` | Plaintext send/receive and constructor observer |
 | `outgoing-packet-capture.py` | Rich outgoing logger with optional single-opcode suppression |
 | `drop-observe.py` | Outgoing packet and memory differential recorder |
@@ -75,6 +80,7 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 | Path | What |
 |---|---|
 | `capture-packets.sh`, `capture-outgoing.sh` | Plaintext and rich outgoing packet capture |
+| `analysis/policies/drop-update-rate-report.json` | Exact `0x70` subtype-5 suppression policy used in the scoped r374 filtering experiment |
 | `capture-drops.sh`, `capture-interaction.sh` | Drop and broad interaction capture |
 | `capture-32b.sh`, `capture-death.sh` | Focused pickup and mob-death capture |
 | `capture-rng.sh` | Auto-PID RNG dataset capture |
@@ -129,6 +135,13 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 | `05-ngsx-control-plane-REPLICATION.md` | Control-plane capture and decode reproduction |
 | `06-crc-ngs-historical-context.md` | Historical CRC/NGS context |
 | `07-blackcipher64-ngs-static-report.md` | NGS-X / grap-core64 static report |
+| `research/outgoing/20261114T210123Z-r374.md` | Reproducible decode, packet correlation, process attribution, runtime-corroborated send path, and update-rate meaning of r374 |
+| `research/outgoing/20261114T210123Z-r374-filter.md` | Exact subtype-5 filtering procedure, live evidence, and short-window safety limits |
+| `research/outgoing/20261114T210123Z-r600.md` | Partial subtype-1 analysis, alternate VM/socket path, and stack-attribution improvements |
+| `research/outgoing/20261114T164932-r48645.md` | Runtime-linked subtype-13 identifier report with complete field and serializer decode |
+| `research/outgoing/20261114T225004-r48422.md` | Reproducible `0x181` two-field decode, raw protected-seed provenance, alternate producer, and unresolved protocol purpose |
+| `research/outgoing/20261115-grap-screenshot-filter.md` | Live `0x0F013` configuration, bounded capture-API watch, selective config filter, and unresolved upload evidence |
+| `research/outgoing/20261115-controlled-proxy.md` | Process-selective HTTP/HTTPS, TCP, and UDP proxy setup, client-request decode trials, MapleMarket launch, and local verification |
 
 ## Evidence and assets
 
@@ -139,6 +152,7 @@ Annotated inventory of the repository. Everything is redacted (see `REDACTION-NO
 | `evidence/module-crc-expected-2026-10-29.json` | Expected module CRC table |
 | `evidence/ngs-control-plane-decoded-summary.txt` | Decoded-channel summary |
 | `evidence/ratetest-dc-decrypted-20261031.json` | Attack-rate disconnect evidence |
+| `evidence/outgoing/` | Reviewed per-operation evidence bundles with exact bytes, provenance, disassembly, and explicit unknowns |
 | `assets/ms_showcase_redacted.gif` | Redacted capability showcase |
 | `captures/` | Local-only captures; Git-ignored and not part of the public evidence set |
 

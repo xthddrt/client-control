@@ -66,10 +66,11 @@ The reusable `vm-lift.py` — not just the one result — is the deliverable.
 The anti-cheat's own server→client channel uses a self-describing cipher
 (`base64(XOR_K(gzip(JSON)))`, `K = ciphertext[2]^0x08`). We read and (via MITM) can rewrite:
 the **kill switch**, the **97-feature detection map**, the **105 YARA rules**, the
-**screenshot config** (`0x0F013`: limit 100, 1280px, q50, 6 s cooltime, enabled — exfil
-batched into `x-csauth/v2`), and the **expected module-CRC table**. The one direction we did
-**not** break is the device-bound **request/attestation** cipher; a crib-drag on its
-keystream-reuse weakness recovered structure but **0 plaintext**.
+**screenshot config** (`0x0F013`: limit 100, 1280px, q50, 6 s cooltime, enabled), and the
+**expected module-CRC table**. The one direction we did **not** break is the device-bound
+**request/attestation** cipher; a crib-drag on its keystream-reuse weakness recovered
+structure but **0 plaintext**. Thus image uploads cannot be identified from heartbeat size
+alone; see the [current audit](outgoing/20261115-grap-screenshot-filter.md).
 
 ---
 

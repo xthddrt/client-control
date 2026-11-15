@@ -1,0 +1,22 @@
+{
+  "observed_date": "2026-11-15",
+  "process_name": "grap-core64.aes",
+  "observed_image_base": "0x400000",
+  "image_sha256": "2c24777e1b7e7e81e0ca4a4d5e1fc6acd68ef6abcd3e2ee3a339554fbc3b8ec3",
+  "pe": {
+    "machine": "0x8664",
+    "timestamp": "0x6a9984cf",
+    "size_of_image": "0x2ccd000"
+  },
+  "rvas": {
+    "bitblt_iat": "0x22ea910",
+    "bitblt_import_name": "0x22ec024"
+  },
+  "code_fingerprints": [
+    {
+      "name": "bitblt_import_name",
+      "rva": "0x22ec024",
+      "bytes": "1300426974426c7400"
+    }
+  ]
+}

@@ -21,6 +21,10 @@ if [[ -n ${TRAFFIC_POLICY:-} ]]; then
     fi
     POLICY_ARGS=(--set "traffic_policy=$TRAFFIC_POLICY")
 fi
+SCREENSHOT_ARGS=()
+if [[ ${NGS_SCREENSHOT_FILTER:-0} == 1 ]]; then
+    SCREENSHOT_ARGS=(--set ngs_screenshot_filter=true)
+fi
 
 if pgrep -f 'nexon_launcher.exe|nexon_client.exe|nexon_runtime.exe|MapleStory.exe' >/dev/null; then
     echo "Close MapleStory and the Nexon launcher before starting the proxied session." >&2
@@ -37,8 +41,8 @@ mkdir -p "$CAPTURES"
 "$MITMDUMP" -s "$ROOT/analysis/ngs-mitm.py" \
     --listen-host 127.0.0.1 --listen-port 8080 \
     --set connection_strategy=lazy \
-    --set ngs_neutralize=true --set ngs_log="$EVENTS" \
-    "${POLICY_ARGS[@]}" -w "$FLOWS" > "$PROXY_LOG" 2>&1 &
+    --set "ngs_neutralize=${NGS_NEUTRALIZE:-true}" --set ngs_log="$EVENTS" \
+    "${POLICY_ARGS[@]}" "${SCREENSHOT_ARGS[@]}" -w "$FLOWS" > "$PROXY_LOG" 2>&1 &
 PROXY_PID=$!
 cleanup() {
     kill "$PROXY_PID" 2>/dev/null || true

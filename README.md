@@ -43,7 +43,7 @@ Now, the anti-cheat we read our way into:
 
 ---
 
-## 📸 The anti-cheat screenshots your desktop — and we decoded the exact settings
+## 📸 The anti-cheat has a desktop-capture configuration — and we decoded the exact settings
 
 GRAP's server→client control channel pushes a detection ruleset to the client. One of
 its 97 features, **`0x0F013`**, is a **screenshot-surveillance** config. We decrypted it
@@ -60,16 +60,16 @@ straight off the wire. Verbatim, this is the packet the server sends the client:
 ]
 ```
 
-`l: 1` means **enabled**. The images are then **batched into the client's normal
-heartbeat** — there is *no* dedicated upload endpoint. We watched them go out: the
-`x-csauth/v2` request body sits at a steady **~10 KB baseline** and periodically bumps
-by **+500–830 bytes** — those bumps *are* the screenshot uploads, chunked across beats
-because quality-50 @ 1280px is small. We mapped the **channel, cadence, size envelope,
-and trigger config end-to-end**.
+`l: 1` enables the capture configuration. Historical captures showed a steady
+**~10 KB** `x-csauth/v2` request-body baseline with **+500–830 byte** bumps, but those
+bumps were not decrypted into image fields or linked to a capture serializer. They are
+upload candidates, **not proven screenshot uploads**. The separate client→server
+request/attestation cipher remains unbroken.
 
-> **What we did *not* do:** read a captured image. The client→server upload rides a
-> separate **device-bound cipher** we did not break. We proved the *mechanism* and its
-> exact parameters — not the picture contents.
+A current audit verified the exact configuration in the live GRAP core and added a
+scoped, opt-in `0x0F013` config filter. Its real local-proxy rewrite is verified; live
+client suppression and the capture-to-upload chain remain unverified. See the
+[configuration, origination, and filter evidence](docs/research/outgoing/20261115-grap-screenshot-filter.md).
 
 ---
 
@@ -232,8 +232,8 @@ is exactly where a "tamper without DC" hunt should start.
   anti-warp DC. No free self-teleport. (A sub-threshold drift band may exist; untested.)
 - **Packet content is validated.** A naive opcode/content edit (e.g. the `0xd3` test)
   DCs on server-side validation — immune to any amount of client-side devirt.
-- **The screenshot *request* cipher is device-bound and unbroken.** We see the
-  surveillance happen; we can't read the images.
+- **The NGS client request/attestation cipher remains unbroken.** We can verify
+  capture configuration, but cannot identify image uploads from encrypted size changes alone.
 - **⚠️ No kernel driver was loaded.** `BlackCat64.sys` doesn't load under Wine/Proton,
   so our tamper surface is **artificially large**. Several results may not generalize to
   a real Windows client with the driver active — treat every "✅ live" as "✅ live *in

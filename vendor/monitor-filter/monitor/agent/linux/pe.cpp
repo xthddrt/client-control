@@ -304,7 +304,8 @@ std::vector<MappedImage> MappedImages(std::istream& maps)
         }
     }
     std::vector<MappedImage> images;
-    std::map<std::string, MappedImage> files;
+    std::vector<MappedImage> files;
+    std::map<std::string, size_t> currentFile;
     std::map<std::pair<std::string, uint64_t>, std::shared_ptr<const PeImage>> opened;
     for (const Line& line : lines) {
         if (line.path.empty() || line.path[0] != '/') continue;
@@ -318,11 +319,13 @@ std::vector<MappedImage> MappedImages(std::istream& maps)
             if (line.offset == 0) images.push_back({line.path, line.low, pe->sizeOfImage, false, pe});
             continue;
         }
-        MappedImage& file = files[line.path];
-        if (file.path.empty()) {
-            file.path = line.path;
-            file.base = line.low;
+        auto foundFile = currentFile.find(line.path);
+        if (line.offset == 0 || foundFile == currentFile.end()) {
+            files.push_back({line.path, line.low, 0, false, nullptr});
+            foundFile = currentFile.emplace(line.path, files.size() - 1).first;
+            foundFile->second = files.size() - 1;
         }
+        MappedImage& file = files[foundFile->second];
         file.size = std::max(file.base + file.size, line.high) - std::min(file.base, line.low);
         file.base = std::min(file.base, line.low);
         file.executable = file.executable || line.executable;
@@ -333,7 +336,7 @@ std::vector<MappedImage> MappedImages(std::istream& maps)
         for (const Line& line : lines)
             if (line.executable && line.low < image.base + image.size && line.high > image.base) image.executable = true;
     }
-    for (auto& item : files) images.push_back(std::move(item.second));
+    for (auto& file : files) images.push_back(std::move(file));
     std::sort(images.begin(), images.end(), [](const MappedImage& left, const MappedImage& right) { return left.base < right.base; });
     return images;
 }

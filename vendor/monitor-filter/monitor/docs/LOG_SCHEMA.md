@@ -30,6 +30,7 @@ Every line is one JSON object. Telemetry records carry the common fields below; 
 | `operation_id` | Links payload chunks. |
 | `text`, `detail`, `component` | Type-specific strings, detail fields, resolved component. |
 | `modules` | Resolved image paths in stack order, innermost first, deduplicated (up to 8). Linux: a Wine thread's syscall records list the PE (Windows-side) frames before the unix frames (`pe_frames=N` in `detail`, see docs/LINUX.md "PE frames"). |
+| `stack_addresses` | Exact instruction addresses in the same stack order, including unresolved or scan-only PE frames. Resolve them against image-load base/size evidence; scanned frames can be stale. |
 | `payload` | Optional Base64 chunk (below). |
 | `payload_unavailable` | Payload could not be captured safely, or (reason `query_failed` first in the detail, as the Windows driver writes it) the value query itself failed, so there was no value to capture. |
 | `record_index` | Writer order across rotated parts. |
@@ -47,7 +48,7 @@ The session UUID is **not** repeated on every line. It lives in `manifest.json` 
 | 2 | `process_exit` | — | — | start time |
 | 3 | `thread_start` | — | — | — |
 | 4 | `thread_exit` | — | — | — |
-| 5 | `image_load` | image path | — | base address / size (Linux: one record per PE load, base = its header mapping, size = `SizeOfImage`) |
+| 5 | `image_load` | image path | — | base address / size (Linux: one record per PE load, base = its header mapping, size = `SizeOfImage`; native loads split at each offset-zero mapping) |
 | 6 | `process_handle` | target image | — | operation / granted access |
 | 7 | `thread_handle` | target image | — | operation / granted access |
 

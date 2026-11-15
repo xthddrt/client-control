@@ -1,0 +1,133 @@
+{
+  "schema": "client-control.grap-bitblt-watch.v1",
+  "target": "0x6ffffe0ecd20",
+  "api": "BitBlt",
+  "duration_seconds": 120.0,
+  "coverage": "threads_present_at_launch_only",
+  "threads": [
+    {
+      "file": "tid-1392465.json",
+      "pid": 1392465,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392486.json",
+      "pid": 1392486,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392488.json",
+      "pid": 1392488,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392489.json",
+      "pid": 1392489,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392490.json",
+      "pid": 1392490,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392491.json",
+      "pid": 1392491,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392492.json",
+      "pid": 1392492,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392493.json",
+      "pid": 1392493,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392494.json",
+      "pid": 1392494,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392495.json",
+      "pid": 1392495,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392496.json",
+      "pid": 1392496,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392497.json",
+      "pid": 1392497,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392498.json",
+      "pid": 1392498,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392499.json",
+      "pid": 1392499,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392507.json",
+      "pid": 1392507,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392508.json",
+      "pid": 1392508,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    },
+    {
+      "file": "tid-1392535.json",
+      "pid": 1392535,
+      "watch_hits": 0,
+      "matched_events": 0,
+      "error": null
+    }
+  ],
+  "failures": 0,
+  "watch_hits": 0,
+  "matched_events": 0,
+  "screenshot_or_upload_proven": false,
+  "note": "A BitBlt call is not by itself proof of surveillance or upload. No image or screen contents were read."
+}

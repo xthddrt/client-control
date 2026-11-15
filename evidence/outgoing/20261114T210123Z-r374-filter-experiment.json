@@ -1,0 +1,3910 @@
+{
+  "capture_check": {
+    "absolute_completeness_proven": false,
+    "counts": {
+      "outgoing_messages": 1158,
+      "outgoing_packet_payload_bytes": 291363,
+      "outgoing_packets": 1779,
+      "outgoing_socket_operations": 665,
+      "outgoing_socket_payload_bytes": 293601
+    },
+    "note": "Pass means no known gap or integrity failure in the supplied evidence; it is not proof against an unobserved sensor path.",
+    "problems": {},
+    "raw_hashes_verified": 14580,
+    "scope": "all_observed_outgoing_raw_bytes",
+    "status": "pass"
+  },
+  "conclusion": "One exact update-rate report was suppressed before transmission; other traced sends and observed non-target 0x70 wire messages remained present, and the client stayed connected during this short experiment. Long-term safety and server-side necessity are not established.",
+  "dropped_message": {
+    "chain": "a2f677ba9d10bc7d706a0408f01bf060f4fe4f58e6c3f6be3088b15bb9dd7d2f",
+    "decode": {
+      "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+      "field_details": {
+        "opcode": {
+          "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+          "offset": 0,
+          "raw_hex": "7000",
+          "signed": false,
+          "size": 2
+        },
+        "subtype": {
+          "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+          "offset": 2,
+          "raw_hex": "05",
+          "signed": false,
+          "size": 1
+        },
+        "tick_ms": {
+          "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+          "offset": 3,
+          "raw_hex": "4220c709",
+          "signed": false,
+          "size": 4
+        },
+        "update_count": {
+          "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+          "offset": 7,
+          "raw_hex": "e21e0000",
+          "signed": false,
+          "size": 4
+        }
+      },
+      "fields": {
+        "opcode": 112,
+        "subtype": 5,
+        "tick_ms": 164044866,
+        "update_count": 7906
+      },
+      "name": "update_rate_report",
+      "name_status": "confirmed",
+      "protocol": "maple",
+      "status": "decoded",
+      "type": "0x70",
+      "unresolved_ranges": []
+    },
+    "direction": "client_to_server",
+    "evidence": [
+      {
+        "event_index": 6807,
+        "file": "captures/r374-filter-experiment-20261114.jsonl"
+      }
+    ],
+    "game_build": {
+      "code_fingerprints_verified": true,
+      "constructor_rva": "0x7614b0",
+      "machine": "0x8664",
+      "module_base": "0x140000000",
+      "observed_date": "2026-10-25",
+      "process_name": "MapleStory.exe",
+      "sendpacket_rva": "0x1661780",
+      "size_of_image": "0x5F2E000",
+      "timestamp": "0x6AEB667B"
+    },
+    "input_order": 6967,
+    "kind": "message",
+    "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+    "ordering": {
+      "basis": "source_timestamp_then_input_order",
+      "input_order": 6967,
+      "tie_break_is_causal": false
+    },
+    "plaintext": {
+      "bytes": 11,
+      "complete": true,
+      "data": "cAAFQiDHCeIeAAA=",
+      "encoding": "base64",
+      "present": true,
+      "scope": "application_plaintext",
+      "sha256": "e1ba272590594ecf9d4dbc1d58306cc25bad0f116cfaa9ef9bfea03a74d423db",
+      "total_bytes": 11
+    },
+    "policy_evaluation": {
+      "action": "drop",
+      "applied": true,
+      "effective_action": "drop",
+      "forward": false,
+      "matched": true,
+      "mode": "enforce",
+      "policy_sha256": "24e418b7086dd90a6bf9453966f46afd8be517cb60a828b1035bfc7c38cad821",
+      "reason": "Suppress only the 11-byte 0x70 subtype-5 update-rate report during the scoped live experiment.",
+      "rule_id": "drop-update-rate-report",
+      "rule_index": 0,
+      "stage": "captured_live_decision"
+    },
+    "process": {
+      "evidence": "ptrace_capture",
+      "game_build": {
+        "code_fingerprints_verified": true,
+        "constructor_rva": "0x7614b0",
+        "machine": "0x8664",
+        "module_base": "0x140000000",
+        "observed_date": "2026-10-25",
+        "process_name": "MapleStory.exe",
+        "sendpacket_rva": "0x1661780",
+        "size_of_image": "0x5F2E000",
+        "timestamp": "0x6AEB667B"
+      },
+      "name": "MapleStory.exe",
+      "pid": 1227560
+    },
+    "raw": {
+      "bytes": 11,
+      "complete": true,
+      "data": "cAAFQiDHCeIeAAA=",
+      "encoding": "base64",
+      "present": true,
+      "scope": "COutPacket_plaintext",
+      "sha256": "e1ba272590594ecf9d4dbc1d58306cc25bad0f116cfaa9ef9bfea03a74d423db",
+      "total_bytes": 11
+    },
+    "record_id": "r6967",
+    "record_index": 71687,
+    "schema": "client-control.traffic.v1",
+    "session": "f9a60a76204f49868042f20e50788390",
+    "socket": null,
+    "time_end_ns": null,
+    "time_end_utc": null,
+    "time_ns": 1794695764785234187,
+    "time_utc": "2026-11-14T22:36:04.785234187Z",
+    "trace": {
+      "construction_id": "f9a60a76204f49868042f20e50788390:6644",
+      "constructor": {
+        "caller": {
+          "address": "0x140d049a2",
+          "rva": "0xd049a2"
+        },
+        "construction_id": "f9a60a76204f49868042f20e50788390:6644",
+        "deep_gap": false,
+        "event_index": 6806,
+        "kind": "constructor",
+        "monotonic_ns": 164224697992055,
+        "opcode": "0x70",
+        "packet": 1106400,
+        "packet_va": "0x10e1e0",
+        "pid": 1227560,
+        "registers": {
+          "cs": "0x33",
+          "ds": "0x2b",
+          "eflags": "0x10206",
+          "es": "0x2b",
+          "fs": "0x0",
+          "fs_base": "0x79ba79678740",
+          "gs": "0x0",
+          "gs_base": "0x7ffc0000",
+          "orig_rax": "0xffffffffffffffff",
+          "r10": "0x0",
+          "r11": "0x202",
+          "r12": "0x401",
+          "r13": "0x142d4db00",
+          "r14": "0x0",
+          "r15": "0x6ffffdb61e10",
+          "r8": "0x7",
+          "r9": "0x0",
+          "rax": "0xf23f7ce82d0a",
+          "rbp": "0x1",
+          "rbx": "0x1",
+          "rcx": "0x10e1e0",
+          "rdi": "0x1f634108",
+          "rdx": "0x70",
+          "rip": "0x1407614b0",
+          "rsi": "0x60078",
+          "rsp": "0x10e1a8",
+          "ss": "0x2b"
+        },
+        "return_stack": [
+          {
+            "address": "0x140d049a2",
+            "rva": "0xd049a2"
+          },
+          {
+            "address": "0x0",
+            "rva": null
+          },
+          {
+            "address": "0x0",
+            "rva": null
+          },
+          {
+            "address": "0x4b915e80",
+            "rva": null
+          },
+          {
+            "address": "0xbf9400",
+            "rva": null
+          },
+          {
+            "address": "0x0",
+            "rva": null
+          },
+          {
+            "address": "0x6ffff5bec807",
+            "rva": null
+          },
+          {
+            "address": "0x0",
+            "rva": null
+          }
+        ],
+        "schema_version": 1,
+        "session_id": "f9a60a76204f49868042f20e50788390",
+        "tid": 1227560,
+        "wall_time_ns": 1794695764785122338
+      },
+      "constructor_evidence": "linked",
+      "inputs": {
+        "body_va": "0x10e1e8",
+        "constructor_opcode": "0x70",
+        "packet_va": "0x10e1e0",
+        "send_rcx": "0x10e1e0"
+      },
+      "memory_evidence": "not_captured",
+      "send": {
+        "body": "7000054220c709e21e0000",
+        "body_va": "0x10e1e8",
+        "caller": {
+          "address": "0x140d049f3",
+          "rva": "0xd049f3"
+        },
+        "construction_id": "f9a60a76204f49868042f20e50788390:6644",
+        "constructor_missing": false,
+        "decode": {
+          "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+          "field_details": {
+            "opcode": {
+              "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+              "offset": 0,
+              "raw_hex": "7000",
+              "signed": false,
+              "size": 2
+            },
+            "subtype": {
+              "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+              "offset": 2,
+              "raw_hex": "05",
+              "signed": false,
+              "size": 1
+            },
+            "tick_ms": {
+              "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+              "offset": 3,
+              "raw_hex": "4220c709",
+              "signed": false,
+              "size": 4
+            },
+            "update_count": {
+              "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+              "offset": 7,
+              "raw_hex": "e21e0000",
+              "signed": false,
+              "size": 4
+            }
+          },
+          "fields": {
+            "opcode": 112,
+            "subtype": 5,
+            "tick_ms": 164044866,
+            "update_count": 7906
+          },
+          "name": "update_rate_report",
+          "name_status": "confirmed",
+          "protocol": "maple",
+          "status": "decoded",
+          "type": "0x70",
+          "unresolved_ranges": []
+        },
+        "destination_evidence": "unavailable_at_SendPacket",
+        "direction": "client_to_server",
+        "dropped": true,
+        "event_index": 6807,
+        "filter_decision": {
+          "action": "drop",
+          "effective_action": "drop",
+          "forward": false,
+          "matched": true,
+          "mode": "enforce",
+          "policy_sha256": "24e418b7086dd90a6bf9453966f46afd8be517cb60a828b1035bfc7c38cad821",
+          "reason": "Suppress only the 11-byte 0x70 subtype-5 update-rate report during the scoped live experiment.",
+          "rule_id": "drop-update-rate-report",
+          "rule_index": 0
+        },
+        "kind": "send",
+        "length": 11,
+        "monotonic_ns": 164224698103333,
+        "opcode": "0x70",
+        "packet_va": "0x10e1e0",
+        "pid": 1227560,
+        "registers": {
+          "cs": "0x33",
+          "ds": "0x2b",
+          "eflags": "0x10206",
+          "es": "0x2b",
+          "fs": "0x0",
+          "fs_base": "0x79ba79678740",
+          "gs": "0x0",
+          "gs_base": "0x7ffc0000",
+          "orig_rax": "0xffffffffffffffff",
+          "r10": "0x4",
+          "r11": "0x0",
+          "r12": "0x401",
+          "r13": "0x142d4db00",
+          "r14": "0x0",
+          "r15": "0x6ffffdb61e10",
+          "r8": "0x10e1f5",
+          "r9": "0x0",
+          "rax": "0xa",
+          "rbp": "0x1",
+          "rbx": "0x1",
+          "rcx": "0x10e1e0",
+          "rdi": "0x1f634108",
+          "rdx": "0x7",
+          "rip": "0x141661780",
+          "rsi": "0x60078",
+          "rsp": "0x10e1a8",
+          "ss": "0x2b"
+        },
+        "return_stack": [
+          {
+            "address": "0x140d049f3",
+            "rva": "0xd049f3"
+          },
+          {
+            "address": "0x1",
+            "rva": null
+          },
+          {
+            "address": "0x60078",
+            "rva": null
+          },
+          {
+            "address": "0x4b915e80",
+            "rva": null
+          },
+          {
+            "address": "0xbf9400",
+            "rva": null
+          },
+          {
+            "address": "0x1866ccf8",
+            "rva": null
+          },
+          {
+            "address": "0x6ffff5bec807",
+            "rva": null
+          },
+          {
+            "address": "0x0",
+            "rva": null
+          }
+        ],
+        "schema_version": 1,
+        "session_id": "f9a60a76204f49868042f20e50788390",
+        "tid": 1227560,
+        "wall_time_ns": 1794695764785234187
+      },
+      "serialization_evidence": "not_captured_enable_deep_opcode",
+      "serialization_steps": []
+    },
+    "transport": null
+  },
+  "historical_message_type": "r374 / 0x70 subtype 5 update-rate report",
+  "ledger_verification": {
+    "final_chain": "1861955107df3765fa982515ef0d0b58f0d4816b87ce176ca24fc6865174da37",
+    "records": 113107
+  },
+  "monitor_driver_loss_fields": {
+    "alloc_failures": 0,
+    "queue_drops": 0,
+    "track_failures": 0
+  },
+  "monitor_session_meta": {
+    "agent_sha256": "9a4500dce574c842459a9e3113a38edbb96f66141fadda84f3c9c110ac0aba63",
+    "build_commit": "unknown",
+    "build_info_present": false,
+    "build_info_sha256": "",
+    "client_root": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw",
+    "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+    "client_version": "",
+    "config": {
+      "etw": true,
+      "payload_mode": "full",
+      "queue_bytes": 67108864,
+      "queue_records": 131072
+    },
+    "driver_dropped_events": 0,
+    "driver_sequence_gaps": 0,
+    "driver_sha256": "",
+    "ended_utc": "20261114T223803Z",
+    "etw_sequence_gaps": 0,
+    "events": 678568,
+    "iteration": 1,
+    "machine_id_hash": "sha256:c816153eb7db18557c27a5e0c162c3b2e0b025e72724fdf46d18bd1a91b0c02f",
+    "machine_label": "bob-Aspire-TC-1785",
+    "outcome": "completed",
+    "part_count": 13,
+    "phase": "steady",
+    "raw_bytes": 819440676,
+    "record_count": 678759,
+    "scenario": "mixed",
+    "schema_version": 1,
+    "scope_root": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata",
+    "sensitivity": "secrets",
+    "session_id": 13150413795778906921,
+    "session_label": "mixed",
+    "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081",
+    "started_utc": "20261114T223227Z",
+    "test_id": "monfilter-20261114T163216-audit"
+  },
+  "monitor_summary": {
+    "blackcat_events": 0,
+    "by_category": {
+      "client_data": 1047,
+      "external_process": 205152,
+      "hardware_identity": 455,
+      "ipc": 332,
+      "network": 1016,
+      "registry": 81283,
+      "unknown": 141908,
+      "user_data": 3044,
+      "windows_runtime": 244331
+    },
+    "by_module": {
+      "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/NxOverlay/DwarfAxe.exe": 1320,
+      "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/NxOverlay/libcef.dll": 1342,
+      "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/Shape2D.dll": 158,
+      "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/grap/grap-core64.aes": 316693,
+      "/home/bob/.wine-nexon/drive_c/Program Files (x86)/Nexon/Nexon Launcher/bin/artcore.dll": 1090,
+      "/home/bob/.wine-nexon/drive_c/Program Files (x86)/Nexon/Nexon Launcher/bin/lib/_ctypes.pyd": 94,
+      "/home/bob/.wine-nexon/drive_c/Program Files (x86)/Nexon/Nexon Launcher/bin/nexon_client/nexon_client.exe": 23618,
+      "/home/bob/.wine-nexon/drive_c/Program Files (x86)/Nexon/Nexon Launcher/bin/nexon_client/resources/app.asar.unpacked/node_modules/ffi-napi/build/Release/ffi_bindings.node": 319,
+      "/home/bob/.wine-nexon/drive_c/Program Files (x86)/Nexon/Nexon Launcher/bin/nexon_client/resources/app.asar.unpacked/node_modules/ref-napi/build/Release/binding.node": 1,
+      "/home/bob/.wine-nexon/drive_c/Program Files (x86)/Nexon/Nexon Launcher/bin/python37.dll": 94,
+      "/home/bob/.wine-nexon/drive_c/users/bob/AppData/Local/Temp/1832bc44-cae8-42c2-af44-c1a1597719fe.tmp.node": 1,
+      "/opt/wine-stable/bin/wineserver": 73659,
+      "/opt/wine-stable/lib/wine/i386-unix/ntdll.so": 888,
+      "/opt/wine-stable/lib/wine/i386-unix/win32u.so": 256,
+      "/opt/wine-stable/lib/wine/i386-unix/winex11.so": 3,
+      "/opt/wine-stable/lib/wine/i386-windows/crypt32.dll": 30,
+      "/opt/wine-stable/lib/wine/i386-windows/cryptbase.dll": 8,
+      "/opt/wine-stable/lib/wine/i386-windows/directmanipulation.dll": 5,
+      "/opt/wine-stable/lib/wine/i386-windows/dwmapi.dll": 131,
+      "/opt/wine-stable/lib/wine/i386-windows/gdi32.dll": 124,
+      "/opt/wine-stable/lib/wine/i386-windows/kernel32.dll": 1916,
+      "/opt/wine-stable/lib/wine/i386-windows/kernelbase.dll": 21334,
+      "/opt/wine-stable/lib/wine/i386-windows/mpr.dll": 15,
+      "/opt/wine-stable/lib/wine/i386-windows/msacm32.dll": 5,
+      "/opt/wine-stable/lib/wine/i386-windows/ntdll.dll": 22429,
+      "/opt/wine-stable/lib/wine/i386-windows/ole32.dll": 5,
+      "/opt/wine-stable/lib/wine/i386-windows/rpcrt4.dll": 1957,
+      "/opt/wine-stable/lib/wine/i386-windows/ucrtbase.dll": 1317,
+      "/opt/wine-stable/lib/wine/i386-windows/user32.dll": 143,
+      "/opt/wine-stable/lib/wine/i386-windows/win32u.dll": 2278,
+      "/opt/wine-stable/lib/wine/i386-windows/winmm.dll": 1,
+      "/opt/wine-stable/lib/wine/i386-windows/ws2_32.dll": 104,
+      "/opt/wine-stable/lib/wine/x86_64-unix/mountmgr.so": 88,
+      "/opt/wine-stable/lib/wine/x86_64-unix/nsiproxy.so": 840,
+      "/opt/wine-stable/lib/wine/x86_64-unix/ntdll.so": 420206,
+      "/opt/wine-stable/lib/wine/x86_64-unix/win32u.so": 3842,
+      "/opt/wine-stable/lib/wine/x86_64-unix/winex11.so": 719,
+      "/opt/wine-stable/lib/wine/x86_64-windows/advapi32.dll": 38,
+      "/opt/wine-stable/lib/wine/x86_64-windows/bcrypt.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/combase.dll": 14,
+      "/opt/wine-stable/lib/wine/x86_64-windows/comctl32.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/coml2.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/compstui.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/crypt32.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/cryptbase.dll": 14,
+      "/opt/wine-stable/lib/wine/x86_64-windows/dnsapi.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/explorer.exe": 1963,
+      "/opt/wine-stable/lib/wine/x86_64-windows/gdi32.dll": 14,
+      "/opt/wine-stable/lib/wine/x86_64-windows/gdiplus.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/imagehlp.dll": 15,
+      "/opt/wine-stable/lib/wine/x86_64-windows/imm32.dll": 14,
+      "/opt/wine-stable/lib/wine/x86_64-windows/iphlpapi.dll": 15,
+      "/opt/wine-stable/lib/wine/x86_64-windows/kernel32.dll": 56974,
+      "/opt/wine-stable/lib/wine/x86_64-windows/kernelbase.dll": 59876,
+      "/opt/wine-stable/lib/wine/x86_64-windows/mountmgr.sys": 132,
+      "/opt/wine-stable/lib/wine/x86_64-windows/mpr.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/msacm32.dll": 14,
+      "/opt/wine-stable/lib/wine/x86_64-windows/msvcrt.dll": 14,
+      "/opt/wine-stable/lib/wine/x86_64-windows/netapi32.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/netutils.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/nsi.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/nsiproxy.sys": 864,
+      "/opt/wine-stable/lib/wine/x86_64-windows/ntdll.dll": 319197,
+      "/opt/wine-stable/lib/wine/x86_64-windows/ntoskrnl.exe": 936,
+      "/opt/wine-stable/lib/wine/x86_64-windows/ole32.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/oleaut32.dll": 14,
+      "/opt/wine-stable/lib/wine/x86_64-windows/psapi.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/rpcrt4.dll": 22,
+      "/opt/wine-stable/lib/wine/x86_64-windows/rsaenh.dll": 14,
+      "/opt/wine-stable/lib/wine/x86_64-windows/sechost.dll": 14,
+      "/opt/wine-stable/lib/wine/x86_64-windows/services.exe": 1,
+      "/opt/wine-stable/lib/wine/x86_64-windows/setupapi.dll": 185,
+      "/opt/wine-stable/lib/wine/x86_64-windows/sfc_os.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/shcore.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/shell32.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/shlwapi.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/ucrtbase.dll": 4397,
+      "/opt/wine-stable/lib/wine/x86_64-windows/user32.dll": 4134,
+      "/opt/wine-stable/lib/wine/x86_64-windows/uxtheme.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/version.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/wbemprox.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/wer.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/win32u.dll": 4464,
+      "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe": 72,
+      "/opt/wine-stable/lib/wine/x86_64-windows/winex11.drv": 14,
+      "/opt/wine-stable/lib/wine/x86_64-windows/wininet.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/winmm.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/winspool.drv": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/wintrust.dll": 12,
+      "/opt/wine-stable/lib/wine/x86_64-windows/ws2_32.dll": 13,
+      "/opt/wine-stable/lib/wine/x86_64-windows/wtsapi32.dll": 13,
+      "/usr/lib/i386-linux-gnu/libc.so.6": 198,
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": 402,
+      "/usr/lib/x86_64-linux-gnu/libLLVM.so.20.1": 1,
+      "/usr/lib/x86_64-linux-gnu/libVkLayer_MESA_device_select.so": 16,
+      "/usr/lib/x86_64-linux-gnu/libX11.so.6.4.0": 63,
+      "/usr/lib/x86_64-linux-gnu/libXrandr.so.2.2.0": 4,
+      "/usr/lib/x86_64-linux-gnu/libc.so.6": 464252,
+      "/usr/lib/x86_64-linux-gnu/libdbus-1.so.3.32.4": 132,
+      "/usr/lib/x86_64-linux-gnu/libdrm.so.2.125.0": 51,
+      "/usr/lib/x86_64-linux-gnu/libvulkan.so.1.3.275": 151,
+      "/usr/lib/x86_64-linux-gnu/libvulkan_gfxstream.so": 36,
+      "/usr/lib/x86_64-linux-gnu/libvulkan_intel.so": 110,
+      "/usr/lib/x86_64-linux-gnu/libvulkan_intel_hasvk.so": 1,
+      "/usr/lib/x86_64-linux-gnu/libvulkan_lvp.so": 10,
+      "/usr/lib/x86_64-linux-gnu/libvulkan_nouveau.so": 25,
+      "/usr/lib/x86_64-linux-gnu/libxcb.so.1.1.0": 54
+    },
+    "by_process": {
+      "0": 1,
+      "1224119": 77114,
+      "1224125": 110,
+      "1224128": 1375,
+      "1224137": 57,
+      "1224139": 941,
+      "1224145": 43,
+      "1224151": 775,
+      "1224174": 43,
+      "1227166": 26735,
+      "1227205": 1201,
+      "1227227": 1346,
+      "1227238": 656,
+      "1227244": 3605,
+      "1227246": 5989,
+      "1227266": 583,
+      "1227296": 1847,
+      "1227560": 137203,
+      "1227637": 5203,
+      "1227662": 352,
+      "1227716": 413075,
+      "1227719": 304,
+      "1252520": 6,
+      "1252642": 3,
+      "1253319": 1
+    },
+    "by_target_process": {
+      "1224119": 277,
+      "1224125": 2405,
+      "1224128": 1805,
+      "1224137": 3000,
+      "1224139": 1201,
+      "1224145": 1000,
+      "1224151": 2400,
+      "1224174": 2000,
+      "1227166": 7249,
+      "1227205": 2596,
+      "1227227": 9008,
+      "1227231": 600,
+      "1227238": 3993,
+      "1227244": 2222,
+      "1227246": 4906,
+      "1227266": 3593,
+      "1227296": 1203,
+      "1227560": 182823,
+      "1227564": 151,
+      "1227565": 150,
+      "1227566": 151,
+      "1227567": 150,
+      "1227568": 150,
+      "1227569": 150,
+      "1227570": 150,
+      "1227574": 150,
+      "1227575": 150,
+      "1227576": 149,
+      "1227577": 150,
+      "1227579": 149,
+      "1227580": 148,
+      "1227581": 149,
+      "1227582": 149,
+      "1227583": 149,
+      "1227584": 149,
+      "1227585": 150,
+      "1227586": 149,
+      "1227588": 150,
+      "1227589": 149,
+      "1227594": 151,
+      "1227596": 150,
+      "1227603": 149,
+      "1227604": 148,
+      "1227605": 149,
+      "1227606": 149,
+      "1227612": 149,
+      "1227613": 149,
+      "1227614": 150,
+      "1227615": 149,
+      "1227616": 150,
+      "1227617": 149,
+      "1227618": 149,
+      "1227619": 150,
+      "1227620": 150,
+      "1227621": 150,
+      "1227622": 148,
+      "1227623": 150,
+      "1227624": 150,
+      "1227625": 149,
+      "1227626": 150,
+      "1227627": 149,
+      "1227629": 149,
+      "1227630": 149,
+      "1227631": 149,
+      "1227632": 149,
+      "1227635": 152,
+      "1227637": 4430,
+      "1227662": 2405,
+      "1227667": 150,
+      "1227668": 150,
+      "1227670": 150,
+      "1227672": 150,
+      "1227673": 149,
+      "1227716": 6842,
+      "1227719": 1985,
+      "1227736": 149,
+      "1227737": 152,
+      "1227740": 793,
+      "1227741": 797,
+      "1227742": 798,
+      "1227744": 795,
+      "1227745": 793,
+      "1227746": 795,
+      "1227747": 793,
+      "1227748": 797,
+      "1227749": 793,
+      "1227750": 795,
+      "1227751": 793,
+      "1227752": 797,
+      "1227753": 150,
+      "1227754": 153,
+      "1227755": 149,
+      "1227757": 150,
+      "1227758": 150,
+      "1227759": 151,
+      "1227760": 149,
+      "1227769": 791,
+      "1227770": 795,
+      "1227780": 797,
+      "1227795": 149,
+      "1227811": 150,
+      "1252558": 21,
+      "1252642": 4,
+      "1252645": 21,
+      "1252656": 1,
+      "1252657": 1,
+      "1252660": 2,
+      "1252754": 1,
+      "1252757": 21,
+      "1252769": 1,
+      "1252779": 2,
+      "1252814": 1,
+      "1252881": 21,
+      "1252883": 105,
+      "1252897": 21,
+      "1252934": 2,
+      "1252993": 1,
+      "1252994": 1,
+      "1252995": 1,
+      "1252996": 1,
+      "1252997": 1,
+      "1252998": 1,
+      "1252999": 1,
+      "1253043": 21,
+      "1253124": 1,
+      "1253125": 1,
+      "1253133": 2,
+      "1253308": 21,
+      "1253319": 1,
+      "1253322": 2,
+      "1253323": 1,
+      "1253353": 1,
+      "1253354": 1,
+      "1253359": 105,
+      "1253363": 2,
+      "1253367": 2,
+      "1253421": 21,
+      "1253435": 21,
+      "1253456": 105
+    },
+    "complete_payload_operations": 14959,
+    "driver_dropped_events": 0,
+    "driver_queued_bytes": 0,
+    "driver_queued_events": 0,
+    "driver_sequence_gaps": 0,
+    "etw_dropped_events": 0,
+    "etw_sequence_gaps": 0,
+    "events": 678568,
+    "hardware_identity_events": 455,
+    "incomplete_payload_operations": 6,
+    "outside_client_events": 677521,
+    "payload_bytes": 2392523,
+    "payload_duplicate_chunks": 0,
+    "payload_operations": 14965,
+    "payload_operations_pending": 6,
+    "payload_unavailable_events": 38847,
+    "session_id": 13150413795778906921,
+    "tracked_at_start": 21,
+    "tracked_process_starts": 21,
+    "tracked_processes_at_end": 0,
+    "type": "observer_summary"
+  },
+  "observed_wire_copies_with_same_plaintext": [],
+  "other_0x70_subtypes_observed_live": [
+    {
+      "chain": "8a7d00d79359089176b3f7b9b673bb7432e02e0ee9b18f66841c38af2453a0c0",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "b25e458b",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "chain": "d35abead629a929349b4c96ce6918d83e2c9ec4391c2e59bbc768ea0c4af40b4",
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip",
+          "operation_id": 3162,
+          "record_index": 149773
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 106742,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 106742,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAK/glVav4JVWAgAAAAC/lms/9CbKgBzLt0LSDy1FNfdKcAAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "2a3647d1c8bd9b339af69145aa09ec3619bead4579f1b76ece2ba289434d875d",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "mouqi9lLyfQssF7Q+hjULN6a3qj6C3t4Qnf47Af7SOhq0WxVaqB7apBHSCxJ0M7fC3MGNw==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_socket_message",
+        "sha256": "69673ef1249eb10cffab6776340bd3995eae9a48c70e98ffbee50e56c762246d",
+        "total_bytes": 52
+      },
+      "record_id": "r106742",
+      "record_index": 23863,
+      "schema": "client-control.traffic.v1",
+      "session": 13150413795778906921,
+      "socket": {
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "42894403",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695624392000000,
+      "time_end_utc": "2026-11-14T22:33:44.392000000Z",
+      "time_ns": 1794695624392000000,
+      "time_utc": "2026-11-14T22:33:44.392000000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "operation_ids": [
+          3162
+        ],
+        "payload_kind": "network_data",
+        "source": "msmon_socket_operations"
+      }
+    },
+    {
+      "chain": "ddc0c6aad8dc8bf6394c9e4615c5c1b106a24340f60752fdff0d3275c3d0b950",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "b25e458b",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 626,
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip!events.pcapng"
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 110679,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 110679,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAK/glVav4JVWAgAAAAC/lms/9CbKgBzLt0LSDy1FNfdKcAAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "2a3647d1c8bd9b339af69145aa09ec3619bead4579f1b76ece2ba289434d875d",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "mouqi9lLyfQssF7Q+hjULN6a3qj6C3t4Qnf47Af7SOhq0WxVaqB7apBHSCxJ0M7fC3MGNw==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "69673ef1249eb10cffab6776340bd3995eae9a48c70e98ffbee50e56c762246d",
+        "total_bytes": 52
+      },
+      "record_id": "r110679",
+      "record_index": 23870,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": "33154",
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "socket:[42894403]",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695624464494400,
+      "time_end_utc": "2026-11-14T22:33:44.464494400Z",
+      "time_ns": 1794695624464494400,
+      "time_utc": "2026-11-14T22:33:44.464494400Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "direction_evidence": "pcapng_epb_flags",
+        "retransmitted_bytes_in_stream": 14,
+        "stream_offset": 2925
+      }
+    },
+    {
+      "chain": "7d5d40846f49f93756075b7fdfd71e72fc36a7a718f1ff5bb927a2ad46f3839c",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "ddc9b473",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "chain": "d75470c9719e7dd1c02661cd69a09513e949e444fd7084002525fec6185f0412",
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip",
+          "operation_id": 5591,
+          "record_index": 247132
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 106810,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 106810,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAHbsrbF27K2xAgAAAABVW/0ZHutcpvYGIWRo1KJry7vAlgAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "765cc56f44c8dba3fa227b7fb18b454d79be9f72e7edc878f9d703fd28ea5026",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "a3NbcykjS3GMUhpYwozhNS385u1z3EPctYnuQlg99UJMa97hSyfazVw+XN3TPrDE6qAl4Q==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_socket_message",
+        "sha256": "7c72f116e0e773e68deafee6173c1d97bf479a4e29e1cf2d21a6bbe69410c491",
+        "total_bytes": 52
+      },
+      "record_id": "r106810",
+      "record_index": 39240,
+      "schema": "client-control.traffic.v1",
+      "session": 13150413795778906921,
+      "socket": {
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "42894403",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695669824000000,
+      "time_end_utc": "2026-11-14T22:34:29.824000000Z",
+      "time_ns": 1794695669824000000,
+      "time_utc": "2026-11-14T22:34:29.824000000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "operation_ids": [
+          5591
+        ],
+        "payload_kind": "network_data",
+        "source": "msmon_socket_operations"
+      }
+    },
+    {
+      "chain": "1185ed4ecfeffd88b5d00ac739897ad17030ae61b202b6a936988d8a109c2419",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "ddc9b473",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1062,
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip!events.pcapng"
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 110747,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 110747,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAHbsrbF27K2xAgAAAABVW/0ZHutcpvYGIWRo1KJry7vAlgAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "765cc56f44c8dba3fa227b7fb18b454d79be9f72e7edc878f9d703fd28ea5026",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "a3NbcykjS3GMUhpYwozhNS385u1z3EPctYnuQlg99UJMa97hSyfazVw+XN3TPrDE6qAl4Q==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "7c72f116e0e773e68deafee6173c1d97bf479a4e29e1cf2d21a6bbe69410c491",
+        "total_bytes": 52
+      },
+      "record_id": "r110747",
+      "record_index": 39248,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": "33154",
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "socket:[42894403]",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695669857929600,
+      "time_end_utc": "2026-11-14T22:34:29.857929600Z",
+      "time_ns": 1794695669857929600,
+      "time_utc": "2026-11-14T22:34:29.857929600Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "direction_evidence": "pcapng_epb_flags",
+        "retransmitted_bytes_in_stream": 14,
+        "stream_offset": 4885
+      }
+    },
+    {
+      "chain": "7ed3f97949ea4e7f915f48c56dac75bf7b5d359445be47036cf2fa5384e85ae8",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "1fba04d9",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "chain": "e7be307c621d7d884fb029e1c4d524d92ec989c13d27b1f2fc8169027accbb05",
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip",
+          "operation_id": 5753,
+          "record_index": 257504
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 106815,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 106815,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAJP9Yj+T/WI/AgAAAADKKYlRgZko7ml0VSz/ws4jYqrsTgAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "75a9f2f441cd9608ae358c63e87da2a9b5ad75b5e3e9b912a82f0221a51a9234",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "29nr2aFM7+piqPJ3L1BfaCT1C9EdMqiLPh769+oN4RcFNEXa8pWdKFO5D33l3iTArGzGGg==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_socket_message",
+        "sha256": "7cd1cc1d8d961ab1f0e772583ff8217f145c1fd4ac2c4d74c86d8e9c3cd83155",
+        "total_bytes": 52
+      },
+      "record_id": "r106815",
+      "record_index": 40950,
+      "schema": "client-control.traffic.v1",
+      "session": 13150413795778906921,
+      "socket": {
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "42894403",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695674825999872,
+      "time_end_utc": "2026-11-14T22:34:34.825999872Z",
+      "time_ns": 1794695674825999872,
+      "time_utc": "2026-11-14T22:34:34.825999872Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "operation_ids": [
+          5753
+        ],
+        "payload_kind": "network_data",
+        "source": "msmon_socket_operations"
+      }
+    },
+    {
+      "chain": "8158f9f538763b2fc6e13a1af06864fa9ceeb5caff5dfbeb4f4c06a90da223a1",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "1fba04d9",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1100,
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip!events.pcapng"
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 110752,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 110752,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAJP9Yj+T/WI/AgAAAADKKYlRgZko7ml0VSz/ws4jYqrsTgAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "75a9f2f441cd9608ae358c63e87da2a9b5ad75b5e3e9b912a82f0221a51a9234",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "29nr2aFM7+piqPJ3L1BfaCT1C9EdMqiLPh769+oN4RcFNEXa8pWdKFO5D33l3iTArGzGGg==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "7cd1cc1d8d961ab1f0e772583ff8217f145c1fd4ac2c4d74c86d8e9c3cd83155",
+        "total_bytes": 52
+      },
+      "record_id": "r110752",
+      "record_index": 41154,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": "33154",
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "socket:[42894403]",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695674862708400,
+      "time_end_utc": "2026-11-14T22:34:34.862708400Z",
+      "time_ns": 1794695674862708400,
+      "time_utc": "2026-11-14T22:34:34.862708400Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "direction_evidence": "pcapng_epb_flags",
+        "retransmitted_bytes_in_stream": 14,
+        "stream_offset": 5124
+      }
+    },
+    {
+      "chain": "b692309356889ec83299195e22038c6ac929fca70b5da630a848371a82eeff60",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "1c4a3caa",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "chain": "7adf77762208c0c01c03a65cb66891678dedd780ab091ea358065d8a91958db9",
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip",
+          "operation_id": 6282,
+          "record_index": 288294
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 106830,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 106830,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAElfMcRJXzHEAgAAAACZM39b0oPe5DpuoyasrCApD5Q+VAAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "885d803ac4917d25025b95760a91ff5432284a9a83e328aa4eb3cc8f3ab66058",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "46rTqvo6GTpUUT2q1VubfaRFeSCeJ0GM0de8y3GaaUYYkrAwCUegd4V3bkzBb0iQ+RWiZQ==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_socket_message",
+        "sha256": "c19b9f1bb7bd494f2e91e8ee26aed7e5591701abd64576ac8ae890479b4b14a3",
+        "total_bytes": 52
+      },
+      "record_id": "r106830",
+      "record_index": 46869,
+      "schema": "client-control.traffic.v1",
+      "session": 13150413795778906921,
+      "socket": {
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "42894403",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695691507000064,
+      "time_end_utc": "2026-11-14T22:34:51.507000064Z",
+      "time_ns": 1794695691507000064,
+      "time_utc": "2026-11-14T22:34:51.507000064Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "operation_ids": [
+          6282
+        ],
+        "payload_kind": "network_data",
+        "source": "msmon_socket_operations"
+      }
+    },
+    {
+      "chain": "420f2e736ddeac5b4c6c7a3ff34826995c7580cffd2cb2f0cd68bf67546b7792",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "1c4a3caa",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1233,
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip!events.pcapng"
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 110767,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 110767,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAElfMcRJXzHEAgAAAACZM39b0oPe5DpuoyasrCApD5Q+VAAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "885d803ac4917d25025b95760a91ff5432284a9a83e328aa4eb3cc8f3ab66058",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "46rTqvo6GTpUUT2q1VubfaRFeSCeJ0GM0de8y3GaaUYYkrAwCUegd4V3bkzBb0iQ+RWiZQ==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "c19b9f1bb7bd494f2e91e8ee26aed7e5591701abd64576ac8ae890479b4b14a3",
+        "total_bytes": 52
+      },
+      "record_id": "r110767",
+      "record_index": 46878,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": "33154",
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "socket:[42894403]",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695691539423100,
+      "time_end_utc": "2026-11-14T22:34:51.539423100Z",
+      "time_ns": 1794695691539423100,
+      "time_utc": "2026-11-14T22:34:51.539423100Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "direction_evidence": "pcapng_epb_flags",
+        "retransmitted_bytes_in_stream": 14,
+        "stream_offset": 5476
+      }
+    },
+    {
+      "chain": "413e0b679adefc27213f5d055ba565a9b196f3640f30b12a0dfbe3183d55bf60",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "d1208383",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "chain": "102cf6db1ea49190029d7843dfd68254a2f1f280265e0bce4929262339fa18bf",
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip",
+          "operation_id": 8196,
+          "record_index": 352894
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 106880,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 106880,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAPtYoZn7WKGZAgAAAAAQhZBYWzUx57PYTCUlHsYsiAXkVwAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "779c7b6a338de94a7755a4b984cd8786e79dba029f8fd73c365db10eb96ee9c6",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "XINsg+/pDn9VQwuwpfDqhv7noC2VwrzFboD8vQKkcKWp2B+ix8BDiozRW9QTw/m56Uw42A==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_socket_message",
+        "sha256": "9971cedb0cea7c08899fc24fce7822f8bde9e2a78a15472e075bfc54ccef579b",
+        "total_bytes": 52
+      },
+      "record_id": "r106880",
+      "record_index": 56339,
+      "schema": "client-control.traffic.v1",
+      "session": 13150413795778906921,
+      "socket": {
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "42894403",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695722388999936,
+      "time_end_utc": "2026-11-14T22:35:22.388999936Z",
+      "time_ns": 1794695722388999936,
+      "time_utc": "2026-11-14T22:35:22.388999936Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "operation_ids": [
+          8196
+        ],
+        "payload_kind": "network_data",
+        "source": "msmon_socket_operations"
+      }
+    },
+    {
+      "chain": "a602884aeff98c70a26e7b9910da7270f187f8f5b34fecdcb181c9a3238e78c4",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "d1208383",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 1652,
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip!events.pcapng"
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 110817,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 110817,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAPtYoZn7WKGZAgAAAAAQhZBYWzUx57PYTCUlHsYsiAXkVwAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "779c7b6a338de94a7755a4b984cd8786e79dba029f8fd73c365db10eb96ee9c6",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "XINsg+/pDn9VQwuwpfDqhv7noC2VwrzFboD8vQKkcKWp2B+ix8BDiozRW9QTw/m56Uw42A==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "9971cedb0cea7c08899fc24fce7822f8bde9e2a78a15472e075bfc54ccef579b",
+        "total_bytes": 52
+      },
+      "record_id": "r110817",
+      "record_index": 56346,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": "33154",
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "socket:[42894403]",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695722421288500,
+      "time_end_utc": "2026-11-14T22:35:22.421288500Z",
+      "time_ns": 1794695722421288500,
+      "time_utc": "2026-11-14T22:35:22.421288500Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "direction_evidence": "pcapng_epb_flags",
+        "retransmitted_bytes_in_stream": 14,
+        "stream_offset": 6977
+      }
+    },
+    {
+      "chain": "dce392e5511ae283d7ecdfa09383a85c13baa1e5f501307fa2059730f87de01a",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "2ebc8802",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "chain": "624644b8ea19abed7fd60aefb2e5f2ffc290cf5fbd080f0e7f3eb02777c85973",
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip",
+          "operation_id": 11617,
+          "record_index": 510221
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 106957,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 106957,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAMjcD8fI3A/HAgAAAABG/yFYDU+A5+Wi/SV7eHcs3l+VVwAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "8dcf80490694eae816bb1d883d89a2936882686a48c53de495c99dbfa52dc86c",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "VwJnAqgOsrQMCbZQCd2MCv007YWV9O0IBaqey6xwvQ+aQDXoQKJVK8T2duUt2ByUmxJz+w==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_socket_message",
+        "sha256": "b03e20c91d8964c133fe26debec95ef725b36a3e643cafb9591fdfd2171583f4",
+        "total_bytes": 52
+      },
+      "record_id": "r106957",
+      "record_index": 84252,
+      "schema": "client-control.traffic.v1",
+      "session": 13150413795778906921,
+      "socket": {
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "42894403",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695799456000000,
+      "time_end_utc": "2026-11-14T22:36:39.456000000Z",
+      "time_ns": 1794695799456000000,
+      "time_utc": "2026-11-14T22:36:39.456000000Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "operation_ids": [
+          11617
+        ],
+        "payload_kind": "network_data",
+        "source": "msmon_socket_operations"
+      }
+    },
+    {
+      "chain": "062e277068dc20b18b80a289e76293c68458f21a3284ebd2b836f2d265dda137",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "2ebc8802",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 2413,
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip!events.pcapng"
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 110894,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 110894,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAMjcD8fI3A/HAgAAAABG/yFYDU+A5+Wi/SV7eHcs3l+VVwAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "8dcf80490694eae816bb1d883d89a2936882686a48c53de495c99dbfa52dc86c",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "VwJnAqgOsrQMCbZQCd2MCv007YWV9O0IBaqey6xwvQ+aQDXoQKJVK8T2duUt2ByUmxJz+w==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "b03e20c91d8964c133fe26debec95ef725b36a3e643cafb9591fdfd2171583f4",
+        "total_bytes": 52
+      },
+      "record_id": "r110894",
+      "record_index": 84267,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": "33154",
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "socket:[42894403]",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695799496532200,
+      "time_end_utc": "2026-11-14T22:36:39.496532200Z",
+      "time_ns": 1794695799496532200,
+      "time_utc": "2026-11-14T22:36:39.496532200Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "direction_evidence": "pcapng_epb_flags",
+        "retransmitted_bytes_in_stream": 14,
+        "stream_offset": 9806
+      }
+    },
+    {
+      "chain": "e33d1e60588e2a1d2592c92958360575a9b8f2bc73affb0ca49dd139b4da01cc",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "469a8df7",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "chain": "7203b7d7d952189321cfc1f6ff18af08279fa12d49383186445da02aec62d8a7",
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip",
+          "operation_id": 11923,
+          "record_index": 528903
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 106973,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 106973,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAKI+B66iPgeuAgAAAADrQAFroPCg1Egd3RYe2lb5gcF0JAAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "1017ab4cc4b279cd18c8b1d4575c13009b06dd8acfd803b001d49eb595ebd637",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "Uvdi963dxpjB3MK7e6+BIwSKi/U5eutZNdxsQmqlTidZD9J4avqKwearQrrVP6jf7DluCw==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_socket_message",
+        "sha256": "20c937adf5b8f68808c14ef6b7ef05547cbdbcbeab05af35166f68b67cecbca6",
+        "total_bytes": 52
+      },
+      "record_id": "r106973",
+      "record_index": 87631,
+      "schema": "client-control.traffic.v1",
+      "session": 13150413795778906921,
+      "socket": {
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "42894403",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695809118000128,
+      "time_end_utc": "2026-11-14T22:36:49.118000128Z",
+      "time_ns": 1794695809118000128,
+      "time_utc": "2026-11-14T22:36:49.118000128Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "operation_ids": [
+          11923
+        ],
+        "payload_kind": "network_data",
+        "source": "msmon_socket_operations"
+      }
+    },
+    {
+      "chain": "7401f0db37afb9adc3925787859a560eefb355f340fe97b6648028c4531973e7",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "469a8df7",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 2499,
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip!events.pcapng"
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 110910,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 110910,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAKI+B66iPgeuAgAAAADrQAFroPCg1Egd3RYe2lb5gcF0JAAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "1017ab4cc4b279cd18c8b1d4575c13009b06dd8acfd803b001d49eb595ebd637",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "Uvdi963dxpjB3MK7e6+BIwSKi/U5eutZNdxsQmqlTidZD9J4avqKwearQrrVP6jf7DluCw==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "20c937adf5b8f68808c14ef6b7ef05547cbdbcbeab05af35166f68b67cecbca6",
+        "total_bytes": 52
+      },
+      "record_id": "r110910",
+      "record_index": 88407,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": "33154",
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "socket:[42894403]",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695809357519900,
+      "time_end_utc": "2026-11-14T22:36:49.357519900Z",
+      "time_ns": 1794695809357519900,
+      "time_utc": "2026-11-14T22:36:49.357519900Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "direction_evidence": "pcapng_epb_flags",
+        "retransmitted_bytes_in_stream": 14,
+        "stream_offset": 11936
+      }
+    },
+    {
+      "chain": "87955e185ef11561308a1c8f9837cb7e71cce3ad9e4edefd5c143124d7814b4f",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "7fecfda3",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "chain": "1f711c3d23c5b7cdfe5e0ada83dea7e1e4347fd06ed0fe3e1bded7af5473c277",
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip",
+          "operation_id": 11956,
+          "record_index": 536562
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 106975,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 106975,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAExBljxMQZY8AgAAAADDOxsDiIu6vGBmx372tDxRWZxafAAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "7d9b5c63ec60b9d327a4904340db62a6db16837342586b4b7f4c81e2e3296d4c",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "IqMSoxUGEZmX+aB5HH8XwU/y3m+UlgELpEC6D6lVwxmnY4XxazZBRuRplli3QEjEvCGGoQ==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_socket_message",
+        "sha256": "a9ad9bb20368f49adf452bcb698a4b9ce1d18178edd48813c0ad7f51186044f7",
+        "total_bytes": 52
+      },
+      "record_id": "r106975",
+      "record_index": 88470,
+      "schema": "client-control.traffic.v1",
+      "session": 13150413795778906921,
+      "socket": {
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "42894403",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695809967000064,
+      "time_end_utc": "2026-11-14T22:36:49.967000064Z",
+      "time_ns": 1794695809967000064,
+      "time_utc": "2026-11-14T22:36:49.967000064Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "operation_ids": [
+          11956
+        ],
+        "payload_kind": "network_data",
+        "source": "msmon_socket_operations"
+      }
+    },
+    {
+      "chain": "da2ebc484931c5057e8c54473f3a98a11afd1fb2592ba4e8484d4c74285f22e0",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "7fecfda3",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 2510,
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip!events.pcapng"
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 110912,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 110912,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAExBljxMQZY8AgAAAADDOxsDiIu6vGBmx372tDxRWZxafAAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "7d9b5c63ec60b9d327a4904340db62a6db16837342586b4b7f4c81e2e3296d4c",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "IqMSoxUGEZmX+aB5HH8XwU/y3m+UlgELpEC6D6lVwxmnY4XxazZBRuRplli3QEjEvCGGoQ==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "a9ad9bb20368f49adf452bcb698a4b9ce1d18178edd48813c0ad7f51186044f7",
+        "total_bytes": 52
+      },
+      "record_id": "r110912",
+      "record_index": 88483,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": "33154",
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "socket:[42894403]",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695810094743200,
+      "time_end_utc": "2026-11-14T22:36:50.094743200Z",
+      "time_ns": 1794695810094743200,
+      "time_utc": "2026-11-14T22:36:50.094743200Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "direction_evidence": "pcapng_epb_flags",
+        "retransmitted_bytes_in_stream": 14,
+        "stream_offset": 11994
+      }
+    },
+    {
+      "chain": "1bace2a9a654100c376c45dd4f5abb7d07a769b19a53854ee0d98c2237ec5263",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "b1a06b63",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "chain": "8f47b72e23f1c9daeebd98010de3adf85e37139413676e064130718fafd45532",
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip",
+          "operation_id": 14071,
+          "record_index": 622330
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 107023,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 107023,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAH/iSJF/4kiRAgAAAAB7is4pMDpvltjXElSOI5A78QquZgAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "7e02f655e02bf7f01acf7fee7f6e8f9c5f6551acbd156402f891aa510c2cae65",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "tGOEY5R7sD8NFJ8UIH005/UZKoS7dzfA27jIYXpkqCiJvr14vVEDTNLtRccIW9p+sLdTJw==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_socket_message",
+        "sha256": "f46a71a9157265b37f25d71f78f8b1df9260484f2931496f3050210fa415bceb",
+        "total_bytes": 52
+      },
+      "record_id": "r107023",
+      "record_index": 103643,
+      "schema": "client-control.traffic.v1",
+      "session": 13150413795778906921,
+      "socket": {
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "42894403",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695855137000192,
+      "time_end_utc": "2026-11-14T22:37:35.137000192Z",
+      "time_ns": 1794695855137000192,
+      "time_utc": "2026-11-14T22:37:35.137000192Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "operation_ids": [
+          14071
+        ],
+        "payload_kind": "network_data",
+        "source": "msmon_socket_operations"
+      }
+    },
+    {
+      "chain": "70c9c7552e42f2638826086f183cd4f41719d599cb320a7cecaf8f9bf03dce3c",
+      "decode": {
+        "alias_mapping": {
+          "evidence": "docs/guides/PACKETS.md:97-111",
+          "plaintext_opcode": "0x0070",
+          "status": "mapped"
+        },
+        "build_scope": "PE timestamp 0x6AEB667B; reanchor before applying these offsets to another build",
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "field_details": {
+          "opcode": {
+            "evidence": "docs/guides/PACKETS.md; fingerprinted build 0x6AEB667B",
+            "offset": 0,
+            "raw_hex": "7000",
+            "signed": false,
+            "size": 2
+          }
+        },
+        "fields": {
+          "opcode": 112
+        },
+        "iv": "b1a06b63",
+        "iv_synced": true,
+        "name": null,
+        "name_status": "unknown",
+        "protocol": "maple",
+        "status": "unknown",
+        "type": "0x70",
+        "unresolved_ranges": [
+          {
+            "length": 46,
+            "offset": 2
+          }
+        ],
+        "wire_alias": "0x0070"
+      },
+      "direction": "client_to_server",
+      "evidence": [
+        {
+          "capture_index": 3044,
+          "file": "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip!events.pcapng"
+        }
+      ],
+      "game_build": {
+        "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+        "client_version": "",
+        "evidence": "msmon_manifest",
+        "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+      },
+      "input_order": 110960,
+      "kind": "message",
+      "ledger_session_id": "05616da2f26348cf8ec6d5dce7415434",
+      "ordering": {
+        "basis": "source_timestamp_then_input_order",
+        "input_order": 110960,
+        "tie_break_is_causal": false
+      },
+      "plaintext": {
+        "bytes": 48,
+        "complete": true,
+        "data": "cAABZAAAAH/iSJF/4kiRAgAAAAB7is4pMDpvltjXElSOI5A78QquZgAAAAAAAAAA",
+        "encoding": "base64",
+        "present": true,
+        "scope": "application_plaintext",
+        "sha256": "7e02f655e02bf7f01acf7fee7f6e8f9c5f6551acbd156402f891aa510c2cae65",
+        "total_bytes": 48
+      },
+      "policy_evaluation": {
+        "action": "allow",
+        "applied": false,
+        "effective_action": "allow",
+        "forward": true,
+        "matched": false,
+        "mode": "enforce",
+        "original_traffic_unchanged": true,
+        "policy_sha256": "2d5be191304da28a25193f6ee2c0fbffd76433e4796e090b3314e2544e67fb05",
+        "reason": "default",
+        "rule_id": null,
+        "rule_index": null,
+        "stage": "offline_observation"
+      },
+      "process": {
+        "evidence": "msmon_image_load",
+        "game_build": {
+          "client_sha256": "1750a5271188b94d786944fd22efcdeec0915f6e0db810cde859f2c725d81d67",
+          "client_version": "",
+          "evidence": "msmon_manifest",
+          "session_uuid": "b67fa7ac-62cc-4b29-9e9f-627b7a600081"
+        },
+        "image_candidates": [
+          "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/svchost.exe",
+          "/opt/wine-stable/lib/wine/i386-windows/presentationfontcache.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/msiexec.exe",
+          "/home/bob/.wine-nexon/drive_c/ProgramData/Nexon/NGS/NGService.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/plugplay.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/rpcss.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/spoolsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/termsv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winmgmt.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/wuauserv.exe",
+          "/opt/wine-stable/lib/wine/x86_64-windows/winedevice.exe"
+        ],
+        "name": "MapleStory.exe",
+        "path": "/home/bob/.wine-nexon/drive_c/Nexon/Library/maplestorycw/appdata/MapleStory.exe",
+        "pid": 1227560,
+        "start_time": 134391602583400000
+      },
+      "raw": {
+        "bytes": 52,
+        "complete": true,
+        "data": "tGOEY5R7sD8NFJ8UIH005/UZKoS7dzfA27jIYXpkqCiJvr14vVEDTNLtRccIW9p+sLdTJw==",
+        "encoding": "base64",
+        "present": true,
+        "scope": "reconstructed_tcp_message",
+        "sha256": "f46a71a9157265b37f25d71f78f8b1df9260484f2931496f3050210fa415bceb",
+        "total_bytes": 52
+      },
+      "record_id": "r110960",
+      "record_index": 103656,
+      "schema": "client-control.traffic.v1",
+      "session": null,
+      "socket": {
+        "cookie": "33154",
+        "destination": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "inode": "socket:[42894403]",
+        "local": {
+          "address": "172.16.1.203",
+          "port": 42864
+        },
+        "protocol": "tcp",
+        "remote": {
+          "address": "44.234.166.164",
+          "port": 8548
+        },
+        "source": {
+          "address": "172.16.1.203",
+          "port": 42864
+        }
+      },
+      "time_end_ns": 1794695855239867600,
+      "time_end_utc": "2026-11-14T22:37:35.239867600Z",
+      "time_ns": 1794695855239867600,
+      "time_utc": "2026-11-14T22:37:35.239867600Z",
+      "trace": null,
+      "transport": {
+        "cipher_evidence": {
+          "algorithm": "AES-256-OFB",
+          "seed_frame": 3,
+          "seed_iv": "b796af93",
+          "seed_source": "two_consecutive_headers_unique",
+          "start_layer": 0,
+          "start_layer_evidence": "opcode_range_heuristic"
+        },
+        "direction_evidence": "pcapng_epb_flags",
+        "retransmitted_bytes_in_stream": 14,
+        "stream_offset": 18448
+      }
+    }
+  ],
+  "policy": {
+    "default": "allow",
+    "mode": "enforce",
+    "rules": [
+      {
+        "action": "drop",
+        "field": {
+          "equals": 5,
+          "name": "subtype"
+        },
+        "id": "drop-update-rate-report",
+        "process": "MapleStory.exe",
+        "protocol": "maple",
+        "reason": "Suppress only the 11-byte 0x70 subtype-5 update-rate report during the scoped live experiment.",
+        "type": "0x70"
+      }
+    ],
+    "version": 1
+  },
+  "policy_sha256": "24e418b7086dd90a6bf9453966f46afd8be517cb60a828b1035bfc7c38cad821",
+  "post_drop_observation": {
+    "client_process_running": true,
+    "client_tracer_pid_after_detach": 0,
+    "current_established_game_connection": {
+      "evidence": "ss output recorded in current_maplestory_tcp_connections",
+      "local": "172.16.1.203:37742",
+      "remote": "44.234.179.105:8562"
+    },
+    "current_maplestory_tcp_connections": [
+      "ESTAB      0      0       172.16.1.203:39485    35.164.63.25:443   users:((\"MapleStory.exe\",pid=1227560,fd=213),(\"wineserver\",pid=1224119,fd=866))  ",
+      "ESTAB      0      0       172.16.1.203:43089    35.164.63.25:443   users:((\"MapleStory.exe\",pid=1227560,fd=168),(\"wineserver\",pid=1224119,fd=1267)) ",
+      "ESTAB      0      0       172.16.1.203:37742  44.234.179.105:8562  users:((\"MapleStory.exe\",pid=1227560,fd=209),(\"wineserver\",pid=1224119,fd=515))  ",
+      "ESTAB      0      0       172.16.1.203:32817     35.165.11.5:8913  users:((\"MapleStory.exe\",pid=1227560,fd=201),(\"wineserver\",pid=1224119,fd=1550)) "
+    ],
+    "endpoint_change_note": "The original 8548 connection was absent at the final check; an established game connection on 8562 and the running scanner were present. Timing does not establish why the endpoint changed.",
+    "filter_active_seconds_after_drop": 96.471199715,
+    "final_health_check_wall_time_ns": 1794696205689848325,
+    "monitor_seconds_after_drop": 118.214765813,
+    "original_8548_connection_present_at_final_check": false,
+    "scanner_process_running": true,
+    "seconds_from_drop_to_final_health_check": 440.904614138,
+    "tcp_8548_status": "State Recv-Q Send-Q Local Address:Port Peer Address:PortProcess\n"
+  },
+  "schema": "client-control.filter-experiment.v1",
+  "source_integrity": {
+    "captures/monfilter-20261114T163216-audit/monfilter-20261114T163216-audit.zip": "0501d242ba7cf0fbdc80fc1aa505eddb2b9a1cdea97f4e63c1a2d77559afb87b",
+    "captures/r374-filter-experiment-20261114.jsonl": "091e9add91441a1bd2612082481698f608a465d269161270785b3b7111517c59",
+    "captures/r374-filter-ledger/traffic.jsonl": "00ce5b0b07053ad2963034909797ae0de97d5521a506dfaccc41e63053dc6e6b"
+  },
+  "trace_summary": {
+    "all_other_sends_forwarded": true,
+    "cleanup_errors": [],
+    "cleanup_success": true,
+    "counts": {
+      "constructors": 10096,
+      "deep_gaps": 0,
+      "dropped": 1,
+      "events": 10336,
+      "field_changes": 0,
+      "linked_sends": 233,
+      "notices": 6,
+      "send_errors": 0,
+      "sends": 233
+    },
+    "dropped_sends": 1,
+    "fatal_error": null,
+    "send_complete": true,
+    "session_end_wall_time_ns": 1794695861256433902,
+    "session_start_wall_time_ns": 1794695579920237848,
+    "traced_sends": 233
+  }
+}

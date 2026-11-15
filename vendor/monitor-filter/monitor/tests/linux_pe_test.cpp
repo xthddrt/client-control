@@ -112,7 +112,7 @@ int main()
     EXPECT(PeOpen(kDll, info.st_ino + 1) == nullptr && PeOpen(kDll, info.st_ino) == image);
 
     /* c: maps grouping: a PE load per header mapping spanning SizeOfImage (code may be anonymous), a data-file
-     * mapping is not executable, and an ELF file is one image from its lowest to highest mapping. */
+     * mapping is not executable, and an ELF file has one span per offset-zero load, including a distant second load. */
     std::ostringstream maps;
     char line[512];
     auto add = [&](uint64_t low, uint64_t high, const char* perms, uint64_t offset, uint64_t inode, const char* path) {
@@ -125,18 +125,22 @@ int main()
     add(0x200000000, 0x200100000, "r--p", 0, info.st_ino, kDll);                 /* mapped as data */
     add(0x7f0000000000, 0x7f0000010000, "r--p", 0, 77, kUnix);
     add(0x7f0000010000, 0x7f0000020000, "r-xp", 0x10000, 77, kUnix);
+    add(0x7f1000000000, 0x7f1000010000, "r--p", 0, 77, kUnix);
+    add(0x7f1000010000, 0x7f1000020000, "r-xp", 0x10000, 77, kUnix);
     add(kBase, kBase + 0x1000, "r--p", 0, info.st_ino, kDll);
     add(kBase + 0x1000, kBase + 0x73000, "r-xp", 0x1000, info.st_ino, kDll);
     add(kBase + 0x73000, kBase + 0x74000, "rw-p", 0x73000, info.st_ino, kDll);
     std::istringstream mapsIn(maps.str());
     const std::vector<MappedImage> mapped = MappedImages(mapsIn);
-    EXPECT(mapped.size() == 4);
-    if (mapped.size() == 4) {
+    EXPECT(mapped.size() == 5);
+    if (mapped.size() == 5) {
         EXPECT(mapped[0].base == 0x140000000 && mapped[0].size == sizeOfImage && mapped[0].pe == image && mapped[0].executable);
         EXPECT(mapped[1].base == 0x200000000 && mapped[1].pe && !mapped[1].executable);
         EXPECT(mapped[2].base == kBase && mapped[2].size == sizeOfImage && mapped[2].executable);
         EXPECT(mapped[3].path == kUnix && !mapped[3].pe && mapped[3].base == 0x7f0000000000 && mapped[3].size == 0x20000 &&
                mapped[3].executable);
+        EXPECT(mapped[4].path == kUnix && !mapped[4].pe && mapped[4].base == 0x7f1000000000 && mapped[4].size == 0x20000 &&
+               mapped[4].executable);
     }
     PeRanges ranges;
     ranges.ranges.push_back({kBase, kBase + sizeOfImage, image});

@@ -44,7 +44,7 @@ DRIVER="$ROOT/captures/outgoing-driver-$STAMP.log"
 OWNER=${SUDO_USER:-$USER}
 GROUP=$(id -gn "$OWNER")
 
-sudo -v
+sudo -n true
 mapfile -t PIDS < <(pgrep -x MapleStory.exe)
 if [[ ${#PIDS[@]} -ne 1 ]]; then
     echo "Expected exactly one running MapleStory.exe process; found ${#PIDS[@]}." >&2

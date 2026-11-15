@@ -1,0 +1,16 @@
+{
+  "schema": "client-control.debug-watch-start-failure.v1",
+  "target_pid": 1278603,
+  "target_state": "zombie",
+  "target_evidence": "/proc/1278603/status reported State: Z (zombie), TracerPid: 0",
+  "operation": "conditional queue-producer watch",
+  "address": "0x140d240e0",
+  "condition": {
+    "offset": 0,
+    "equals": 2
+  },
+  "watch_started": false,
+  "error": "No such process: /proc/1278603/mem",
+  "events": [],
+  "interpretation": "The target had exited before the watch could attach. This is not evidence of queue inactivity or producer absence. No live observation window was obtained."
+}

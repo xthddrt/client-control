@@ -1,0 +1,78 @@
+{
+  "schema": "client-control.controlled-proxy-offline.v1",
+  "scope": "real_local_mitmdump_and_loopback_servers_only",
+  "raw_maple_client_hex": "df00fb00a4092beacd1692a9634d8171895626a9b12e41b1e82014b8db8a6bb3bc345128aaf44ddcb516b616205f6c",
+  "decoded_frames": [
+    {
+      "type": "0x32b",
+      "fields": {
+        "drop_object_id": 99,
+        "field_0x02": 0,
+        "field_0x03": 0,
+        "field_0x07": 0,
+        "field_0x0b": 0,
+        "field_0x0d": 0,
+        "field_0x13": 0,
+        "field_0x17": 0,
+        "field_0x18": 0,
+        "field_0x1c": 0,
+        "field_0x20": 0,
+        "opcode": 811
+      }
+    },
+    {
+      "type": "0x70",
+      "fields": {
+        "opcode": 112
+      }
+    }
+  ],
+  "raw_tcp_round_trip_verified": true,
+  "split_and_combined_stream_reassembled": true,
+  "udp_datagrams_hex": [
+    "00070100000100000000000003666f6f076578616d706c6503636f6d0000010001",
+    "706c61696e2d756470"
+  ],
+  "udp_round_trip_verified": true,
+  "unknown_udp_protocols_preserved": true,
+  "ngs_synthetic_client_decode": {
+    "cipher_attempted": "ngs_response_algorithm",
+    "decoded_request": {
+      "signature": {
+        "0x0F013": [
+          {
+            "id": 14345,
+            "l": 1,
+            "s": {
+              "capture_cool_time": "6",
+              "capture_limit": "100",
+              "quality": "50",
+              "width": "1280"
+            }
+          }
+        ]
+      },
+      "subfeature": {
+        "0x06010": 1,
+        "0x0F013": 1
+      },
+      "unrelated": {
+        "preserve": [
+          1,
+          "exact-value"
+        ]
+      }
+    },
+    "direction": "client_to_server",
+    "plaintext_base64": "eyJzdWJmZWF0dXJlIjogeyIweDBGMDEzIjogMSwgIjB4MDYwMTAiOiAxfSwgInNpZ25hdHVyZSI6IHsiMHgwRjAxMyI6IFt7ImlkIjogMTQzNDUsICJsIjogMSwgInMiOiB7ImNhcHR1cmVfbGltaXQiOiAiMTAwIiwgIndpZHRoIjogIjEyODAiLCAicXVhbGl0eSI6ICI1MCIsICJjYXB0dXJlX2Nvb2xfdGltZSI6ICI2In19XX0sICJ1bnJlbGF0ZWQiOiB7InByZXNlcnZlIjogWzEsICJleGFjdC12YWx1ZSJdfX0=",
+    "same_algorithm_as_server_response": true,
+    "status": "decrypted"
+  },
+  "ngs_failed_client_decode_status": "undecoded",
+  "non_ngs_http_response_preserved": true,
+  "ledger_raw_and_message_links_verified": true,
+  "policy_stage": "post_forward_observation",
+  "policy_applied_at_proxy": false,
+  "live_maple_story_or_Nexon_tested": false,
+  "real_NGS_request_cipher_proven": false
+}

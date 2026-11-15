@@ -37,9 +37,10 @@ cleartext:
   - **YARA rules** — e.g. `rule HT_doyuin` (matches a hack-tool path string
     `C:\douyin_...`) and **`rule ExtProc_Themida`** (GRAP scans *external
     processes* for Themida — directly relevant to our own tooling).
-  - **`0x0F013` screenshot surveillance**: `{"capture_limit":"100","width":"1280",
-    "capture_cool_time":"6","quality":"50"}` — GRAP periodically **screenshots the
-    player** (up to 100, 1280px wide, q50, 6 s cooldown) and can upload them.
+  - **`0x0F013` screenshot surveillance config**: `{"capture_limit":"100","width":"1280",
+    "capture_cool_time":"6","quality":"50"}` — indicates an enabled capture capability,
+    not proof that a particular heartbeat contains an image. See the [current
+    origination/filter audit](outgoing/20261115-grap-screenshot-filter.md).
   - **`0x0F020` hash signatures**: lists of module hashes (`0xc87ed562`, …) to match.
 - `lifetoken` (session GUID), `auth_cycle` 60 s, `terminate_message`
   "An abnormal behavior has been detected." (the string shown on a GRAP kick).

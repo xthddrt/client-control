@@ -1,0 +1,40 @@
+{
+  "schema": "client-control.debug-watch.v1",
+  "pid": 1227560,
+  "module_base": "0x140000000",
+  "pe_timestamp": "0x6AEB667B",
+  "address": "0x140d04970",
+  "mode": "execute",
+  "duration_seconds": 600.0,
+  "events": [
+    {
+      "wall_time_ns": 1794694975136016696,
+      "monotonic_ns": 163435048886347,
+      "mode": "execute",
+      "watched_address": "0x140d04970",
+      "rip": "0x140d04970",
+      "rva": "0xd04970",
+      "registers": {
+        "rax": "0x5",
+        "rbx": "0x1",
+        "rcx": "0x1869ac08",
+        "rdx": "0x10e7a0",
+        "rsi": "0x60078",
+        "rdi": "0x1f634108",
+        "r8": "0x7",
+        "r9": "0x0",
+        "r10": "0x0",
+        "r11": "0x202",
+        "r12": "0x401",
+        "r13": "0x142d4db00",
+        "r14": "0x0",
+        "r15": "0x6ffffdb61e10",
+        "rbp": "0x1",
+        "rsp": "0x10e648"
+      },
+      "stack": "9273a74401000000a0e7100000000000010000000000000001000000000000000100000000000000050000000000000008ac69180000000008ac691800000000",
+      "code_at_entry": "488954241048894c24084881ec9804"
+    }
+  ],
+  "error": null
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "client-control.debug-watch.v1",
+  "pid": 1278603,
+  "module_base": "0x140000000",
+  "pe_timestamp": "0x6AEB667B",
+  "address": "0x140d240e0",
+  "mode": "execute",
+  "condition": {
+    "offset": 0,
+    "equals": 2
+  },
+  "read_rdx_bytes": 32,
+  "duration_seconds": 600.0,
+  "events": [],
+  "error": null
+}

@@ -115,6 +115,8 @@ if mode in ("ebpf", "nopayloads"):
         problems.append("the repeats_tail of failed opens has no errno: %s" % [e["status"] for e in tails])
     if not any(e.get("stack_frames", 0) > 0 and e["modules"] for e in mine):
         problems.append("no stack resolved to a module")
+    if any(len(e.get("stack_addresses", [])) != e["stack_frames"] for e in mine if e.get("stack_frames", 0) > 0):
+        problems.append("stack_addresses does not match stack_frames")
     if not any(e["type"] == "process_start" and e["value1"] == 0 and e.get("flags", 0) & 2 for e in mine):
         problems.append("the forked child was not tracked as inherited")
     # 100 preads of probe-burst.txt: a few full records, the rest counted, nothing lost.

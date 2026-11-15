@@ -3,6 +3,7 @@
 import argparse
 import base64
 from collections import Counter, defaultdict
+import copy
 import hashlib
 import json
 import os
@@ -323,6 +324,46 @@ class TraceIndex:
         }
 
 
+def apply_trace_opcode(decoded, plaintext, trace):
+    if not trace or decoded.get("protocol") != "maple" or plaintext is None or len(plaintext) < 2:
+        return decoded
+    correlation = trace.get("correlation", {})
+    if correlation.get("candidate_count") != 1 or correlation.get("ambiguous_duplicate_bodies"):
+        return decoded
+    send = trace.get("chain", {}).get("send", {})
+    if not send.get("opcode"):
+        return decoded
+    try:
+        opcode = int(send["opcode"], 0)
+    except (TypeError, ValueError):
+        return decoded
+    wire_opcode = int.from_bytes(plaintext[:2], "little")
+    existing = decoded.get("type")
+    alias = decoded.get("alias_mapping") or {}
+    mapped = alias.get("plaintext_opcode")
+    conflict = (mapped is not None and int(mapped, 0) != opcode) or (
+        mapped is None and existing is not None and int(existing, 0) not in (wire_opcode, opcode)
+    )
+    if conflict:
+        decoded["opcode_trace"] = {"status": "conflicting_trace_opcode", "trace_opcode": hex(opcode)}
+        return decoded
+    body = struct.pack("<H", opcode) + plaintext[2:]
+    updated = decode_game_body(body, "client_to_server")
+    for key in ("iv", "iv_synced", "cipher_evidence"):
+        if key in decoded:
+            updated[key] = decoded[key]
+    updated["wire_alias"] = f"0x{wire_opcode:04x}"
+    updated["alias_mapping"] = {
+        "plaintext_opcode": hex(opcode),
+        "status": "trace_correlated",
+        "evidence": "one runtime trace candidate with identical length and exact bytes after the wire opcode",
+        "causal_claim": False,
+    }
+    decoded.clear()
+    decoded.update(updated)
+    return decoded
+
+
 class LedgerBuilder:
     def __init__(self, output, policy=None, client_ips=()):
         self.inputs = []
@@ -399,7 +440,8 @@ class LedgerBuilder:
             evaluation.update({"stage": "offline_observation", "applied": False, "original_traffic_unchanged": True})
         else:
             evaluation = dict(observed_decision)
-            evaluation.update({"stage": "captured_live_decision", "applied": True})
+            evaluation.setdefault("stage", "captured_live_decision")
+            evaluation.setdefault("applied", True)
         record = {
             "kind": "message",
             "session": session,
@@ -559,6 +601,7 @@ class LedgerBuilder:
                     process["attribution_conflict_pids"] = pids
                 decoded = frame["decode"]
                 trace = self.traces.match(frame.get("plaintext"), start, first.get("process_id")) if decoded.get("protocol") == "maple" else None
+                decoded = apply_trace_opcode(decoded, frame.get("plaintext"), trace)
                 if trace and not process.get("game_build"):
                     traced_send = trace["chain"]["send"]
                     traced_start = self.traces.sessions.get(traced_send.get("session_id"), {})
@@ -727,7 +770,7 @@ class LedgerBuilder:
             },
             "payload_kind": payload["kind"],
             "syscall": {key: first.get(key) for key in ("type", "detail", "value0", "value1", "status", "thread_id",
-                                                        "modules", "stack_frames", "stack_unresolved")},
+                                                        "modules", "stack_addresses", "stack_frames", "stack_unresolved")},
             "evidence": [{"file": str(source), "record_index": item.get("record_index"), "chain": item.get("chain")}
                          for item in records],
             "complete": complete,
@@ -823,14 +866,18 @@ class LedgerBuilder:
                     evidence = [{"file": str(source), "record_index": record.get("record_index"),
                                  "operation_id": record.get("operation_id"), "chain": record.get("chain")}
                                 for record in contributors]
+                    decoded = frame["decode"]
+                    trace = self.traces.match(frame.get("plaintext"), min(times) if times else None,
+                                              first["_ledger_process"].get("pid")) if decoded.get("protocol") == "maple" else None
+                    decoded = apply_trace_opcode(decoded, frame.get("plaintext"), trace)
                     self.add_message(
-                        frame["decode"], frame["raw"], frame.get("plaintext"), min(times) if times else None,
+                        decoded, frame["raw"], frame.get("plaintext"), min(times) if times else None,
                         first["_ledger_process"], first["_ledger_socket"], first["_ledger_direction"], evidence,
                         "reconstructed_socket_message", session=key[0],
                         transport={"source": "msmon_socket_operations", "payload_kind": payload_kind,
                                    "operation_ids": [record.get("operation_id") for record in contributors],
                                    "cipher_evidence": result.get("cipher_evidence")},
-                        time_end_ns=max(times) if times else None,
+                        trace=trace, time_end_ns=max(times) if times else None,
                     )
 
     def add_ngs(self, path):
@@ -838,8 +885,122 @@ class LedgerBuilder:
         with Path(path).open(encoding="utf-8") as stream:
             records = [json.loads(line) for line in stream if line.strip()]
         request_ids = {event.get("flow_id") for event in records if event.get("kind") == "request" and event.get("flow_id")}
+
+        def proxy_socket(event):
+            client = event.get("client")
+            destination = event.get("destination")
+            return {
+                "protocol": event.get("transport_protocol", "tcp"), "local": client, "source": client,
+                "remote": destination, "destination": destination,
+                "inode": event.get("socket_inode"), "cookie": event.get("socket_cookie"),
+            }
+
         for event in records:
             kind = event.get("kind")
+            if kind in ("tcp_start", "udp_start"):
+                socket = proxy_socket(event)
+                self.store.add({
+                    "kind": "socket_lifecycle", "lifecycle": "start", "session_id": event.get("session_id"),
+                    "process": event.get("process"), "socket": socket, "decision": event.get("decision"),
+                    "coverage": event.get("coverage"), "evidence": [{"file": str(path), "kind": kind}],
+                }, timestamp_ns(event.get("timestamp")))
+                self.store.add({
+                    "kind": "filter_decision", "decision": event.get("decision"), "flow_id": event.get("flow_id"),
+                    "session_id": event.get("session_id"), "process": event.get("process"), "socket": socket,
+                    "applied": True, "evidence": [{"file": str(path), "kind": kind}],
+                }, timestamp_ns(event.get("timestamp")))
+                continue
+            if kind in ("tcp_data", "udp_data"):
+                raw = base64.b64decode(event.get("raw_base64", ""), validate=True)
+                if len(raw) != event.get("bytes") or hashlib.sha256(raw).hexdigest() != event.get("sha256"):
+                    raise ValueError("Controlled-proxy transport payload failed its length or SHA-256 check.")
+                direction = event.get("direction")
+                if direction not in ("client_to_server", "server_to_client"):
+                    raise ValueError("Controlled-proxy transport payload has unknown direction.")
+                index = event.get("datagram_index") if kind == "udp_data" else event.get("chunk_index")
+                operation_id = f"{event.get('flow_id')}:{direction}:{index}"
+                process = event.get("process") or {"pid": None, "name": None, "evidence": "proxy_process_unavailable"}
+                socket = proxy_socket(event)
+                self.store.add({
+                    "kind": "socket_operation", "session_id": event.get("session_id"),
+                    "operation_id": operation_id, "process": process,
+                    "game_build": process.get("game_build"),
+                    "socket": socket, "direction": direction,
+                    "raw": raw_bytes(raw, "proxy_udp_datagram" if kind == "udp_data" else "proxy_tcp_stream_chunk"),
+                    "complete": True, "payload_kind": "network_data",
+                    "syscall": {"type": "proxy_udp_datagram" if kind == "udp_data" else "proxy_tcp_message",
+                                "detail": "exact UDP datagram" if kind == "udp_data" else "exact TCP stream content; not a network packet boundary"},
+                    "transport": {"proxy": "mitmproxy", "flow_id": event.get("flow_id"),
+                                  "datagram_index": event.get("datagram_index"), "chunk_index": event.get("chunk_index"),
+                                  "stream_offset": event.get("stream_offset")},
+                    "forward": event.get("forward"), "forward_evidence": event.get("forward_evidence"),
+                    "server_receipt_proven": False,
+                    "evidence": [{"file": str(path), "kind": kind}],
+                }, timestamp_ns(event.get("timestamp")))
+                if kind == "udp_data":
+                    decoded = event.get("decode") or {
+                        "protocol": "udp", "type": None, "name": None, "status": "unknown",
+                        "fields": {}, "unresolved_ranges": [{"offset": 0, "length": len(raw)}],
+                    }
+                    evaluation = event.get("policy_evaluation")
+                    message_id = self.add_message(
+                        decoded, raw, raw, timestamp_ns(event.get("timestamp")), process, socket, direction,
+                        [{"file": str(path), "kind": kind, "datagram_index": index}], "proxy_udp_datagram",
+                        session=event.get("session_id"),
+                        transport={"proxy": "mitmproxy", "flow_id": event.get("flow_id"), "operation_ids": [operation_id]},
+                        observed_decision=evaluation,
+                    )
+                    if evaluation is not None:
+                        self.store.add({
+                            "kind": "filter_decision", "decision": evaluation, "message_id": message_id,
+                            "flow_id": event.get("flow_id"), "session_id": event.get("session_id"),
+                            "process": process, "socket": socket, "applied": evaluation.get("applied", False),
+                            "evidence": [{"file": str(path), "kind": kind, "datagram_index": index}],
+                        }, timestamp_ns(event.get("timestamp")))
+                continue
+            if kind == "tcp_decode":
+                socket = proxy_socket(event)
+                for frame in event.get("frames", []):
+                    raw = base64.b64decode(frame["raw_base64"], validate=True)
+                    plaintext = base64.b64decode(frame["plaintext_base64"], validate=True) if frame.get("plaintext_base64") is not None else None
+                    evaluation = frame.get("policy_evaluation")
+                    message_id = self.add_message(
+                        frame.get("decode") or {}, raw, plaintext,
+                        frame.get("time_ns") if frame.get("time_ns") is not None else timestamp_ns(event.get("timestamp")),
+                        event.get("process") or {"pid": None, "name": None, "evidence": "proxy_process_unavailable"},
+                        socket, event.get("direction"), [{"file": str(path), "kind": kind, "offset": frame.get("offset")}],
+                        "proxy_reconstructed_tcp_message", session=event.get("session_id"),
+                        transport={"proxy": "mitmproxy", "flow_id": event.get("flow_id"),
+                                   "stream_offset": frame.get("offset"), "operation_ids": frame.get("operation_ids", []),
+                                   "time_evidence": frame.get("time_evidence"),
+                                   "cipher_evidence": event.get("cipher_evidence")},
+                        observed_decision=evaluation, time_end_ns=frame.get("time_end_ns"),
+                    )
+                    if evaluation is not None:
+                        self.store.add({
+                            "kind": "filter_decision", "decision": evaluation, "message_id": message_id,
+                            "flow_id": event.get("flow_id"), "session_id": event.get("session_id"),
+                            "process": event.get("process"), "socket": socket, "applied": False,
+                            "evidence": [{"file": str(path), "kind": kind, "offset": frame.get("offset")}],
+                        }, frame.get("time_ns") if frame.get("time_ns") is not None else timestamp_ns(event.get("timestamp")))
+                if not event.get("recognized"):
+                    self.store.add({
+                        "kind": "coverage", "coverage": "unrecognized_tcp_stream", "loss_evidence": False,
+                        "session_id": event.get("session_id"), "process": event.get("process"), "socket": socket,
+                        "observation": {key: event.get(key) for key in (
+                            "protocol", "problem", "unparsed_base64", "decode_bytes", "captured_stream_bytes", "decode_window_truncated",
+                        )},
+                        "evidence": [{"file": str(path), "kind": kind}],
+                    }, timestamp_ns(event.get("timestamp")))
+                continue
+            if kind in ("tcp_end", "udp_end"):
+                self.store.add({
+                    "kind": "socket_lifecycle", "lifecycle": "end", "session_id": event.get("session_id"),
+                    "process": event.get("process"), "socket": proxy_socket(event),
+                    "bytes": event.get("bytes"), "decode_window_truncated": event.get("decode_window_truncated"),
+                    "error": event.get("error"), "evidence": [{"file": str(path), "kind": kind}],
+                }, timestamp_ns(event.get("timestamp")))
+                continue
             request = event.get("request", event)
             request_present = kind == "request" or (
                 kind in ("response", "error") and request.get("body_base64") is not None
@@ -851,20 +1012,28 @@ class LedgerBuilder:
                 headers = request.get("headers", {})
                 target = request.get("path")
                 protocol = request.get("scheme", "https")
+                request_decode = event.get("client_decode") or {}
+                fields = {"method": request.get("method"), "target": target, "host": host, "headers": headers}
+                if "decoded_request" in request_decode:
+                    fields["payload"] = request_decode["decoded_request"]
+                decrypted = "plaintext_base64" in request_decode
+                plaintext = base64.b64decode(request_decode["plaintext_base64"], validate=True) if decrypted else body
                 decoded = {
                     "protocol": protocol,
                     "type": f"{request.get('method', 'UNKNOWN')} {target}",
                     "name": "ngs_request" if host and host.endswith(".ngs.nexon.com") else "http_request",
-                    "status": "request_ciphertext" if host and host.startswith("x-") and host.endswith(".ngs.nexon.com") else "plaintext",
-                    "fields": {"method": request.get("method"), "target": target, "host": host, "headers": headers},
-                    "unresolved_ranges": [{"offset": 0, "length": len(body), "reason": "NGS request cipher unresolved"}]
+                    "status": request_decode.get("status", "request_ciphertext" if host and host.startswith("x-") and host.endswith(".ngs.nexon.com") else "plaintext"),
+                    "fields": fields,
+                    "unresolved_ranges": [] if decrypted else [{"offset": 0, "length": len(body), "reason": "NGS request cipher unresolved"}]
                     if host and host.startswith("x-") and host.endswith(".ngs.nexon.com") and body else [],
                     "raw_scope_note": "Exact application body; original TLS records and HTTP framing require packet evidence.",
+                    "request_decode": {key: value for key, value in request_decode.items()
+                                       if key not in ("decoded_request", "plaintext_base64")},
                 }
                 socket = {"remote": {"host": host, "port": 443}, "protocol": "tcp",
                           "inode": event.get("socket_inode"), "cookie": event.get("socket_cookie")}
                 process = event.get("process") or {"pid": None, "name": None, "evidence": "mitm_process_unavailable"}
-                message_id = self.add_message(decoded, body, body, timestamp_ns(event.get("timestamp")), process, socket,
+                message_id = self.add_message(decoded, body, plaintext, timestamp_ns(event.get("timestamp")), process, socket,
                                  "client_to_server", [{"file": str(path), "kind": kind}], "http_request_body",
                                  session=event.get("session_id"), transport={"proxy": "mitmproxy", "flow_id": event.get("flow_id")},
                                  trace=None, observed_decision=event.get("decision"))
@@ -883,7 +1052,7 @@ class LedgerBuilder:
                 continue
             response = event["response"]
             body = base64.b64decode(response.get("body_base64", ""), validate=True)
-            host = request.get("host")
+            host = event.get("original_host") or request.get("host")
             decoded_body = None
             error = event.get("decode_error")
             if host and host.startswith("x-") and host.endswith(".ngs.nexon.com") and body and not event.get("blocked"):
@@ -907,11 +1076,29 @@ class LedgerBuilder:
             socket = {"remote": {"host": host, "port": 443}, "protocol": "tcp",
                       "inode": event.get("socket_inode"), "cookie": event.get("socket_cookie")}
             process = event.get("process") or {"pid": None, "name": None, "evidence": "mitm_process_unavailable"}
-            self.add_message(decoded, body, json.dumps(decoded_body, separators=(",", ":")).encode()
+            observed_decision = event.get("screenshot_filter")
+            if observed_decision is None and event.get("neutralized"):
+                observed_decision = {"action": "modify", "forward": True, "changes": event["neutralized"],
+                                     "reason": "generic_NGS_response_neutralization"}
+            message_id = self.add_message(decoded, body, json.dumps(decoded_body, separators=(",", ":")).encode()
                              if decoded_body is not None else None,
                              timestamp_ns(event.get("timestamp")), process, socket, "server_to_client",
                              [{"file": str(path), "kind": "response"}], "http_response_body",
-                             session=event.get("session_id"), transport={"proxy": "mitmproxy", "flow_id": event.get("flow_id"), "blocked": event.get("blocked")})
+                             session=event.get("session_id"), transport={"proxy": "mitmproxy", "flow_id": event.get("flow_id"), "blocked": event.get("blocked")},
+                             observed_decision=observed_decision)
+            if event.get("rewritten_response_body_base64"):
+                forwarded = base64.b64decode(event["rewritten_response_body_base64"], validate=True)
+                self.store.add({
+                    "kind": "filter_decision", "decision": observed_decision, "message_id": message_id,
+                    "flow_id": event.get("flow_id"), "session_id": event.get("session_id"),
+                    "process": process, "socket": socket, "original_host": event.get("original_host"),
+                    "original_raw": raw_bytes(body, "original_http_response_body"),
+                    "forwarded_raw": raw_bytes(forwarded, "rewritten_http_response_body"),
+                    "original_decoded_response": event.get("decoded_response"),
+                    "rewritten_decoded_response": event.get("rewritten_response"),
+                    "neutralized": event.get("neutralized"),
+                    "evidence": [{"file": str(path), "kind": "response"}],
+                }, timestamp_ns(event.get("timestamp")))
 
     def finish(self):
         for stream in reassemble_tcp(self.pending_packets):
@@ -1013,6 +1200,340 @@ def verify_ledger(path):
     return {"records": count, "final_chain": previous}
 
 
+def iter_msmon_evidence(source):
+    source = Path(source)
+    if source.is_dir():
+        parts = sorted(source.glob("events.jsonl*"), key=lambda path: (
+            int(path.suffix[1:]) if path.suffix[1:].isdecimal() else 0
+        ))
+        metadata_path = source / "session_meta.json"
+        if metadata_path.exists():
+            yield "session_meta", json.loads(metadata_path.read_text())
+        readers = [(str(path), path) for path in parts]
+    elif zipfile.is_zipfile(source):
+        readers = None
+    else:
+        readers = [(str(source), source)]
+    previous = ZERO_CHAIN
+    if readers is not None:
+        for name, path in readers:
+            with path.open(encoding="utf-8") as stream:
+                for number, line in enumerate(stream, 1):
+                    if not line.strip():
+                        continue
+                    record, previous = verify_chain_line(line.rstrip("\r\n"), previous, f"{name}:{number}")
+                    yield "event", {"file": name, "line": number, "observation": record}
+        return
+    with zipfile.ZipFile(source) as archive:
+        names = archive.namelist()
+        if "session_meta.json" in names:
+            yield "session_meta", json.loads(archive.read("session_meta.json"))
+        parts = sorted((name for name in names if Path(name).name.startswith("events.jsonl")),
+                       key=lambda name: (len(name), name))
+        for name in parts:
+            for number, line in enumerate(archive.read(name).decode("utf-8").splitlines(), 1):
+                if not line.strip():
+                    continue
+                record, previous = verify_chain_line(line, previous, f"{name}:{number}")
+                yield "event", {"file": name, "line": number, "observation": record}
+
+
+def verify_raw_tree(value):
+    values = 0
+    hashes = 0
+    if isinstance(value, dict):
+        if value.get("encoding") == "base64" and "data" in value:
+            data = base64.b64decode(value["data"], validate=True)
+            if "bytes" in value and len(data) != value["bytes"]:
+                raise ValueError("Embedded raw value length differs from its bytes field")
+            if "total_bytes" in value and len(data) > value["total_bytes"]:
+                raise ValueError("Embedded raw value exceeds its total_bytes field")
+            if value.get("sha256") is not None:
+                if hashlib.sha256(data).hexdigest() != value["sha256"]:
+                    raise ValueError("Embedded raw value SHA-256 mismatch")
+                hashes += 1
+            values += 1
+        for child in value.values():
+            child_values, child_hashes = verify_raw_tree(child)
+            values += child_values
+            hashes += child_hashes
+    elif isinstance(value, list):
+        for child in value:
+            child_values, child_hashes = verify_raw_tree(child)
+            values += child_values
+            hashes += child_hashes
+    return values, hashes
+
+
+def same_connection(left, right):
+    left = left or {}
+    right = right or {}
+    if not left.get("source") or not left.get("destination"):
+        return False
+    return all(left.get(key) == right.get(key) for key in ("protocol", "source", "destination"))
+
+
+def resolve_stack_addresses(source_evidence):
+    analyses = []
+    for source in source_evidence:
+        images = []
+        for item in source.get("process_records", []):
+            record = item["observation"]
+            base, size = record.get("value0"), record.get("value1")
+            if record.get("type") == "image_load" and isinstance(base, int) and isinstance(size, int) and base > 0 and size > 0:
+                images.append({"base": base, "size": size, "path": record.get("text"),
+                               "time_ns": timestamp_ns(record.get("timestamp")),
+                               "evidence": {"file": item.get("file"), "line": item.get("line"),
+                                            "chain": record.get("chain")}})
+        for item in source.get("observations", []):
+            record = item["observation"]
+            addresses = record.get("stack_addresses") or []
+            if not addresses:
+                continue
+            frames = []
+            for text in addresses:
+                address = int(text, 0)
+                candidates = [image for image in images if image["base"] <= address < image["base"] + image["size"]
+                              and image["time_ns"] is not None and timestamp_ns(record.get("timestamp")) is not None
+                              and image["time_ns"] <= timestamp_ns(record.get("timestamp"))]
+                unique = {(image["path"], image["base"], image["size"]): image for image in candidates}
+                candidates = list(unique.values())
+                if candidates:
+                    latest = max(image["time_ns"] for image in candidates)
+                    candidates = [image for image in candidates if image["time_ns"] == latest]
+                frame = {"address": text, "status": "image_range_match" if len(candidates) == 1 else
+                         "ambiguous_image_ranges" if candidates else "no_image_range_match"}
+                if len(candidates) == 1:
+                    image = candidates[0]
+                    frame.update({"image": image["path"], "rva": address - image["base"],
+                                  "image_base": image["base"], "image_load": image["evidence"]})
+                elif candidates:
+                    frame["image_candidates"] = [{"image": image["path"], "image_base": image["base"],
+                                                  "image_load": image["evidence"]} for image in candidates]
+                frames.append(frame)
+            analyses.append({"source_file": item.get("file"), "source_line": item.get("line"),
+                             "frames": frames,
+                             "note": "Image-range attribution is not instruction-level proof; scanned frames may be stale."})
+    return analyses
+
+
+def evidence_key(evidence):
+    if evidence.get("capture_index") is None:
+        return None
+    return evidence.get("file"), evidence.get("capture_index")
+
+
+def static_code_evidence(image_path, code_rvas, reference_rvas):
+    import importlib.util
+
+    path = Path(__file__).resolve().parent / "protocol-static.py"
+    spec = importlib.util.spec_from_file_location("client_control_protocol_static", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    image = module.Image(image_path)
+    excerpts = []
+    for rva in code_rvas:
+        function = image.function(rva)
+        if function:
+            instructions = image.instructions(*function)
+            range_evidence = "pdata_function_bounds"
+            complete_function = True
+        else:
+            instructions = []
+            for instruction in image.instructions(rva, rva + 0x100):
+                instructions.append(instruction)
+                if instruction.mnemonic in ("ret", "jmp"):
+                    break
+            range_evidence = "through_first_ret_or_jmp_within_256_bytes"
+            complete_function = False
+        if not instructions:
+            raise ValueError(f"No code found at RVA {rva:#x}")
+        item = {
+            "rva": rva,
+            "range_evidence": range_evidence,
+            "complete_function": complete_function,
+            "instructions": [{
+                "rva": instruction.address - image.base,
+                "bytes": instruction.bytes.hex(),
+                "mnemonic": instruction.mnemonic,
+                "operands": instruction.op_str,
+            } for instruction in instructions],
+        }
+        if rva in reference_rvas:
+            callers = []
+            for start, end in sorted(set(image.call_candidates(rva))):
+                call_sites = [instruction.address - image.base for instruction in image.instructions(start, end)
+                              if module.Image.immediate_call(instruction) == image.base + rva]
+                if call_sites:
+                    callers.append({"function_start": start, "function_end": end, "call_sites": call_sites})
+            needle = (image.base + rva).to_bytes(8, "little")
+            pointers = []
+            for section in image.sections:
+                name, start = section[0], section[1]
+                data = image.data[name]
+                offset = data.find(needle)
+                while offset >= 0:
+                    pointers.append({"section": name, "rva": start + offset})
+                    offset = data.find(needle, offset + 1)
+            item["static_references"] = {"direct_callers": callers, "data_pointers": pointers}
+        excerpts.append(item)
+    return {
+        "image": str(image_path),
+        "sha256": hashlib.sha256(Path(image_path).read_bytes()).hexdigest(),
+        "pe_timestamp": f"0x{image.timestamp:08x}",
+        "preferred_image_base": f"0x{image.base:x}",
+        "evidence": "static_candidate_not_runtime_correlation",
+        "code_excerpts": excerpts,
+    }
+
+
+def analyze_operation(path, identifier, image_path=None, code_rvas=(), reference_rvas=()):
+    path = Path(path)
+    ledger_path = path / "traffic.jsonl" if path.is_dir() else path
+    records = [json.loads(line) for line in ledger_path.open(encoding="utf-8") if line.strip()]
+    target = next((record for record in records if record.get("record_id") == identifier or
+                   str(record.get("record_index")) == str(identifier)), None)
+    if target is None:
+        raise ValueError(f"No ledger record {identifier}.")
+    if target.get("kind") != "socket_operation" or target.get("direction") != "client_to_server":
+        raise ValueError("Operation analysis requires an outgoing socket_operation record")
+    if not target.get("complete") or not target.get("raw", {}).get("complete"):
+        raise ValueError("Refusing to present an incomplete socket operation as complete")
+    operation_id = target.get("operation_id")
+    session_id = target.get("session_id")
+    socket_messages = [record for record in records if record.get("kind") == "message"
+                       and record.get("session") == session_id
+                       and operation_id in ((record.get("transport") or {}).get("operation_ids") or [])]
+    raw_hash = target["raw"].get("sha256")
+    pid = (target.get("process") or {}).get("pid")
+    packet_candidates = []
+    for record in records:
+        if record.get("kind") != "message" or record.get("direction") != "client_to_server":
+            continue
+        if record.get("raw", {}).get("scope") != "reconstructed_tcp_message":
+            continue
+        if record.get("raw", {}).get("sha256") != raw_hash or not same_connection(target.get("socket"), record.get("socket")):
+            continue
+        candidate_pid = (record.get("process") or {}).get("pid")
+        if pid is not None and candidate_pid is not None and candidate_pid != pid:
+            continue
+        packet_candidates.append(record)
+    packets_by_evidence = {}
+    for record in records:
+        if record.get("kind") == "packet":
+            for evidence in record.get("evidence", []):
+                key = evidence_key(evidence)
+                if key is not None:
+                    packets_by_evidence[key] = record
+    correlations = []
+    target_raw = base64.b64decode(target["raw"]["data"], validate=True)
+    for message in packet_candidates:
+        keys = {key for key in (evidence_key(item) for item in message.get("evidence", [])) if key is not None}
+        packets = []
+        for key in sorted(keys):
+            packet = packets_by_evidence.get(key)
+            if packet is None:
+                continue
+            payload = base64.b64decode(packet.get("transport_payload", {}).get("data", ""), validate=True)
+            offsets = []
+            offset = payload.find(target_raw)
+            while offset >= 0:
+                offsets.append(offset)
+                offset = payload.find(target_raw, offset + 1)
+            packets.append({"packet": packet, "target_payload_offsets": offsets})
+        shared = []
+        for other in records:
+            if other.get("kind") != "message" or other.get("record_id") == message.get("record_id"):
+                continue
+            other_keys = {key for key in (evidence_key(item) for item in other.get("evidence", [])) if key is not None}
+            if keys & other_keys:
+                shared.append({"record_id": other.get("record_id"), "type": (other.get("decode") or {}).get("type"),
+                               "stream_offset": (other.get("transport") or {}).get("stream_offset"),
+                               "raw_sha256": (other.get("raw") or {}).get("sha256")})
+        correlations.append({
+            "message": message,
+            "correlation": {
+                "method": "exact_raw_sha256_process_direction_and_connection",
+                "status": "unique" if len(packet_candidates) == 1 else "ambiguous_multiple_candidates",
+            },
+            "packets": packets,
+            "messages_sharing_packet_evidence": shared,
+        })
+    source_evidence = []
+    for evidence in target.get("evidence", []):
+        source = evidence.get("file")
+        if not source:
+            continue
+        source_record = {"source": source, "session_meta": None, "observations": [], "process_records": []}
+        for kind, item in iter_msmon_evidence(source):
+            if kind == "session_meta":
+                source_record["session_meta"] = item
+                continue
+            observation = item["observation"]
+            if evidence.get("record_index") is not None and observation.get("record_index") == evidence["record_index"]:
+                if evidence.get("chain") is None or observation.get("chain") == evidence["chain"]:
+                    source_record["observations"].append(item)
+            if observation.get("process_id") == pid and observation.get("type") in (
+                "process_start", "process_exit", "image_load",
+            ):
+                source_record["process_records"].append(item)
+        if evidence.get("record_index") is not None and not source_record["observations"]:
+            raise ValueError(f"Original monitor observation {evidence['record_index']} was not found in {source}")
+        source_evidence.append(source_record)
+    frame_analysis = []
+    for message in socket_messages:
+        raw = base64.b64decode(message["raw"]["data"], validate=True)
+        plaintext = base64.b64decode(message["plaintext"]["data"], validate=True) \
+            if message.get("plaintext", {}).get("data") is not None else None
+        item = {
+            "record_id": message.get("record_id"),
+            "raw_hex": raw.hex(" "),
+            "plaintext_hex": plaintext.hex(" ") if plaintext is not None else None,
+            "decode": message.get("decode"),
+            "trace": message.get("trace"),
+        }
+        if (message.get("decode") or {}).get("protocol") == "maple" and len(raw) >= 4:
+            word0, word1 = struct.unpack_from("<HH", raw)
+            item["maple_transport_header"] = {
+                "word0": f"0x{word0:04x}", "word1": f"0x{word1:04x}",
+                "declared_body_bytes": word0 ^ word1, "captured_body_bytes": len(raw) - 4,
+                "length_matches": (word0 ^ word1) == len(raw) - 4,
+            }
+            if plaintext is not None:
+                current = apply_trace_opcode(copy.deepcopy(message["decode"]), plaintext, message.get("trace"))
+                item["current_field_decode"] = current
+        frame_analysis.append(item)
+    summary_path = ledger_path.parent / "summary.json"
+    summary = json.loads(summary_path.read_text()) if summary_path.exists() else None
+    bundle = {
+        "schema": "client-control.socket-operation-analysis.v1",
+        "selector": {"ledger": str(path), "record": identifier},
+        "ledger_verification": verify_ledger(ledger_path),
+        "ledger_summary": summary,
+        "operation": target,
+        "source_evidence": source_evidence,
+        "stack_analysis": resolve_stack_addresses(source_evidence),
+        "socket_message_observations": socket_messages,
+        "frame_analysis": frame_analysis,
+        "packet_correlations": correlations,
+        "runtime_trace_status": "observed" if any(message.get("trace") for message in [*socket_messages, *packet_candidates])
+        else "not_captured",
+        "absolute_completeness_proven": False,
+        "server_receipt_or_processing_proven": False,
+        "causal_conclusion": "not_established",
+        "limitations": [
+            "Raw hashes prove stored-byte integrity, not complete sensor coverage or server receipt.",
+            "Static code excerpts are candidates until linked by runtime construction/send evidence.",
+            "Timing proximity alone does not establish a caller, response, crash, or malfunction.",
+        ],
+    }
+    if image_path is not None:
+        bundle["static_analysis"] = static_code_evidence(image_path, code_rvas, set(reference_rvas))
+    values, hashes = verify_raw_tree(bundle)
+    bundle["integrity"] = {"raw_values_verified": values, "raw_hashes_verified": hashes}
+    return bundle
+
+
 def show_record(path, identifier, explain=False):
     path = Path(path)
     if path.is_dir():
@@ -1080,6 +1601,17 @@ def self_test():
     assert process_index.lookup(1)["name"] == "MapleStory.exe"
     process_index.event({"type": "process_start", "process_id": 2, "process_path": "/opt/chrome/CrUtilityMain"})
     assert process_index.lookup(2, fallback_name="CrUtilityMai")["name"] == "CrUtilityMain"
+    trace = {"correlation": {"candidate_count": 1, "ambiguous_duplicate_bodies": False},
+             "chain": {"send": {"opcode": "0x181"}}}
+    decoded = {"protocol": "maple", "type": "0xf68f", "status": "unmapped_wire_opcode"}
+    apply_trace_opcode(decoded, bytes.fromhex("8f f6 02 00 00 00 99 55 00 00"), trace)
+    assert decoded["type"] == "0x181" and decoded["alias_mapping"]["status"] == "trace_correlated"
+    assert decoded["fields"]["field_0x06"] == 0x5599 and decoded["status"] == "decoded"
+    ambiguous = {"protocol": "maple", "type": "0x8ff6", "status": "unknown"}
+    apply_trace_opcode(ambiguous, bytes.fromhex("f6 8f 02 00 00 00 99 55 00 00"),
+                       {"correlation": {"candidate_count": 2, "ambiguous_duplicate_bodies": True},
+                        "chain": {"send": {"opcode": "0x181"}}})
+    assert ambiguous["type"] == "0x8ff6"
     pickup = bytearray(36)
     struct.pack_into("<H", pickup, 0, 0x32B)
     struct.pack_into("<I", pickup, 15, 0x143FF)
@@ -1230,6 +1762,31 @@ def self_test():
         assert second_summary["counts"]["socket_operation"] == 3
         assert any(record.get("coverage") == "socket_stream_break" for record in second_records)
         assert check_capture(second_output)["status"] == "fail"
+        operation = next(record for record in second_records if record.get("kind") == "socket_operation"
+                         and record.get("direction") == "client_to_server" and record.get("complete"))
+        analysis = analyze_operation(second_output, operation["record_id"])
+        assert analysis["operation"]["record_id"] == operation["record_id"]
+        assert analysis["source_evidence"][0]["observations"][0]["observation"]["operation_id"] == operation["operation_id"]
+        assert analysis["socket_message_observations"] and analysis["integrity"]["raw_hashes_verified"] > 0
+        assert analysis["runtime_trace_status"] == "not_captured"
+        resolved = resolve_stack_addresses([{
+            "observations": [{"file": "events.jsonl", "line": 2, "observation": {
+                "timestamp": "2026-01-01T00:00:01Z", "stack_addresses": ["0x140001234"],
+            }}],
+            "process_records": [{"file": "events.jsonl", "line": 1, "observation": {
+                "type": "image_load", "timestamp": "2026-01-01T00:00:00Z",
+                "value0": 0x140000000, "value1": 0x2000, "text": "MapleStory.exe", "chain": "test",
+            }}],
+        }])
+        assert resolved[0]["frames"][0]["status"] == "image_range_match"
+        assert resolved[0]["frames"][0]["rva"] == 0x1234
+        incomplete = next(record for record in second_records if record.get("kind") == "socket_operation"
+                          and not record.get("complete"))
+        try:
+            analyze_operation(second_output, incomplete["record_id"])
+            raise AssertionError("incomplete operation exported as complete")
+        except ValueError as error:
+            assert "incomplete" in str(error)
 
         gapped = [json.loads(line) for line in events]
         for record in gapped:
@@ -1274,6 +1831,15 @@ def main(argv=None):
     show.add_argument("ledger", type=Path)
     show.add_argument("record", help="record_id or record_index")
     show.add_argument("--explain", action="store_true", help="Include direct related observations without a timing-only causal claim")
+    analyze = commands.add_parser("analyze-operation", help="Export one outgoing operation and all linked evidence")
+    analyze.add_argument("ledger", type=Path)
+    analyze.add_argument("record", help="Outgoing socket operation record_id or record_index")
+    analyze.add_argument("--output", type=Path, required=True, help="Reviewed JSON evidence bundle to write")
+    analyze.add_argument("--image", type=Path, help="Fingerprinted PE image for optional static code excerpts")
+    analyze.add_argument("--code", action="append", default=[], type=lambda value: int(value, 0),
+                         help="Code RVA to export; repeat for helpers")
+    analyze.add_argument("--references", action="append", default=[], type=lambda value: int(value, 0),
+                         help="Code RVA whose direct callers and static data pointers are exported")
     commands.add_parser("self-test", help="Run synthetic end-to-end checks")
     args = parser.parse_args(argv)
     if args.command == "self-test":
@@ -1288,6 +1854,16 @@ def main(argv=None):
         return 1 if result["status"] == "fail" else 0
     if args.command == "show":
         print(json.dumps(show_record(args.ledger, args.record, args.explain), indent=2))
+        return 0
+    if args.command == "analyze-operation":
+        if (args.code or args.references) and args.image is None:
+            parser.error("analyze-operation --code/--references requires --image")
+        result = analyze_operation(args.ledger, args.record, args.image, args.code, args.references)
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        args.output.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        print(json.dumps({"output": str(args.output), "operation": result["operation"]["record_id"],
+                          "runtime_trace_status": result["runtime_trace_status"],
+                          "integrity": result["integrity"]}, indent=2))
         return 0
     if not any((args.pcap, args.trace, args.msmon, args.ngs)):
         parser.error("build needs at least one --pcap, --trace, --msmon, or --ngs input")

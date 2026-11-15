@@ -38,7 +38,8 @@ std::shared_ptr<const PeImage> PeOpen(const std::string& path, uint64_t inode = 
 std::shared_ptr<const PeImage> PeLoaded(int memory, uint64_t base);
 
 /* One image in /proc/<pid>/maps. A PE image is one per load: base = the mapping of its header (file offset
- * 0), size = SizeOfImage. Any other file is one per path: lowest address and span to the highest. */
+ * 0), size = SizeOfImage. A native image starts at each offset-zero mapping and spans its subsequent mappings;
+ * a second offset-zero mapping is another load, not one span across both addresses. */
 struct MappedImage {
     std::string path;
     uint64_t base = 0;
