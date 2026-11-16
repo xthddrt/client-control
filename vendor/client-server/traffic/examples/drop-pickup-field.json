@@ -1,0 +1,20 @@
+{
+  "schema": "client-control.traffic-filter/v1",
+  "name": "scoped pickup-field drop example",
+  "default": "allow",
+  "rules": [
+    {
+      "id": "drop-one-drop-object",
+      "action": "drop",
+      "description": "Research example: suppress a pickup request only for one known drop object ID. Do not use without an isolated test account.",
+      "match": {
+        "process": {"name": "MapleStory.exe"},
+        "protocol": ["maplestory_game"],
+        "destination": {"port": 8585},
+        "type": {"opcode": "0x32b", "name": "pickup_request"},
+        "field": [{"name": "drop_object_id", "equals": "0x143ff"}],
+        "size": {"min": 36, "max": 36}
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+# analysis/capture-senders.sh: which Windows module makes each send of the game family.
+# Audit only: nothing is denied, nothing is hidden; loopback is not logged.
+mode audit
+protect \MapleStory.exe
+protect \nexon_client.exe
+protect \nexon_runtime.exe
+protect \nexon_agent.exe
+protect \DwarfAxe.exe
+protect \CrashReportClient.exe
+protect \grap-core64.aes
+protect \grap-updater.aes
+protect \grap-communicator64.aes
+block-network on
+network-default allow
+network-loopback on
+audit|message|proto=tcp|rights=send
+audit|message|proto=udp|rights=send

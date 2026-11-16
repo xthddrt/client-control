@@ -1,0 +1,42 @@
+{
+ "observed_date": "2026-10-25",
+ "process_name": "MapleStory.exe",
+ "observed_image_base": "0x140000000",
+ "pe": {
+  "machine": "0x8664",
+  "timestamp": "0x6AEB667B",
+  "size_of_image": "0x5F2E000"
+ },
+ "code_fingerprints": [
+  {
+   "name": "character_identifier_getter",
+   "rva": "0x2809A60",
+   "bytes": "8b81d0110000c3cccccccccccccccccc488b"
+  },
+  {
+   "name": "character_cached_position_getter",
+   "rva": "0x28585F0",
+   "bytes": "48895c2408574883ec20488d99f00f00"
+  },
+  {
+   "name": "controller_snapshot_copy",
+   "rva": "0xA2D700",
+   "bytes": "48895c24104889742418574883ec30488bd94881"
+  },
+  {
+   "name": "encoded_integer_position_assignment",
+   "rva": "0xA56590",
+   "bytes": "48895c241048896c241848897424205741544155415641574883ec208b"
+  },
+  {
+   "name": "portal_array_accessor",
+   "rva": "0x1F7DB20",
+   "bytes": "48895c2410574883ec204863da85d2786a488b4108488d79"
+  },
+  {
+   "name": "portal_minimap_xy_reader",
+   "rva": "0x250116E",
+   "bytes": "8b8e04030000458b7e144403befc0200"
+  }
+ ]
+}

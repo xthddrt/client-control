@@ -1,0 +1,4 @@
+cryptography==50.0.2
+mitmproxy==12.3.1
+capstone==5.0.3
+pefile==2024.8.26

@@ -1,0 +1,26 @@
+{
+  "schema": "client-control.traffic-filter/v1",
+  "name": "audit game report family",
+  "default": "allow",
+  "rules": [
+    {
+      "id": "audit-1ef",
+      "action": "audit",
+      "description": "Log every 0x1ef report; never suppress it.",
+      "match": {
+        "process": {"name": "MapleStory.exe"},
+        "protocol": ["maplestory_game"],
+        "type": {"opcode": "0x1ef"}
+      }
+    },
+    {
+      "id": "audit-unknown-game",
+      "action": "audit",
+      "description": "Log game messages whose type is not resolved.",
+      "match": {
+        "protocol": ["maplestory_game"],
+        "type": {"confidence": ["unknown", "unresolved"]}
+      }
+    }
+  ]
+}
